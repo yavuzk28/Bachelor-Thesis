@@ -1,0 +1,41 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The binary contains multiple functions, including main-like entry, helper functions, and library calls.",
+    "The primary control flow starts at .text:1140, which checks argc (edi) and branches to either file input or stdin processing.",
+    "A loop at .text:1180 iterates over command-line arguments, printing each transformed string.",
+    "A branch at .text:1160 decides whether to process arguments or read from stdin.",
+    "The stdin processing path includes a read loop and calls to various helper functions.",
+    "Several functions (e.g., 1330, 1430, 1510, 18e0, 19f0, 1b80) are called and return, creating call/ret edges.",
+    "Stack canary checks at various points create conditional branches to a fail function.",
+    "I have omitted internal nodes for helper functions due to limited information, focusing on the main control flow.",
+    "Edges are inferred from conditional jumps and calls that return to the next instruction.",
+    "The overall structure includes loops and branches, with multiple exit points."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7",
+      "B8"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B1", "B2"],
+      ["B1", "B6"],
+      ["B2", "B3"],
+      ["B3", "B2"],
+      ["B3", "B4"],
+      ["B4", "B5"],
+      ["B5", "B2"],
+      ["B6", "B7"],
+      ["B7", "B8"],
+      ["B8", "B5"]
+    ]
+  }
+}

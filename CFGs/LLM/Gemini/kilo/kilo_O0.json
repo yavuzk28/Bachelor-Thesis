@@ -1,0 +1,41 @@
+{
+"cfg_confidence": 90,
+"reasoning": [
+"Analyzed the function at 0x25fa which performs initialization, terminal/isatty checks, and error handling via tcgetattr and tcsetattr.",
+"Identified conditional branches checking for flags and terminal properties (e.g., test eax, eax; je 262c).",
+"Mapped out the sequential basic blocks starting from B0 at 0x25fa, which branches to either an early exit path or carries out terminal device attribute checks.",
+"B0 splits into B1 (early return/exit) and B2 (isatty check). B2 conditionally branches on the isatty result into an error handler or continues to tcgetattr.",
+"Further branches check the return value of tcgetattr (cmp eax, 0xffffffff; je 271d) and tcsetattr, leading to error setup blocks or standard exit blocks with stack canary validation."
+],
+"cfg": {
+"nodes": [
+"B0",
+"B1",
+"B2",
+"B3",
+"B4",
+"B5",
+"B6",
+"B7",
+"B8",
+"B9",
+"B10"
+],
+"edges": [
+["B0", "B1"],
+["B0", "B2"],
+["B2", "B3"],
+["B2", "B4"],
+["B4", "B5"],
+["B4", "B6"],
+["B5", "B7"],
+["B5", "B8"],
+["B3", "B9"],
+["B6", "B9"],
+["B8", "B9"],
+["B7", "B10"],
+["B9", "B10"],
+["B1", "B10"]
+]
+}
+}

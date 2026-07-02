@@ -1,0 +1,44 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The disassembly contains multiple functions including main-like code starting at 0x25fb with argument handling and a large switch statement.",
+    "I identified a loop structure for reading user input and processing commands (keys: 'w','a','s','d','q','r','h','j','k','l','C','D','4','6','8','2'), which maps to directional moves and resets.",
+    "There are function calls to game logic functions (e.g., 0x1bf1, 0x1cb1, 0x1b8d, 0x1c51, 0x14e9, 0x2086) that modify the game state.",
+    "The CFG includes branches for invalid commands and special exit conditions.",
+    "I did not fully reconstruct the entire program's CFG due to the large number of functions and complex control flow, but I have captured the main execution flow of the primary function.",
+    "The return path at the end of the function and exit calls are included."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7",
+      "B8",
+      "B9",
+      "B10",
+      "B11"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B1", "B2"],
+      ["B2", "B3"],
+      ["B3", "B4"],
+      ["B4", "B5"],
+      ["B5", "B6"],
+      ["B6", "B7"],
+      ["B7", "B8"],
+      ["B8", "B9"],
+      ["B9", "B10"],
+      ["B10", "B11"],
+      ["B11", "B4"],
+      ["B3", "B6"],
+      ["B7", "B0"],
+      ["B8", "B2"]
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "cfg_confidence": 30,
+  "reasoning": [
+    "The disassembly includes multiple sections (.init, .plt, .text, .fini) and many functions. A full CFG reconstruction across all functions is not feasible due to the large number of basic blocks and indirect control flow (calls through function pointers, PLT stubs, and signal handlers).",
+    "The main function appears to start at address 0x24c0, which calls __libc_start_main. It contains a hlt instruction after the call, suggesting program termination after main returns.",
+    "Several functions contain recognizable control-flow structures: conditional branches (je, jne, jg, etc.) and unconditional jumps (jmp). For example, function at 0x25a9 uses if-else logic to check terminal attributes, function at 0x2747 reads input and branches based on key codes, and function at 0x2c84 has a loop that processes string characters with multiple nested conditional branches.",
+    "The CFG for the entire program would be extremely large and complex, with many interprocedural edges (calls and returns) that are difficult to resolve without symbol information.",
+    "Given the limited information and the scope of the task, I can reconstruct only a high-level sketch of the main control flow at the function level, but not a detailed basic-block CFG for all functions.",
+    "Confidence is low because of the many indirect jumps/calls and the fact that the .text section is not labeled with function boundaries, making it hard to determine where functions start and end."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0_start_init",
+      "B1_plt_stubs",
+      "B2_text_entry",
+      "B3_main_function",
+      "B4_exit"
+    ],
+    "edges": [
+      ["B0_start_init", "B1_plt_stubs"],
+      ["B1_plt_stubs", "B2_text_entry"],
+      ["B2_text_entry", "B3_main_function"],
+      ["B3_main_function", "B4_exit"]
+    ]
+  }
+}

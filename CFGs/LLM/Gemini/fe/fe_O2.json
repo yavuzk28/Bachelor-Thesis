@@ -1,0 +1,46 @@
+{
+"cfg_confidence": 75,
+"reasoning": [
+"Parsed the provided disassembly starting from address 0x1120 down to 0x1400.",
+"Identified basic blocks by detecting control flow modifications such as conditional jumps (je, jne, jb), unconditional jumps (jmp), and function termination points (ret, call to exit).",
+"Function at 0x1120 features early calls to fprintf and longjmp, acting as error termination sequences.",
+"Function at 0x1180 comprises linear entry followed by a conditional check (je 11a8) and a dynamic indirect jump (jmp rax).",
+"Function at 0x11b0 computes pointer differences, performs mathematical shifts, followed by a conditional jump (je 11e8) and a pointer validation check leading to an indirect jump.",
+"Function at 0x11f0 contains logic to check an initialization flag with a conditional jump (jne 1228), followed by a secondary check (je 1217) leading to initialization routine invocation and standard return.",
+"Function at 0x1250 establishes an extensive loop structure (from 0x12c0 through 0x1309) that iterates over nodes using a linked list or array offset, validated via comparison (jne 12c0), followed by an absolute exit invocation."
+],
+"cfg": {
+"nodes": [
+"B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9",
+"B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19",
+"B20", "B21", "B22", "B23", "B24", "B25", "B26", "B27", "B28"
+],
+"edges": [
+["B0", "B1"],
+["B2", "B3"],
+["B2", "B4"],
+["B4", "B3"],
+["B5", "B6"],
+["B5", "B8"],
+["B6", "B7"],
+["B6", "B8"],
+["B9", "B10"],
+["B9", "B14"],
+["B10", "B11"],
+["B10", "B12"],
+["B11", "B12"],
+["B12", "B13"],
+["B15", "B16"],
+["B17", "B18"],
+["B17", "B19"],
+["B19", "B20"],
+["B20", "B21"],
+["B20", "B22"],
+["B22", "B20"],
+["B23", "B24"],
+["B23", "B25"],
+["B26", "B27"],
+["B26", "B28"]
+]
+}
+}

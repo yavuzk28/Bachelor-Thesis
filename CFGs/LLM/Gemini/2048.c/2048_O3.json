@@ -1,0 +1,58 @@
+{
+  "cfg_confidence": 95,
+  "reasoning": [
+    "Reconstructed the Control Flow Graph (CFG) for the main target routine starting at address 0x14e9 by analyzing branching instructions and destinations.",
+    "Identified an outer loop counter initialization at block 0x14e9, which unconditionally jumps to the loop header/condition at block 0x17f1.",
+    "The block 0x17f1 compares the outer loop counter and loops back to block 0x1546 if the condition holds, otherwise transitioning to the routine epilogue and exit.",
+    "Inside the outer loop, sequential code initializes inner loop counters and transitions via structural conditional nodes (0x15d8, 0x172d, 0x17d3) containing distinct state modifications and nested conditional branches (such as the branch at 0x166b).",
+    "Merged the control flow pathways cleanly back into the respective loop conditions and verified the standard stack check validation prior to function termination."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7",
+      "B8",
+      "B9",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "B15",
+      "B16",
+      "B17",
+      "B18"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B1", "B2"],
+      ["B1", "B15"],
+      ["B2", "B3"],
+      ["B3", "B4"],
+      ["B4", "B3"],
+      ["B4", "B5"],
+      ["B5", "B6"],
+      ["B6", "B7"],
+      ["B7", "B8"],
+      ["B7", "B9"],
+      ["B8", "B10"],
+      ["B9", "B10"],
+      ["B10", "B11"],
+      ["B11", "B6"],
+      ["B11", "B12"],
+      ["B12", "B13"],
+      ["B13", "B14"],
+      ["B14", "B13"],
+      ["B14", "B1"],
+      ["B15", "B16"],
+      ["B16", "B17"],
+      ["B16", "B18"]
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "The disassembly contains many functions, but the primary function of interest appears to be the entry point at 0x25fb (which calls main-like logic) and the main function starting at 0x25fb (the code at 0x25fb is likely `main`). The CFG reconstruction focuses on the main control flow of the `main` function.",
+    "The `main` function starts with standard prologue, argument checks, and a series of `strcmp` checks against argv[1] to determine modes. This creates a decision tree with multiple branches: help mode, test mode, etc. Some branches lead to early exits or function calls.",
+    "After argument processing, the program enters a large loop that reads keyboard input (`getchar`) and processes commands. This loop has nested conditionals that handle different commands (`a`, `h`, `d`, etc.), each of which triggers different sequences of function calls (likely moves in a puzzle game).",
+    "Within the main loop, there are branches for quit ('q'), reset ('r'), and other commands. The loop also includes checks for successful game completion (calls to `puts` and exit).",
+    "The high-level structure is: entry -> argument parsing -> initialization -> main game loop -> exit. The loop contains complex branching based on user input, with each command leading to a different set of function calls, and some commands like 'q' and 'r' have sub-branches for confirmation.",
+    "Due to the large number of functions and the lack of symbol names, the exact mapping of basic blocks is challenging. The `cfg_confidence` is moderate because many branches are present but their precise control flow edges within the game logic cannot be fully resolved without deeper analysis of the 0x12e9, 0x14e9, 0x183f, 0x18cb, 0x19ee, 0x1b8d, 0x1bf1, 0x1c51, 0x1cb1, 0x1e08, 0x1e94, 0x2012 functions and their interactions.",
+    "The reconstructed CFG is simplified to the major blocks: initialization, argument processing, the command loop, and the exit path. The edges represent the main flow; more detailed sub-blocks inside the loop are collapsed due to the complexity and lack of symbols."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B1", "B2"],
+      ["B2", "B3"],
+      ["B2", "B7"],
+      ["B3", "B4"],
+      ["B4", "B5"],
+      ["B5", "B4"],
+      ["B5", "B6"],
+      ["B6", "B7"]
+    ]
+  }
+}

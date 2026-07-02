@@ -1,0 +1,40 @@
+{
+  "cfg_confidence": 75,
+  "reasoning": [
+    "The disassembly contains multiple code sections (.init, .plt, .plt.got, .plt.sec, .text, .fini). The .text section contains the main executable code.",
+    "The .text section starts at address 0x1140 and contains the main function (entry point). It begins with standard prologue and checks argc (edi) > 1. If not, it jumps to a block that reads from stdin and processes input.",
+    "The main loop at 0x1180 iterates over command-line arguments (argv[1] onward). For each argument, it calls a function at 0x18e0 (likely a hash/compression function), then prints each byte in hex format, followed by a newline.",
+    "There is a conditional branch at 0x1160: if argc <= 1, jump to 0x11e1; otherwise, proceed with argument processing.",
+    "Inside the argument processing loop, there is an inner loop at 0x1190 that prints each byte of the processed output. The inner loop condition compares rbp and rbx; if not equal, it continues printing.",
+    "After the inner loop, a newline is printed (putchar) and the next argument is processed until r12 == r14.",
+    "The function at 0x18e0 (called from main) is a processing function that takes a string, computes a hash-like transformation (using SHA-like operations and a final permutation). It uses a loop over the string length, with periodic calls to 0x1330 to update state.",
+    "The function at 0x1330 is a core transformation function (likely MD5/SHA-like) that processes a 64-byte block. It contains a loop that runs 64 iterations and then updates the state.",
+    "There are also functions at 0x1510 and 0x1430 that appear to be helper functions for padding and block processing.",
+    "The CFG reconstruction focuses on the main function and the core transformation function, as they contain the most control flow structures. Other functions are utility functions with straightforward linear or small branching.",
+    "The main function has a conditional branch (if argc <= 1), a loop over arguments, an inner loop over bytes, and function calls. The core transformation function has a fixed loop (64 iterations) with conditional logic inside, and a final state update.",
+    "Due to the complexity and the presence of many functions, the CFG is simplified to the most relevant nodes representing the main control flow. The confidence is moderate because some function internals are not fully disassembled (e.g., function 0x1330 has a loop but its exact structure is partially inferred)."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B0", "B2"],
+      ["B2", "B3"],
+      ["B3", "B4"],
+      ["B4", "B5"],
+      ["B5", "B3"],
+      ["B3", "B6"],
+      ["B6", "B2"],
+      ["B2", "B7"]
+    ]
+  }
+}

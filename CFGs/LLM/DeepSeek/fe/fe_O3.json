@@ -1,0 +1,37 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "The disassembly lacks function boundaries and labels, making it difficult to determine exact basic block divisions and control flow edges.",
+    "Many jumps and calls are indirect (e.g., call rax, jmp QWORD PTR [rip+...]) which cannot be resolved without runtime information.",
+    "Some control flow is present: conditional jumps (je, jne), unconditional jumps (jmp), calls (call), and ret instructions.",
+    "Loops are indicated by backward jumps (e.g., jne 12c0, jne 2770), and branches show conditional structures.",
+    "The overall CFG is incomplete because the target addresses of many indirect jumps are unknown, and the code contains multiple disconnected regions."
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5",
+      "B6",
+      "B7",
+      "B8",
+      "B9"
+    ],
+    "edges": [
+      ["B0", "B1"],
+      ["B1", "B2"],
+      ["B1", "B3"],
+      ["B2", "B4"],
+      ["B3", "B4"],
+      ["B4", "B5"],
+      ["B5", "B6"],
+      ["B6", "B7"],
+      ["B7", "B8"],
+      ["B8", "B9"],
+      ["B9", "B5"]
+    ]
+  }
+}

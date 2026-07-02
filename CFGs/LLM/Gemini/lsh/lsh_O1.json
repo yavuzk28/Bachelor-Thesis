@@ -1,0 +1,41 @@
+{
+"cfg_confidence": 95,
+"reasoning": [
+"Identified several subroutines in the .text section starting at offsets 1130, 1160, 1190, 11d0, 1210, 1220, 1270, 12e0, 12f0, 1300, 1390, 1410, 14c0, 15a0, and 1660.",
+"Traced basic blocks based on sequential execution, conditional jumps (je, jne, jl, jg, js), unconditional jumps (jmp), and function returns (ret).",
+"Constructed control flow within the main processing function at 15a0 which contains a shell-like loop structure calling line reading (1410) and tokenizing (14c0) subroutines.",
+"Mapped conditional branches in function 1300 (fork handler) where it checks fork return value (js to error, je to child execvp, otherwise parent waitpid loop).",
+"Mapped conditional branches in function 1410 (input reader loop fetching characters until newline or EOF with dynamic realloc resizing).",
+"Mapped conditional branches in function 14c0 (tokenizer loop calling strtok and dynamically resizing the arguments array).",
+"Combined all distinct basic blocks across the functions into a singular global control flow representation labeled from B0 onwards."
+],
+"cfg": {
+"nodes": [
+"B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9",
+"B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19",
+"B20", "B21", "B22", "B23", "B24", "B25", "B26", "B27", "B28", "B29",
+"B30", "B31", "B32", "B33", "B34", "B35", "B36", "B37", "B38", "B39",
+"B40", "B41", "B42", "B43", "B44", "B45", "B46", "B47", "B48", "B49",
+"B50", "B51", "B52", "B53", "B54", "B55", "B56", "B57", "B58", "B59",
+"B60", "B61", "B62", "B63", "B64", "B65", "B66", "B67", "B68", "B69",
+"B70", "B71", "B72", "B73", "B74"
+],
+"edges": [
+["B0", "B1"], ["B0", "B2"], ["B2", "B3"], ["B4", "B5"], ["B4", "B6"],
+["B6", "B7"], ["B8", "B9"], ["B8", "B10"], ["B10", "B11"], ["B12", "B13"],
+["B12", "B16"], ["B13", "B14"], ["B13", "B15"], ["B17", "B18"], ["B19", "B20"],
+["B19", "B21"], ["B21", "B20"], ["B22", "B23"], ["B22", "B24"], ["B24", "B25"],
+["B25", "B24"], ["B26", "B27"], ["B27", "B28"], ["B27", "B29"], ["B29", "B30"],
+["B29", "B31"], ["B31", "B32"], ["B31", "B33"], ["B33", "B31"], ["B35", "B36"],
+["B35", "B39"], ["B36", "B37"], ["B36", "B38"], ["B38", "B36"], ["B40", "B41"],
+["B41", "B42"], ["B41", "B44"], ["B42", "B43"], ["B42", "B44"], ["B45", "B46"],
+["B45", "B51"], ["B46", "B47"], ["B46", "B48"], ["B48", "B49"], ["B49", "B46"],
+["B49", "B50"], ["B50", "B46"], ["B52", "B53"], ["B52", "B62"], ["B53", "B54"],
+["B54", "B55"], ["B55", "B56"], ["B55", "B61"], ["B56", "B57"], ["B57", "B58"],
+["B57", "B59"], ["B59", "B57"], ["B59", "B60"], ["B63", "B64"], ["B64", "B65"],
+["B64", "B66"], ["B66", "B67"], ["B67", "B68"], ["B67", "B69"], ["B69", "B70"],
+["B69", "B71"], ["B71", "B72"], ["B71", "B64"], ["B72", "B73"], ["B73", "B64"],
+["B74", "B12"]
+]
+}
+}

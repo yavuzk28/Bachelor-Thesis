@@ -1,0 +1,44 @@
+{
+"cfg_confidence": 90,
+"reasoning": [
+"Reconstructed the Control Flow Graph (CFG) for the main logic located in the .text section starting at offset 0x1140.",
+"B0 (0x1140 - 0x1163) handles the entry and conditional check on the argument count (edi), branching to B1 or B8.",
+"B1 (0x1165 - 0x1176) initializes loop variables for the outer loop and falls into the outer loop body.",
+"B2 (0x1180 - 0x118d) acts as the outer loop head, calling an internal initialization function, and falls into the inner loop.",
+"B3 (0x1190 - 0x11aa) executes the inner loop body, which prints individual byte values.",
+"B4 (0x11ad - 0x11ad) checks the inner loop condition, conditionally branching back to B3 or falling through to B5.",
+"B5 (0x11af - 0x11bd) prints a newline character and updates the outer loop pointer.",
+"B6 (0x11c0 - 0x11c0) checks the outer loop condition, branching back to B2 or falling through to B7.",
+"B7 (0x11c2 - 0x11e0) performs the stack canary check and returns normally if valid, otherwise falling into a stack failure block.",
+"B8 (0x11e1 - 0x11f8) handles the alternative branch when edi <= 1, reads input using fread/malloc helpers, and jumps to B7 to clean up and exit.",
+"B9 (0x11fa - 0x11ff) handles the stack check failure by calling __stack_chk_fail."
+],
+"cfg": {
+"nodes": [
+"B0",
+"B1",
+"B2",
+"B3",
+"B4",
+"B5",
+"B6",
+"B7",
+"B8",
+"B9"
+],
+"edges": [
+["B0", "B1"],
+["B0", "B8"],
+["B1", "B2"],
+["B2", "B3"],
+["B3", "B4"],
+["B4", "B3"],
+["B4", "B5"],
+["B5", "B6"],
+["B6", "B2"],
+["B6", "B7"],
+["B8", "B7"],
+["B7", "B9"]
+]
+}
+}

@@ -1,0 +1,38 @@
+{
+"cfg_confidence": 40,
+"reasoning": [
+"Analyzed the provided X86_64 disassembly structure within the main functional text area starting at entry 12e9 and loop constructs up to 183e.",
+"Identified a highly structured sequence inside function 14e9 spanning conditional jumps, nested inner loops using block comparisons at 15d8, 172d, 17d3, and an outermost validation condition branching at 17f1.",
+"Due to data fragmentation and partial trace presentation inside the assembly source code, matched isolated basic execution blocks to model conditional jumps, fallthrough paths, and loop cyclic terminations representing structural multi-branch configurations."
+],
+"cfg": {
+"nodes": [
+"B0",
+"B1",
+"B2",
+"B3",
+"B4",
+"B5",
+"B6",
+"B7",
+"B8",
+"B9",
+"B10"
+],
+"edges": [
+["B0", "B1"],
+["B1", "B2"],
+["B2", "B3"],
+["B3", "B4"],
+["B3", "B5"],
+["B4", "B6"],
+["B5", "B6"],
+["B6", "B7"],
+["B7", "B8"],
+["B7", "B9"],
+["B8", "B10"],
+["B9", "B10"],
+["B10", "B1"]
+]
+}
+}

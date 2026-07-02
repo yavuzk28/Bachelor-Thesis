@@ -1,0 +1,62 @@
+{
+"cfg_confidence": 95,
+"reasoning": [
+"Analyzed the x86-64 disassembly section by section, identifying distinct function boundaries and basic blocks based on control-flow instructions (jmp, je, jne, jge, jl, call, ret).",
+"Function at 0x1210 (cd command logic) contains basic blocks spanning 1210->1225, 1227->123f (fallthrough/jump), 1241->1251, 1253->125f, and a merge at 1261->126b.",
+"Function at 0x1270 (help command logic) contains a loop structure with blocks at 1270->12aa, 12ad->12bf (loop header), 12c1->12e7 (loop body), and 12e9->1301 (loop exit).",
+"Function at 0x1310 is a trivial stub returning 0.",
+"Function at 0x1320 is a trivial stub returning 3.",
+"Function at 0x1330 (process spawning with fork/execvp/waitpid) contains complex conditional jumps checking fork results (1344->1375) and a waitpid loop (138b->13ca).",
+"Function at 0x13e0 (command execution router) loops through built-in commands using strcmp, mapping to blocks 13e8->13f4, 13ff->1418, 141a->1452, 1454->145f, and fallback 1461->1475.",
+"Function at 0x1480 (line editor/reader loop) uses getchar inside a loop with buffer reallocation checks, branching at 14de, 14eb, and 1524.",
+"Function at 0x1580 (string tokenizer) loops over strtok with buffer expansion checks, branching at 15ed, 1612, and 163f.",
+"Function at 0x16b0 (main command loop) prints a prompt, reads input, tokenizes, executes, and loops back conditionally (16fe->16b8).",
+"Function at 0x1710 is the entry point invoking the main loop at 16b0.",
+"Basic blocks across all subroutines were mapped to sequential identifiers (B0 to B43) and edges were linked based on conditional/unconditional jumps and standard sequential execution flow."
+],
+"cfg": {
+"nodes": [
+"B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9",
+"B10", "B11", "B12", "B13", "B14", "B15", "B16", "B17", "B18", "B19",
+"B20", "B21", "B22", "B23", "B24", "B25", "B26", "B27", "B28", "B29",
+"B30", "B31", "B32", "B33", "B34", "B35", "B36", "B37", "B38", "B39",
+"B40", "B41", "B42", "B43"
+],
+"edges": [
+["B0", "B1"], ["B0", "B2"],
+["B1", "B4"],
+["B2", "B3"], ["B2", "B4"],
+["B3", "B4"],
+["B5", "B6"],
+["B6", "B7"], ["B6", "B8"],
+["B7", "B6"],
+["B9", "B10"], ["B9", "B14"],
+["B10", "B11"], ["B10", "B12"],
+["B11", "B13"],
+["B12", "B13"],
+["B13", "B10"],
+["B14", "B15"],
+["B15", "B16"], ["B15", "B19"],
+["B16", "B17"], ["B16", "B18"],
+["B17", "B15"],
+["B18", "B15"],
+["B20", "B21"], ["B20", "B22"],
+["B21", "B26"],
+["B22", "B23"], ["B22", "B25"],
+["B23", "B24"], ["B23", "B25"],
+["B24", "B26"],
+["B25", "B22"],
+["B27", "B28"], ["B27", "B29"],
+["B28", "B30"], ["B28", "B31"],
+["B29", "B32"],
+["B31", "B28"],
+["B32", "B33"], ["B32", "B34"],
+["B33", "B36"],
+["B34", "B35"], ["B34", "B36"],
+["B35", "B36"],
+["B36", "B32"],
+["B37", "B38"],
+["B38", "B37"], ["B38", "B39"]
+]
+}
+}
