@@ -1,5 +1,6 @@
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.block.*;
+import ghidra.program.model.symbol.FlowType;
 import ghidra.program.model.listing.*;
 
 import java.io.*;
@@ -63,8 +64,14 @@ public class ExportCFG extends GhidraScript {
 
                 while (dests.hasNext()) {
 
-                    CodeBlockReference ref =
-                        dests.next();
+                    CodeBlockReference ref = dests.next();
+
+                    FlowType flow = ref.getFlowType();
+
+                    // Skip interprocedural call edges
+                    if (flow.isCall()) {
+                        continue;
+                    }
 
                     CodeBlock dstBlock =
                         ref.getDestinationBlock();
