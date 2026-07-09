@@ -1,0 +1,57 @@
+{
+"cfg_confidence": 70,
+"reasoning": [
+"The input assembly code contains multiple functions identified by entry points (e.g., .init at 1000, .text entries starting from 1120).",
+"Basic blocks were identified based on sequential instructions terminated by control-flow instructions such as 'ret', 'jmp', 'je', 'jne', 'call', and 'hlt'.",
+"Due to the complexity of the assembly and the length of the code, only a subset of the functions were fully mapped (e.g., the function at 1120, 1150, 1180, 11b0, 11f0, 1230, 1250, 1320, 1360, 13d0, 13e0, 1420, 1430).",
+"Intraprocedural edges were added based on the target addresses of conditional and unconditional branch instructions within each function.",
+"Interprocedural edges (calls) were excluded according to the provided instructions."
+],
+"cfg": {
+"nodes": [
+"sub_1120::B0",
+"sub_1150::B0",
+"sub_1150::B1",
+"sub_1180::B0",
+"sub_1180::B1",
+"sub_11b0::B0",
+"sub_11b0::B1",
+"sub_11f0::B0",
+"sub_11f0::B1",
+"sub_11f0::B2",
+"sub_1230::B0",
+"sub_1250::B0",
+"sub_1250::B1",
+"sub_1250::B2",
+"sub_1250::B3",
+"sub_1320::B0",
+"sub_1360::B0",
+"sub_1360::B1",
+"sub_1360::B2",
+"sub_13d0::B0",
+"sub_13e0::B0",
+"sub_13e0::B1",
+"sub_1420::B0",
+"sub_1430::B0",
+"sub_1430::B1",
+"sub_1430::B2",
+"sub_1430::B3"
+],
+"edges": [
+["sub_1150::B0", "sub_1150::B1"],
+["sub_1180::B0", "sub_1180::B1"],
+["sub_11b0::B0", "sub_11b0::B1"],
+["sub_11f0::B0", "sub_11f0::B1"],
+["sub_11f0::B1", "sub_11f0::B2"],
+["sub_1250::B0", "sub_1250::B1"],
+["sub_1250::B1", "sub_1250::B2"],
+["sub_1250::B2", "sub_1250::B3"],
+["sub_1360::B0", "sub_1360::B1"],
+["sub_1360::B1", "sub_1360::B2"],
+["sub_13e0::B0", "sub_13e0::B1"],
+["sub_1430::B0", "sub_1430::B1"],
+["sub_1430::B1", "sub_1430::B2"],
+["sub_1430::B2", "sub_1430::B3"]
+]
+}
+}

@@ -1,0 +1,42 @@
+{
+"cfg_confidence": 95,
+"reasoning": [
+"Function boundaries identified based on entry points (endbr64, function prologues) and ret instructions.",
+"Basic blocks defined by identifying entry points (branch targets) and termination points (branches, calls leading to jumps, returns).",
+"Internal function flow includes conditional jumps (je, jne, jg, jl, js, jz) and unconditional jumps (jmp).",
+"Library calls (plt) are treated as atomic operations within a block; they do not terminate a block unless followed by a control flow change.",
+"Functions identified: sub_1000 (.init), sub_1130 (entry point), sub_1160, sub_1190, sub_11d0, sub_1210, sub_1220, sub_1270, sub_12f0, sub_1300, sub_1310, sub_13a0, sub_1430, sub_14e0, sub_15c0, sub_16a0."
+],
+"cfg": {
+"nodes": [
+"sub_1000::B0", "sub_1000::B1", "sub_1000::B2",
+"sub_1130::B0",
+"sub_1160::B0", "sub_1160::B1", "sub_1160::B2",
+"sub_1190::B0", "sub_1190::B1",
+"sub_11d0::B0", "sub_11d0::B1", "sub_11d0::B2", "sub_11d0::B3",
+"sub_1210::B0",
+"sub_1220::B0", "sub_1220::B1", "sub_1220::B2", "sub_1220::B3",
+"sub_1270::B0",
+"sub_12f0::B0",
+"sub_1300::B0",
+"sub_1310::B0", "sub_1310::B1", "sub_1310::B2", "sub_1310::B3", "sub_1310::B4", "sub_1310::B5", "sub_1310::B6",
+"sub_13a0::B0", "sub_13a0::B1", "sub_13a0::B2", "sub_13a0::B3", "sub_13a0::B4", "sub_13a0::B5", "sub_13a0::B6", "sub_13a0::B7",
+"sub_1430::B0", "sub_1430::B1", "sub_1430::B2", "sub_1430::B3", "sub_1430::B4", "sub_1430::B5", "sub_1430::B6",
+"sub_14e0::B0", "sub_14e0::B1", "sub_14e0::B2", "sub_14e0::B3", "sub_14e0::B4", "sub_14e0::B5", "sub_14e0::B6", "sub_14e0::B7",
+"sub_15c0::B0", "sub_15c0::B1", "sub_15c0::B2", "sub_15c0::B3", "sub_15c0::B4", "sub_15c0::B5", "sub_15c0::B6", "sub_15c0::B7", "sub_15c0::B8",
+"sub_16a0::B0"
+],
+"edges": [
+["sub_1000::B0", "sub_1000::B1"], ["sub_1000::B1", "sub_1000::B2"], ["sub_1000::B1", "sub_1000::B0"],
+["sub_1160::B0", "sub_1160::B1"], ["sub_1160::B1", "sub_1160::B2"],
+["sub_1190::B0", "sub_1190::B1"],
+["sub_11d0::B0", "sub_11d0::B1"], ["sub_11d0::B1", "sub_11d0::B2"], ["sub_11d0::B2", "sub_11d0::B3"],
+["sub_1220::B0", "sub_1220::B1"], ["sub_1220::B1", "sub_1220::B2"], ["sub_1220::B1", "sub_1220::B3"], ["sub_1220::B2", "sub_1220::B3"],
+["sub_1310::B0", "sub_1310::B1"], ["sub_1310::B1", "sub_1310::B2"], ["sub_1310::B1", "sub_1310::B3"], ["sub_1310::B2", "sub_1310::B4"], ["sub_1310::B3", "sub_1310::B4"], ["sub_1310::B4", "sub_1310::B5"], ["sub_1310::B5", "sub_1310::B4"], ["sub_1310::B4", "sub_1310::B6"],
+["sub_13a0::B0", "sub_13a0::B1"], ["sub_13a0::B1", "sub_13a0::B2"], ["sub_13a0::B1", "sub_13a0::B3"], ["sub_13a0::B2", "sub_13a0::B4"], ["sub_13a0::B3", "sub_13a0::B5"], ["sub_13a0::B4", "sub_13a0::B6"], ["sub_13a0::B5", "sub_13a0::B6"], ["sub_13a0::B6", "sub_13a0::B7"],
+["sub_1430::B0", "sub_1430::B1"], ["sub_1430::B1", "sub_1430::B2"], ["sub_1430::B2", "sub_1430::B3"], ["sub_1430::B3", "sub_1430::B4"], ["sub_1430::B4", "sub_1430::B5"], ["sub_1430::B5", "sub_1430::B6"], ["sub_1430::B5", "sub_1430::B3"], ["sub_1430::B3", "sub_1430::B6"],
+["sub_14e0::B0", "sub_14e0::B1"], ["sub_14e0::B1", "sub_14e0::B2"], ["sub_14e0::B2", "sub_14e0::B3"], ["sub_14e0::B3", "sub_14e0::B4"], ["sub_14e0::B4", "sub_14e0::B5"], ["sub_14e0::B5", "sub_14e0::B6"], ["sub_14e0::B5", "sub_14e0::B4"], ["sub_14e0::B4", "sub_14e0::B7"],
+["sub_15c0::B0", "sub_15c0::B1"], ["sub_15c0::B1", "sub_15c0::B2"], ["sub_15c0::B2", "sub_15c0::B3"], ["sub_15c0::B3", "sub_15c0::B4"], ["sub_15c0::B4", "sub_15c0::B5"], ["sub_15c0::B5", "sub_15c0::B6"], ["sub_15c0::B6", "sub_15c0::B7"], ["sub_15c0::B7", "sub_15c0::B8"], ["sub_15c0::B7", "sub_15c0::B1"], ["sub_15c0::B5", "sub_15c0::B1"]
+]
+}
+}
