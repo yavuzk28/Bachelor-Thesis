@@ -1,19 +1,50 @@
-You are given a reverse engineering task and a program representation (binary or disassembly).
+You are given a reverse engineering task and a program representation (either a binary or its disassembly).
 
-Your task is to reconstruct a function-level Control Flow Graph (CFG).
+Your task is to reconstruct the program's function-level Control Flow Graph (CFG).
 
-Definition:
-- A Control Flow Graph (CFG) is an intraprocedural graph describing the possible execution flow within individual functions.
-- Each node represents a basic block.
-- A basic block is a maximal sequence of consecutive instructions with:
-  - exactly one entry point,
-  - exactly one exit point,
-  - no internal branches,
-  - no internal branch targets.
-- Each edge represents a possible transfer of control between two basic blocks within the same function.
-- Do not introduce interprocedural edges.
-- Do not create edges representing function calls or returns between different functions.
-- If multiple functions are present, reconstruct the CFG for each function independently and include all resulting basic blocks in the output graph without connecting different functions via call or return edges.
+Definition
+
+A Control Flow Graph (CFG) is an intraprocedural directed graph representing the possible execution flow within individual functions.
+
+Each function has its own independent CFG.
+
+A CFG consists of:
+
+- Nodes representing basic blocks.
+- Directed edges representing possible transfers of control between basic blocks.
+
+A basic block is defined as a maximal linear sequence of instructions with a single entry point and a single exit point, containing no internal control-flow transfers or branch targets. Execution proceeds sequentially until the terminating instruction.
+
+A basic block terminates at the first instruction that may alter control flow, including but not limited to:
+
+- conditional branches,
+- unconditional jumps,
+- switch dispatches,
+- indirect jumps,
+- returns,
+- unreachable instructions.
+
+CFG Construction Rules
+
+Construct only intraprocedural control flow.
+
+If multiple functions are present:
+
+- reconstruct the CFG of each function independently;
+- include all reconstructed basic blocks in a single output graph;
+- do NOT introduce edges between different functions.
+
+Specifically:
+
+- Do not create call edges.
+- Do not create return edges between caller and callee.
+- Do not model the call graph.
+- Do not infer interprocedural control-flow relationships.
+- Ignore library functions unless their internal control flow is explicitly present.
+- Only include control-flow transitions that occur within the same function.
+- When the destination of a branch cannot be determined with reasonable confidence, omit the uncertain edge rather than speculate.
+
+Output Format
 
 Return ONLY valid JSON.
 
@@ -28,25 +59,30 @@ Use the following schema:
   ],
   "cfg": {
     "nodes": [
-      "B0",
-      "B1",
-      "B2"
+      "main::B0",
+      "main::B1",
+      "parse_input::B0"
     ],
     "edges": [
-      ["B0","B1"],
-      ["B1","B2"]
+      ["main::B0", "main::B1"],
+      ["parse_input::B0", "parse_input::B1"]
     ]
   }
 }
 
-Rules:
-- Return only JSON.
-- Do not include markdown.
+Output Rules
+
+- Return only valid JSON.
+- Do not use Markdown.
 - Do not include explanations outside the JSON.
-- Use node identifiers B0, B1, B2, ...
-- Each node represents exactly one basic block.
-- Each edge represents one possible control-flow transition between basic blocks within the same function.
-- Do not infer interprocedural control-flow edges.
-- If control flow cannot be determined with confidence, omit the uncertain edge rather than speculate.
-- The CFG should represent your best estimate of the intraprocedural control flow.
-- cfg_confidence must be an integer from 0 to 100.
+- Use node identifiers in the format "<function_name>::B<n>", where <function_name> is the recovered function name if identifiable (e.g., "main", "parse_input"), or a generated identifier such as "sub_1", "sub_2", etc.
+- Number basic blocks independently within each function (e.g., main::B0, main::B1, helper::B0, helper::B1).
+- Each node must correspond to exactly one basic block.
+- Each basic block must belong to exactly one function.
+- Each edge must represent one possible intraprocedural control-flow transition.
+- Do not create interprocedural edges. Every edge must connect two basic blocks belonging to the same function.
+- Do not create edges representing function calls.
+- Do not create edges representing returns to callers.
+- If control flow cannot be determined with reasonable confidence, omit the uncertain edge rather than speculate.
+- cfg_confidence must be an integer between 0 and 100.
+- The returned CFG should represent your best reconstruction of the program's intraprocedural control flow.
