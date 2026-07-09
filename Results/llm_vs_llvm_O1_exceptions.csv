@@ -1,2 +1,0 @@
-Model,Program,Optimization,Metrics,LLM_Nodes,LLVM_Nodes,LLM_Edges,LLVM_Edges,LLM_Cyclomatic,LLVM_Cyclomatic
-Gemini,lsh,O1,"Nodes, Edges",75,24,71,48,24,28

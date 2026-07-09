@@ -1,32 +1,52 @@
 You are given a reverse engineering task and a program representation (binary or disassembly).
-Your task is to reconstruct the program's Control Flow Graph (CFG).
+
+Your task is to reconstruct a function-level Control Flow Graph (CFG).
+
+Definition:
+- A Control Flow Graph (CFG) is an intraprocedural graph describing the possible execution flow within individual functions.
+- Each node represents a basic block.
+- A basic block is a maximal sequence of consecutive instructions with:
+  - exactly one entry point,
+  - exactly one exit point,
+  - no internal branches,
+  - no internal branch targets.
+- Each edge represents a possible transfer of control between two basic blocks within the same function.
+- Do not introduce interprocedural edges.
+- Do not create edges representing function calls or returns between different functions.
+- If multiple functions are present, reconstruct the CFG for each function independently and include all resulting basic blocks in the output graph without connecting different functions via call or return edges.
+
 Return ONLY valid JSON.
+
 Use the following schema:
+
 {
-"cfg_confidence": 0,
-"reasoning": [
-"reason 1",
-"reason 2",
-"reason 3"
-],
-"cfg": {
-"nodes": [
-"B0",
-"B1",
-"B2"
-],
-"edges": [
-["B0", "B1"],
-["B1", "B2"]
-]
+  "cfg_confidence": 0,
+  "reasoning": [
+    "reason 1",
+    "reason 2",
+    "reason 3"
+  ],
+  "cfg": {
+    "nodes": [
+      "B0",
+      "B1",
+      "B2"
+    ],
+    "edges": [
+      ["B0","B1"],
+      ["B1","B2"]
+    ]
+  }
 }
-}
+
 Rules:
-Return only JSON.
-Do not include markdown.
-Do not include explanations outside the JSON.
-Use node identifiers B0, B1, B2, ...
-Each node should represent a basic block.
-Each edge should represent a possible control-flow transition between basic blocks.
-The CFG should represent your best estimate of the program's control flow.
-cfg_confidence must be an integer from 0 to 100.
+- Return only JSON.
+- Do not include markdown.
+- Do not include explanations outside the JSON.
+- Use node identifiers B0, B1, B2, ...
+- Each node represents exactly one basic block.
+- Each edge represents one possible control-flow transition between basic blocks within the same function.
+- Do not infer interprocedural control-flow edges.
+- If control flow cannot be determined with confidence, omit the uncertain edge rather than speculate.
+- The CFG should represent your best estimate of the intraprocedural control flow.
+- cfg_confidence must be an integer from 0 to 100.
