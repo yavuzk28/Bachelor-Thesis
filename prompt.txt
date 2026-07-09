@@ -14,7 +14,7 @@ A CFG consists of:
 - Directed edges representing possible transfers of control between basic blocks.
 
 A basic block is defined as a maximal linear sequence of instructions with a single entry point and a single exit point, containing no internal control-flow transfers or branch targets. Execution proceeds sequentially until the terminating instruction.
-
+Do not split a basic block into multiple nodes unless a control-flow instruction or branch target requires a new basic block. Consecutive non-branching instructions must belong to the same basic block.
 A basic block terminates at the first instruction that may alter control flow, including but not limited to:
 
 - conditional branches,
@@ -42,7 +42,7 @@ Specifically:
 - Do not infer interprocedural control-flow relationships.
 - Ignore library functions unless their internal control flow is explicitly present.
 - Only include control-flow transitions that occur within the same function.
-- When the destination of a branch cannot be determined with reasonable confidence, omit the uncertain edge rather than speculate.
+- When the destination of a particular branch cannot be determined with reasonable confidence, omit only that specific edge while continuing to reconstruct the remainder of the CFG. Do not omit entire functions or the entire CFG solely because some edges are uncertain.
 
 Output Format
 
@@ -83,6 +83,10 @@ Output Rules
 - Do not create interprocedural edges. Every edge must connect two basic blocks belonging to the same function.
 - Do not create edges representing function calls.
 - Do not create edges representing returns to callers.
-- If control flow cannot be determined with reasonable confidence, omit the uncertain edge rather than speculate.
 - cfg_confidence must be an integer between 0 and 100.
 - The returned CFG should represent your best reconstruction of the program's intraprocedural control flow.
+- Assume the supplied program representation is complete unless it is explicitly truncated or incomplete.
+- Never return an empty CFG solely because function names are unavailable or because some control-flow cannot be recovered.
+- Produce the most complete sound intraprocedural CFG supported by the available evidence.
+- Prefer partial reconstruction over omission. Recover all confidently identifiable functions, basic blocks, and intraprocedural edges even if some portions of the program remain uncertain.
+- An empty CFG should only be returned if the input contains no executable code or no recoverable control-flow information.
