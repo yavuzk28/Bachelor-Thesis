@@ -19,6 +19,7 @@ REPOS=(
 )
 
 
+# Clone the repositories
 for repo in "${REPOS[@]}"; do
     git clone "$repo"
 done
