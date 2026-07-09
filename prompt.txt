@@ -78,7 +78,6 @@ Output Rules
 - Use node identifiers in the format "<function_name>::B<n>", where <function_name> is the recovered function name if identifiable (e.g., "main", "parse_input"), or a generated identifier such as "sub_1", "sub_2", etc.
 - Number basic blocks independently within each function (e.g., main::B0, main::B1, helper::B0, helper::B1).
 - Each node must correspond to exactly one basic block.
-- A basic block must contain all sequential instructions until the first control-flow instruction or branch target. Do not create one basic block per instruction.
 - Each basic block must belong to exactly one function.
 - Each edge must represent one possible intraprocedural control-flow transition.
 - Do not create interprocedural edges. Every edge must connect two basic blocks belonging to the same function.
