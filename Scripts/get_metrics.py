@@ -59,35 +59,7 @@ for json_file in sorted(CFG_DIR.rglob("*.json")):
             nx.number_strongly_connected_components(G)
         )
 
-        largest_scc = max(
-            (
-                len(component)
-                for component in nx.strongly_connected_components(G)
-            ),
-            default=0
-        )
 
-
-        avg_out_degree = (
-            sum(
-                dict(
-                    G.out_degree()
-                ).values()
-            )
-            / node_count
-            if node_count > 0
-            else 0
-        )
-
-        max_out_degree = (
-            max(
-                dict(
-                    G.out_degree()
-                ).values()
-            )
-            if node_count > 0
-            else 0
-        )
 
         graph_density = (
             nx.density(G)
@@ -124,34 +96,18 @@ for json_file in sorted(CFG_DIR.rglob("*.json")):
             "Program": program,
             "Optimization": opt,
 
-            "Nodes": node_count,
-            "Edges": edge_count,
+            "Node_Count": node_count,
+            "Edge_Count": edge_count,
 
-            "CyclomaticComplexity":
-                cyclomatic_complexity,
+            "Cyclomatic_Complexity": cyclomatic_complexity,
 
-            "StronglyConnectedComponents":
-                scc_count,
+            "SCC_Count": scc_count,
 
-            "LargestSCC":
-                largest_scc,
+            "Graph_Density": round(
+                graph_density,
+                6
+            ),
 
-            "GraphDensity":
-                round(
-                    graph_density,
-                    6
-                ),
-
-            "AverageOutDegree":
-                round(
-                    avg_out_degree,
-                    4
-                ),
-
-            "MaximumOutDegree":
-                max_out_degree,
-
-                
         })
 
     except Exception as e:
@@ -175,20 +131,14 @@ with open(
             "Program",
             "Optimization",
 
-            "Nodes",
-            "Edges",
+            "Node_Count",
+            "Edge_Count",
 
-            "CyclomaticComplexity",
+            "Cyclomatic_Complexity",
 
-            "StronglyConnectedComponents",
+            "SCC_Count",
 
-            "LargestSCC",
-
-            "GraphDensity",
-
-            "AverageOutDegree",
-
-            "MaximumOutDegree",
+            "Graph_Density",
         ]
     )
 
