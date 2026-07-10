@@ -1,4 +1,22 @@
+# ==================================================
+# Python dependencies
+# Install with:
+#     pip install -r requirements.txt
+# ==================================================
+
 angr==9.2.223
 matplotlib==3.11.0
 networkx==3.6.1
 pandas==3.0.3
+
+# ==================================================
+# External software (install separately)
+# ==================================================
+#
+# Python 3.14+
+# Bash (Linux)
+# Clang/LLVM
+# Java JDK 21+ (required by Ghidra)
+# Ghidra
+#
+# See README.md for installation instructions.
