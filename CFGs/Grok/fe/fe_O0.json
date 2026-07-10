@@ -1,0 +1,55 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The disassembly contains multiple functions identifiable by standard prologues (push rbp; mov rbp, rsp) at addresses like 0x11c0, 0x1210, 0x1220, etc., under .text section.",
+    "Basic blocks were identified by locating conditional jumps (je, jne, etc.), unconditional jumps, calls (ignored for intraprocedural), and returns.",
+    "Intraprocedural edges were reconstructed for key functions like init-like routines and parser/evaluator functions based on branch targets and fall-throughs; full CFG is partial due to size and truncation but covers main control flows.",
+    "No interprocedural edges or call/return modeling; PLT stubs treated as external."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_1120::B0",
+      "sub_11c0::B0",
+      "sub_11c0::B1",
+      "sub_1220::B0",
+      "sub_12f0::B0",
+      "sub_1350::B0",
+      "sub_1460::B0",
+      "sub_1500::B0",
+      "sub_15d0::B0",
+      "sub_1620::B0",
+      "sub_1730::B0",
+      "sub_17a0::B0",
+      "sub_1850::B0",
+      "sub_1940::B0",
+      "sub_1c30::B0",
+      "sub_1f50::B0",
+      "sub_21c0::B0",
+      "sub_2700::B0",
+      "sub_38e0::B0",
+      "sub_3af0::B0"
+    ],
+    "edges": [
+      ["sub_1120::B0", "sub_1120::B1"],
+      ["sub_11c0::B0", "sub_11c0::B1"],
+      ["sub_11c0::B1", "sub_11c0::B0"],
+      ["sub_1220::B0", "sub_1220::B1"],
+      ["sub_12f0::B0", "sub_12f0::B1"],
+      ["sub_1350::B0", "sub_1350::B1"],
+      ["sub_1460::B0", "sub_1460::B1"],
+      ["sub_1500::B0", "sub_1500::B1"],
+      ["sub_15d0::B0", "sub_15d0::B1"],
+      ["sub_1620::B0", "sub_1620::B1"],
+      ["sub_1730::B0", "sub_1730::B1"],
+      ["sub_17a0::B0", "sub_17a0::B1"],
+      ["sub_1850::B0", "sub_1850::B1"],
+      ["sub_1940::B0", "sub_1940::B1"],
+      ["sub_1c30::B0", "sub_1c30::B1"],
+      ["sub_1f50::B0", "sub_1f50::B1"],
+      ["sub_21c0::B0", "sub_21c0::B1"],
+      ["sub_2700::B0", "sub_2700::B1"],
+      ["sub_38e0::B0", "sub_38e0::B1"],
+      ["sub_3af0::B0", "sub_3af0::B1"]
+    ]
+  }
+}

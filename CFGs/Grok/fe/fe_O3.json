@@ -1,0 +1,36 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly provided in single .text section with no function symbols, requiring manual identification via prologues/epilogues (push rbp/mov rbp, ret patterns).",
+    "Main function identified at 0x35a0 with standard prologue, argument handling, setjmp, loop for parsing/execution, and file I/O branches.",
+    "Multiple small utility functions identified (e.g., around 0x1250, 0x14d0 for alloc-like, 0x1ab0 for expression eval). Basic blocks split at branches (je, jne, jmp, call targets treated as intraprocedural only).",
+    "Full CFG reconstruction partial due to file size/truncation and complexity of interpreter-like code with linked lists/trees; focused on key control flows in main and helpers.",
+    "No interprocedural edges; calls ignored per rules. Edges from conditional jumps (e.g., je at various offsets) and loops."
+  ],
+  "cfg": {
+    "nodes": [
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "main::B4",
+      "sub_1250::B0",
+      "sub_14d0::B0",
+      "sub_1ab0::B0",
+      "sub_1ab0::B1",
+      "sub_20a0::B0"
+    ],
+    "edges": [
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B2", "main::B4"],
+      ["main::B3", "main::B1"],
+      ["main::B4", "main::B0"],
+      ["sub_1250::B0", "sub_1250::B0"],
+      ["sub_14d0::B0", "sub_14d0::B0"],
+      ["sub_1ab0::B0", "sub_1ab0::B1"],
+      ["sub_20a0::B0", "sub_20a0::B0"]
+    ]
+  }
+}

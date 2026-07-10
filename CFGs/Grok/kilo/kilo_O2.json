@@ -1,0 +1,43 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "The input is a large objdump-style disassembly without explicit user function labels beyond PLT stubs and sections.",
+    "Identified intraprocedural CFGs for major code regions in .text: entry/_start at 0x2270 (B0-B1 with libc call), key handling at 0x2490, cursor/term at 0x2630 and 0x26f0, buffer ops at 0x2970/0x2ed0, render at ~0x4020, main loop at ~0x4950.",
+    "Basic blocks split at branches (je/jne/jmp/call/ret/conditional), with edges for fallthrough and taken branches. Limited by truncation and lack of full symbol info; partial reconstruction prioritizes visible control flow.",
+    "No interprocedural edges; calls treated as intra-block terminators only."
+  ],
+  "cfg": {
+    "nodes": [
+      "_start::B0",
+      "_start::B1",
+      "raw_mode::B0",
+      "raw_mode::B1",
+      "raw_mode::B2",
+      "read_key::B0",
+      "read_key::B1",
+      "read_key::B2",
+      "read_key::B3",
+      "get_cursor::B0",
+      "get_cursor::B1",
+      "render_line::B0",
+      "main_loop::B0",
+      "main_loop::B1",
+      "main_loop::B2",
+      "cleanup::B0"
+    ],
+    "edges": [
+      ["_start::B0", "_start::B1"],
+      ["raw_mode::B0", "raw_mode::B1"],
+      ["raw_mode::B0", "raw_mode::B2"],
+      ["raw_mode::B1", "raw_mode::B2"],
+      ["read_key::B0", "read_key::B1"],
+      ["read_key::B1", "read_key::B2"],
+      ["read_key::B1", "read_key::B3"],
+      ["read_key::B2", "read_key::B3"],
+      ["get_cursor::B0", "get_cursor::B1"],
+      ["main_loop::B0", "main_loop::B1"],
+      ["main_loop::B1", "main_loop::B2"],
+      ["main_loop::B0", "main_loop::B2"]
+    ]
+  }
+}
