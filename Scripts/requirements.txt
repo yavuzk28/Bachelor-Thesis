@@ -1,0 +1,4 @@
+angr==9.2.223
+matplotlib==3.11.0
+networkx==3.6.1
+pandas==3.0.3
