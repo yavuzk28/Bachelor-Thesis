@@ -35,6 +35,7 @@ Bachelor-Thesis/
 │
 ├── prompt.txt                    # Prompt used for LLM CFG reconstruction
 ├── requirements.txt              # Python dependencies
+├── Thesis.pdf                    # Thesis 
 ├── LICENSE                       # Project license
 └── README.md                     # Project documentation
 ```
