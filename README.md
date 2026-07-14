@@ -53,6 +53,8 @@ The following software must be installed:
 - Clang / LLVM
 - Java JDK 21+
 - Ghidra
+- Cloc
+- Ctags
 
 ---
 
