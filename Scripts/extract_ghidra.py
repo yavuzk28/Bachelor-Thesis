@@ -26,13 +26,34 @@ PROJECT_ROOT.mkdir(
 )
 
 
-GHIDRA = (
-    Path.home()
-    / "Tools"
-    / "ghidra"
-    / "support"
-    / "analyzeHeadless"
-)
+ghidra = shutil.which("analyzeHeadless")
+
+if ghidra is None:
+    search_roots = [
+        Path.home() / "Tools",
+        Path.home() / "Applications",
+        Path("/opt"),
+        Path("/usr/local"),
+    ]
+
+    for root in search_roots:
+        if not root.exists():
+            continue
+
+        matches = list(root.rglob("analyzeHeadless"))
+        if matches:
+            ghidra = str(matches[0])
+            break
+
+if ghidra is None:
+    raise RuntimeError(
+        "Could not locate Ghidra (analyzeHeadless).\n"
+        "Searched PATH, ~/Tools, ~/Applications, /opt, and /usr/local.\n"
+        "If Ghidra is installed elsewhere, add its 'support' directory to PATH "
+        "or update the search locations in extract_ghidra.py.
+    )
+
+GHIDRA = Path(ghidra)
 
 
 GHIDRA_SCRIPT_DIR = SCRIPT_DIR
