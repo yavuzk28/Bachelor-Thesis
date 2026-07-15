@@ -53,6 +53,7 @@ The following software must be installed:
 - Clang / LLVM
 - Java JDK 21+
 - Ghidra
+- Rizin
 - Cloc
 - Ctags
 
@@ -98,7 +99,7 @@ This executes the following stages automatically:
 - Sample disassembly
 - Extract LLVM CFGs
 - Extract Ghidra CFGs
-- Extract angr CFGs
+- Extract Rizin CFGs
 
 ---
 
