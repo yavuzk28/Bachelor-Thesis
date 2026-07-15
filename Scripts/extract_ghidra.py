@@ -50,7 +50,7 @@ if ghidra is None:
         "Could not locate Ghidra (analyzeHeadless).\n"
         "Searched PATH, ~/Tools, ~/Applications, /opt, and /usr/local.\n"
         "If Ghidra is installed elsewhere, add its 'support' directory to PATH "
-        "or update the search locations in extract_ghidra.py.
+        "or update the search locations in extract_ghidra.py."
     )
 
 GHIDRA = Path(ghidra)
