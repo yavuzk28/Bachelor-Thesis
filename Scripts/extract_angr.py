@@ -36,6 +36,7 @@ def should_merge_fake_return(
     cfg,
     project,
     merge_map,
+    graph,
 ):
 
     if data.get("type") != "fake_return":
@@ -69,7 +70,10 @@ def should_merge_fake_return(
 
     if dst in merge_map:
         return False
-        
+    
+    if graph.in_degree(dst_node) != 1:
+        return False
+    
     merge_map[dst] = src
 
     return True
@@ -132,10 +136,13 @@ for binary in binaries:
                         cfg,
                         project,
                         merge_map,
+                        graph
                     ):
                         continue
 
-                    continue
+                    else:
+
+                        continue
 
                 # Keep only intraprocedural edges
                 if (
