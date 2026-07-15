@@ -17,7 +17,7 @@ PIPELINE = [
     ("Sample disassembly", [sys.executable, str(SCRIPTS / "samplify.py")]),
     ("Extract LLVM CFGs", [sys.executable, str(SCRIPTS / "extract_llvm.py")]),
     ("Extract Ghidra CFGs", [sys.executable, str(SCRIPTS / "extract_ghidra.py")]),
-    ("Extract Angr CFGs", [sys.executable, str(SCRIPTS / "extract_angr.py")]),
+    ("Extract Rizin CFGs", [sys.executable, str(SCRIPTS / "extract_rizin.py")]),
 ]
 
 
