@@ -24,6 +24,56 @@ binaries = sorted(
 )
 
 
+
+
+
+
+def should_merge_fake_return(
+    src_node,
+    dst_node,
+    data,
+    func,
+    cfg,
+    project,
+    merge_map,
+):
+
+    if data.get("type") != "fake_return":
+        return False
+
+    if not hasattr(src_node, "addr"):
+        return False
+
+    if not hasattr(dst_node, "addr"):
+        return False
+
+    if cfg.kb.functions.floor_func(src_node.addr) != func:
+        return False
+
+    if cfg.kb.functions.floor_func(dst_node.addr) != func:
+        return False
+
+    block = project.factory.block(src_node.addr)
+
+    if not block.capstone.insns:
+        return False
+
+    last_insn = block.capstone.insns[-1]
+
+    if not last_insn.mnemonic.startswith("call"):
+        return False
+
+
+    src = f"{func.name}::{src_node.addr:08x}"
+    dst = f"{func.name}::{dst_node.addr:08x}"
+
+    if dst in merge_map:
+        return False
+        
+    merge_map[dst] = src
+
+    return True
+
 # Main
 for binary in binaries:
 
@@ -42,6 +92,7 @@ for binary in binaries:
 
         nodes = set()
         edges = set()
+        merge_map = {}
 
         for func in cfg.kb.functions.values():
 
@@ -62,12 +113,28 @@ for binary in binaries:
                 )
 
             # Edges
-            for src_node, dst_node in graph.edges():
+            for src_node, dst_node, data in graph.edges(data=True):
+                
 
                 if not hasattr(src_node, "addr"):
                     continue
 
                 if not hasattr(dst_node, "addr"):
+                    continue
+
+
+                if data.get("type") != "transition":
+                    if should_merge_fake_return(
+                        src_node,
+                        dst_node,
+                        data,
+                        func,
+                        cfg,
+                        project,
+                        merge_map,
+                    ):
+                        continue
+
                     continue
 
                 # Keep only intraprocedural edges
@@ -85,6 +152,25 @@ for binary in binaries:
                 nodes.add(dst)
 
                 edges.add((src, dst))
+
+
+
+        # Remove merged nodes
+        for dst in merge_map:
+            nodes.discard(dst)
+
+        # Redirect edges
+        new_edges = set()
+
+        for src, dst in edges:
+
+            src = merge_map.get(src, src)
+            dst = merge_map.get(dst, dst)
+
+            if src != dst:
+                new_edges.add((src, dst))
+
+        edges = new_edges
 
         result = {
             "node_count": len(nodes),
@@ -120,3 +206,6 @@ for binary in binaries:
         print(
             f"Failed: {binary}\n{e}"
         )
+
+
+
