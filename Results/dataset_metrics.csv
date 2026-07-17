@@ -1,6 +1,6 @@
-program,loc,functions
-2048.c,508,19
-fe,662,48
-kilo,986,36
-lsh,176,10
-md5-c,166,9
+program,loc,functions,loops,conditionals
+2048.c,508,19,26,41
+fe,662,48,11,31
+kilo,986,36,26,159
+lsh,176,10,6,21
+md5-c,166,9,8,4
