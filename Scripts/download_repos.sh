@@ -15,6 +15,7 @@ REPOS=(
     "https://github.com/mevdschee/2048.c.git"
     "https://github.com/antirez/kilo.git"
     "https://github.com/Zunawe/md5-c.git"
+    "https://github.com/IanK02/Notepad--.git"
 )
 
 # Clone the normal repositories
@@ -30,7 +31,11 @@ find c_files -maxdepth 1 -type f -name "*.c" \
     ! -name "janet.c" \
     ! -name "wuffs.c" \
     ! -name "sqlite3.c" \
-    ! -name "gcc.c" |
+    ! -name "gcc.c" \
+    ! -name "puredoom.c" \
+    ! -name "minilua.c" \
+    ! -name "chibicc.c" \
+    ! -name "oggenc.c" |
 while read -r file; do
     name=$(basename "$file" .c)
 

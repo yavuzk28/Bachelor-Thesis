@@ -191,7 +191,7 @@ for program in SRC_DIR.iterdir():
             "-Wextra"
         ]
     
-    if program.name in {"wak", "minilua", "oggenc"}:
+    if program.name == "wak":
         link_flags = ["-lm"]
 
     for opt in OPT_LEVELS:
