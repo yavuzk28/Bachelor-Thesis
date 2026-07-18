@@ -93,9 +93,10 @@ def compile_llvm(files, bc_dir, ir_dir, program_name, opt, extra_flags=None):
         Path(bc).unlink(missing_ok=True)
 
 
-def compile_binary(files, out_dir, name, opt, extra_flags=None):
+def compile_binary(files, out_dir, name, opt, extra_flags=None, link_flags=None):
 
     extra_flags = extra_flags or []
+    link_flags = link_flags or []
 
     run([
         "clang",
@@ -103,7 +104,8 @@ def compile_binary(files, out_dir, name, opt, extra_flags=None):
         *extra_flags,
         *sorted(set(files)),
         "-o",
-        str(out_dir / name)
+        str(out_dir / name),
+        *link_flags
     ])
 
 
@@ -167,6 +169,7 @@ for program in SRC_DIR.iterdir():
 
     # All other repositories
     extra_flags = []
+    link_flags = [] 
 
     if program.name == "kilo":
         extra_flags = [
@@ -187,6 +190,9 @@ for program in SRC_DIR.iterdir():
             "-Wall",
             "-Wextra"
         ]
+    
+    if program.name in {"wak", "minilua", "oggenc"}:
+        link_flags = ["-lm"]
 
     for opt in OPT_LEVELS:
 
@@ -196,7 +202,8 @@ for program in SRC_DIR.iterdir():
             binary_out,
             f"{program.name}_{opt}",
             opt,
-            extra_flags
+            extra_flags,
+            link_flags
         )
 
         binary = binary_out / f"{program.name}_{opt}"
