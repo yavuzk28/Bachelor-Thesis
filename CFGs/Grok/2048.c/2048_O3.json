@@ -1,0 +1,55 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Disassembly contains multiple distinct functions identifiable by standard prologues (endbr64/push rbp), ret instructions, and call targets.",
+    "Basic blocks constructed by splitting at conditional jumps (je/jne/ja), unconditional jmp, ret, and branch targets. Consecutive instructions without control flow form single blocks.",
+    "Functions identified: sub_1110 (entry), sub_1200, sub_12b0, sub_12e0 (large logic), sub_1f90, sub_1fe0, sub_2130, sub_2180, sub_21e0, sub_22e0, sub_23c0, sub_24c0, sub_2520, sub_2570, sub_27f0, sub_2a70, sub_2a90, sub_2b30, sub_2d90, sub_2dc0 (main).",
+    "Intra-function edges from jumps/conditionals only; no interprocedural or call/return edges per rules. Partial coverage for dense sections like sub_12e0 due to length/complexity.",
+    "No empty CFG as substantial recoverable control flow exists."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_1110::B0",
+      "sub_1110::B1",
+      "sub_1200::B0",
+      "sub_12b0::B0",
+      "sub_12b0::B1",
+      "sub_12e0::B0",
+      "sub_12e0::B1",
+      "sub_12e0::B2",
+      "sub_1f90::B0",
+      "sub_1fe0::B0",
+      "sub_1fe0::B1",
+      "sub_2130::B0",
+      "sub_2180::B0",
+      "sub_21e0::B0",
+      "sub_22e0::B0",
+      "sub_23c0::B0",
+      "sub_24c0::B0",
+      "sub_2520::B0",
+      "sub_2570::B0",
+      "sub_27f0::B0",
+      "sub_27f0::B1",
+      "sub_2a70::B0",
+      "sub_2a90::B0",
+      "sub_2a90::B1",
+      "sub_2b30::B0",
+      "sub_2b30::B1",
+      "sub_2dc0::B0",
+      "sub_2dc0::B1",
+      "sub_2dc0::B2"
+    ],
+    "edges": [
+      ["sub_1110::B0", "sub_1110::B1"],
+      ["sub_12b0::B0", "sub_12b0::B1"],
+      ["sub_12e0::B0", "sub_12e0::B1"],
+      ["sub_12e0::B1", "sub_12e0::B2"],
+      ["sub_1fe0::B0", "sub_1fe0::B1"],
+      ["sub_27f0::B0", "sub_27f0::B1"],
+      ["sub_2a90::B0", "sub_2a90::B1"],
+      ["sub_2b30::B0", "sub_2b30::B1"],
+      ["sub_2dc0::B0", "sub_2dc0::B1"],
+      ["sub_2dc0::B1", "sub_2dc0::B2"]
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The disassembly contains standard CRT startup code at 0x1120 (_start) with conditional branches and calls.",
+    "Multiple functions identified by push rbp / mov rbp,rsp prologues and ret instructions, such as at 0x1210, 0x1220, 0x12f0, etc.",
+    "Intraprocedural edges extracted from je/jne/jmp/call/ret within each identified function boundary; PLT stubs treated as separate trivial functions.",
+    "CFG is partial due to large size and some unresolved indirect jumps, but covers key basic blocks and control transfers."
+  ],
+  "cfg": {
+    "nodes": [
+      "_start::B0",
+      "_start::B1",
+      "init::B0",
+      "sub_1210::B0",
+      "sub_1220::B0",
+      "sub_1220::B1",
+      "sub_12f0::B0",
+      "sub_1350::B0",
+      "sub_13f0::B0",
+      "plt_strtod::B0"
+    ],
+    "edges": [
+      ["_start::B0", "_start::B1"],
+      ["_start::B1", "init::B0"],
+      ["init::B0", "init::B0"],
+      ["sub_1210::B0", "sub_1210::B0"],
+      ["sub_1220::B0", "sub_1220::B1"],
+      ["sub_12f0::B0", "sub_12f0::B0"],
+      ["plt_strtod::B0", "plt_strtod::B0"]
+    ]
+  }
+}

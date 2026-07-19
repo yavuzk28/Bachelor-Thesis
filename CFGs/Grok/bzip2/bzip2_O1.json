@@ -1,0 +1,29 @@
+    {
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly provided is extensive but lacks standard function symbols (stripped binary with relative PLT labels). Identified multiple function prologues via push rbp/sub rsp patterns at addresses like 0x2620, 0x3840, 0x41f0 etc.",
+    "Basic blocks derived from control flow instructions (je/jne/jmp/ret/conditional branches) within .text section starting at 0x22c0. Intra-procedural edges follow branch targets within same function.",
+    "Limited to key functions due to file size/truncation; no interprocedural edges per rules. Partial CFG focuses on identifiable entry points and visible branches.",
+    "Confidence moderate due to massive disassembly volume and label artifacts preventing full automated parsing."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_2530::B0",
+      "sub_2530::B1",
+      "sub_2620::B0",
+      "sub_2620::B1",
+      "sub_2620::B2",
+      "sub_3840::B0",
+      "sub_10070::B0",
+      "sub_10070::B1"
+    ],
+    "edges": [
+      ["sub_2530::B0", "sub_2530::B1"],
+      ["sub_2620::B0", "sub_2620::B1"],
+      ["sub_2620::B1", "sub_2620::B2"],
+      ["sub_2620::B2", "sub_2620::B0"],
+      ["sub_3840::B0", "sub_3840::B0"],
+      ["sub_10070::B0", "sub_10070::B1"]
+    ]
+  }
+}

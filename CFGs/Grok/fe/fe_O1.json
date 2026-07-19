@@ -1,0 +1,34 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The disassembly shows multiple intraprocedural control flows with conditional jumps (je, jne, jb, etc.), loops, and returns in .text section.",
+    "Identified basic blocks around key addresses like 0x1250 (multi-register push function with branches), 0x1320, 0x1360, 0x1430, etc., based on prologues and ret instructions.",
+    "Edges constructed from visible branches (e.g., je to targets) within apparent function boundaries; calls ignored as per rules; partial reconstruction due to large/truncated input but sound for visible parts."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_1120::B0",
+      "sub_1120::B1",
+      "sub_1250::B0",
+      "sub_1250::B1",
+      "sub_1250::B2",
+      "sub_1320::B0",
+      "sub_1320::B1",
+      "sub_1360::B0",
+      "sub_1430::B0",
+      "sub_1430::B1",
+      "sub_14b0::B0",
+      "sub_14b0::B1"
+    ],
+    "edges": [
+      ["sub_1120::B0", "sub_1120::B1"],
+      ["sub_1250::B0", "sub_1250::B1"],
+      ["sub_1250::B1", "sub_1250::B2"],
+      ["sub_1250::B0", "sub_1250::B2"],
+      ["sub_1320::B0", "sub_1320::B1"],
+      ["sub_1360::B0", "sub_1360::B0"],
+      ["sub_1430::B0", "sub_1430::B1"],
+      ["sub_14b0::B0", "sub_14b0::B1"]
+    ]
+  }
+}

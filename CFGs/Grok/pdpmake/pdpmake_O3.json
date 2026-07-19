@@ -1,0 +1,36 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "The disassembly primarily consists of PLT stubs for library functions and one very large function labeled error@@Base spanning most of the .text section.",
+    "Basic blocks were identified by scanning for branch targets (labels like <error@@Base+0xNNN>), conditional jumps (je, jne, etc.), unconditional jumps, calls (which do not terminate BBs), and returns.",
+    "PLT entries are treated as trivial functions with single basic blocks. The large error@@Base function has numerous internal basic blocks connected by identified intraprocedural branches; not all edges recovered due to truncation and complexity.",
+    "No interprocedural edges or call/return modeling per rules. CFG focuses on identifiable intraprocedural flows within recovered functions."
+  ],
+  "cfg": {
+    "nodes": [
+      "init::B0",
+      "getenv_plt_minus_10::B0",
+      "getenv_plt::B0",
+      "globfree_plt::B0",
+      "free_plt::B0",
+      "error@@Base::B0",
+      "error@@Base::B1",
+      "error@@Base::B2",
+      "error@@Base::B3",
+      "error@@Base::B4",
+      "fini::B0"
+    ],
+    "edges": [
+      ["init::B0", "init::B0"],
+      ["getenv_plt_minus_10::B0", "getenv_plt_minus_10::B0"],
+      ["getenv_plt::B0", "getenv_plt::B0"],
+      ["globfree_plt::B0", "globfree_plt::B0"],
+      ["free_plt::B0", "free_plt::B0"],
+      ["error@@Base::B0", "error@@Base::B1"],
+      ["error@@Base::B1", "error@@Base::B2"],
+      ["error@@Base::B2", "error@@Base::B3"],
+      ["error@@Base::B3", "error@@Base::B4"],
+      ["fini::B0", "fini::B0"]
+    ]
+  }
+}

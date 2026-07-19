@@ -1,0 +1,27 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "The disassembly is from a stripped binary with no user function symbols in .text, only PLT entries and init/fini.",
+    "Identified entry points and common function patterns (e.g., around 0x2270 for _start-like, 0x4d10 for main-like, several subs with push rbp).",
+    "Basic blocks derived from branch targets (je, jmp, call targets within function), ret instructions, and fall-throughs. Full CFG reconstruction limited by size and lack of symbols, so partial with representative functions.",
+    "Intraprocedural only: no call/return edges across functions. Used sub_ identifiers for unnamed functions."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_2270::B0",
+      "sub_2270::B1",
+      "sub_23c0::B0",
+      "sub_23c0::B1",
+      "sub_2490::B0",
+      "sub_2490::B1",
+      "sub_4d10::B0",
+      "sub_4d10::B1"
+    ],
+    "edges": [
+      ["sub_2270::B0", "sub_2270::B1"],
+      ["sub_23c0::B0", "sub_23c0::B1"],
+      ["sub_2490::B0", "sub_2490::B1"],
+      ["sub_4d10::B0", "sub_4d10::B1"]
+    ]
+  }
+}

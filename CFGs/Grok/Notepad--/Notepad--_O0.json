@@ -1,0 +1,35 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "The disassembly contains startup code (.init, .text entry at 0x1230), PLT stubs, and multiple functions identifiable by standard prologues (push rbp; mov rbp,rsp) and epilogues (pop rbp; ret).",
+    "Basic blocks extracted from visible control flow: conditional jumps (je/jne), unconditional jumps (jmp), loops, and returns. Many functions like buffer append (around 1320), terminal setup (1460,1480), file loading (1780), and input handling are present.",
+    "Full reconstruction limited by input truncation and scale; partial intraprocedural CFGs for key functions (e.g., sub_1320, sub_1530, sub_1780) with identified branches. No interprocedural edges included per rules."
+  ],
+  "cfg": {
+    "nodes": [
+      "startup::B0",
+      "sub_1320::B0",
+      "sub_1320::B1",
+      "sub_1320::B2",
+      "sub_1460::B0",
+      "sub_1480::B0",
+      "sub_1530::B0",
+      "sub_1710::B0",
+      "sub_1780::B0",
+      "sub_1780::B1",
+      "sub_1920::B0",
+      "sub_19f0::B0",
+      "sub_1b40::B0",
+      "sub_1ca0::B0"
+    ],
+    "edges": [
+      ["startup::B0", "startup::B1"],
+      ["sub_1320::B0", "sub_1320::B1"],
+      ["sub_1320::B1", "sub_1320::B2"],
+      ["sub_1320::B1", "sub_1320::B0"],
+      ["sub_1780::B0", "sub_1780::B1"],
+      ["sub_1920::B0", "sub_1920::B1"],
+      ["sub_19f0::B0", "sub_19f0::B1"]
+    ]
+  }
+}

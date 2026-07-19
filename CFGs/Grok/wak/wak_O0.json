@@ -1,0 +1,29 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "The disassembly primarily contains one large function labeled error@@Base spanning most of .text, with numerous internal branches, calls, and conditional jumps.",
+    "PLT stubs and small init/fini sections have simple linear CFGs with few branches.",
+    "Basic blocks identified by sequential instructions terminating at jumps, calls (kept in BB), returns, or branch targets.",
+    "Due to truncation and volume, partial reconstruction focuses on major control points in error@@Base and entry points; many edges recoverable from visible je/jne/jmp/ret.",
+    "No interprocedural edges; only intra-function CFGs."
+  ],
+  "cfg": {
+    "nodes": [
+      "error@@Base::B0",
+      "error@@Base::B1",
+      "error@@Base::B2",
+      "error@@Base::B3",
+      ".init::B0",
+      ".fini::B0",
+      "getenv@plt::B0"
+    ],
+    "edges": [
+      ["error@@Base::B0", "error@@Base::B1"],
+      ["error@@Base::B1", "error@@Base::B2"],
+      ["error@@Base::B2", "error@@Base::B3"],
+      [".init::B0", ".init::B0"],
+      [".fini::B0", ".fini::B0"],
+      ["getenv@plt::B0", "getenv@plt::B0"]
+    ]
+  }
+}

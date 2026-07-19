@@ -1,0 +1,43 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly shows multiple functions in .text with standard x86-64 prologues (push rbp, etc.) and control flow via conditional jumps (je, jne, jg, jl), unconditional jmp, and ret.",
+    "Basic blocks identified by branch targets and fall-throughs within visible functions like sub_1350 (string append/buffer), sub_1500 (init), sub_1700 (file load with getline loop), sub_1890 (cleanup).",
+    "Intraprocedural edges from jumps/branches within each function; calls to PLT ignored per rules; partial reconstruction due to truncation and label offsets.",
+    "No interprocedural edges; focused on confidently recoverable blocks and flows from provided disassembly."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_1260::B0",
+      "sub_1300::B0",
+      "sub_1300::B1",
+      "sub_1350::B0",
+      "sub_1350::B1",
+      "sub_1350::B2",
+      "sub_1350::B3",
+      "sub_1500::B0",
+      "sub_1500::B1",
+      "sub_1700::B0",
+      "sub_1700::B1",
+      "sub_1700::B2",
+      "sub_1700::B3",
+      "sub_1890::B0",
+      "sub_1890::B1"
+    ],
+    "edges": [
+      ["sub_1260::B0", "sub_1260::B0"],
+      ["sub_1300::B0", "sub_1300::B1"],
+      ["sub_1300::B0", "sub_1300::B0"],
+      ["sub_1350::B0", "sub_1350::B1"],
+      ["sub_1350::B0", "sub_1350::B3"],
+      ["sub_1350::B1", "sub_1350::B2"],
+      ["sub_1350::B2", "sub_1350::B3"],
+      ["sub_1500::B0", "sub_1500::B1"],
+      ["sub_1700::B0", "sub_1700::B1"],
+      ["sub_1700::B1", "sub_1700::B2"],
+      ["sub_1700::B2", "sub_1700::B3"],
+      ["sub_1700::B3", "sub_1700::B1"],
+      ["sub_1890::B0", "sub_1890::B1"]
+    ]
+  }
+}

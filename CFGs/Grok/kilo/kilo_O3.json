@@ -1,0 +1,41 @@
+{
+  "cfg_confidence": 35,
+  "reasoning": [
+    "Disassembly is stripped with no symbol table; functions identified by standard prologues (push rbp/sub rsp), call sites, and return patterns.",
+    "Basic blocks split at branches (je/jne/jmp/conditional), returns, and targets; calls do not split blocks per rules.",
+    "Partial reconstruction due to truncation in input and complexity; focused on .text entry and key visible functions like input handler at 24a0 and terminal setup at 23c0; intra-function edges only.",
+    "Many edges recovered from explicit jumps; indirect/switch cases (e.g., at 25e2) partially resolved where targets visible."
+  ],
+  "cfg": {
+    "nodes": [
+      "entry::B0",
+      "init_term::B0",
+      "init_term::B1",
+      "init_term::B2",
+      "get_key::B0",
+      "get_key::B1",
+      "get_key::B2",
+      "get_key::B3",
+      "get_key::B4",
+      "get_key::B5",
+      "get_cursor::B0",
+      "get_cursor::B1",
+      "process_input::B0"
+    ],
+    "edges": [
+      ["entry::B0", "init_term::B0"],
+      ["init_term::B0", "init_term::B1"],
+      ["init_term::B1", "init_term::B2"],
+      ["init_term::B0", "init_term::B2"],
+      ["get_key::B0", "get_key::B1"],
+      ["get_key::B1", "get_key::B2"],
+      ["get_key::B2", "get_key::B3"],
+      ["get_key::B3", "get_key::B4"],
+      ["get_key::B4", "get_key::B5"],
+      ["get_key::B1", "get_key::B5"],
+      ["get_key::B5", "get_key::B0"],
+      ["get_cursor::B0", "get_cursor::B1"],
+      ["process_input::B0", "get_key::B0"]
+    ]
+  }
+}

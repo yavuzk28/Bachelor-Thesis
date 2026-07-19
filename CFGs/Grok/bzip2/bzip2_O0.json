@@ -1,0 +1,32 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "The disassembly is from a stripped ELF binary (likely bzip2 or similar compressor) with .text section containing multiple functions identified by standard x86-64 prologues (push rbp; mov rbp,rsp).",
+    "PLT stubs and init/fini sections have simple linear CFGs with conditional jumps and returns. Main .text functions show complex control flow with loops, conditionals, and calls to library functions.",
+    "Due to the large truncated disassembly (800k+ bytes) and lack of symbol names, only partial intraprocedural CFG reconstruction is feasible. Identified entry points at 0x22a0, 0x2390, 0x25c0 etc. Basic blocks split at branches (je, jmp, jge, ret). No interprocedural edges included.",
+    "CFG represents key structures from visible code: init routines, compression/decompression helpers with loops over buffers and bit operations."
+  ],
+  "cfg": {
+    "nodes": [
+      "init::B0",
+      "plt_getenv::B0",
+      "text_start::B0",
+      "text_start::B1",
+      "func_2390::B0",
+      "func_2390::B1",
+      "func_25c0::B0",
+      "func_25c0::B1",
+      "func_25c0::B2",
+      "fini::B0"
+    ],
+    "edges": [
+      ["init::B0", "init::B1"],
+      ["text_start::B0", "text_start::B1"],
+      ["func_2390::B0", "func_2390::B1"],
+      ["func_25c0::B0", "func_25c0::B1"],
+      ["func_25c0::B1", "func_25c0::B2"],
+      ["func_25c0::B1", "func_25c0::B0"],
+      ["fini::B0", "fini::B1"]
+    ]
+  }
+}

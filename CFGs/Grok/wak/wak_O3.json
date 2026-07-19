@@ -1,0 +1,37 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly contains multiple functions in .text section including error handlers at 0x2390 and 0x2470, _start at 0x25d0, and a large main-like function at 0x26c0 handling getopt and processing logic.",
+    "Basic blocks identified by branch targets (e.g., je, jne, jmp) and function entry points. Truncation and size limit full reconstruction; focused on prominent control flows.",
+    "Intraprocedural only: no call/return edges between functions. Nodes follow <function>::B<n> format using recovered labels where possible (e.g., start, error_print). Partial but sound CFG from visible branches."
+  ],
+  "cfg": {
+    "nodes": [
+      "error_print::B0",
+      "error_print::B1",
+      "warn_print::B0",
+      "warn_print::B1",
+      "warn_print::B2",
+      "_start::B0",
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "main::B4",
+      "main::B5"
+    ],
+    "edges": [
+      ["error_print::B0", "error_print::B1"],
+      ["warn_print::B0", "warn_print::B1"],
+      ["warn_print::B1", "warn_print::B2"],
+      ["_start::B0", "_start::B0"],
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B3", "main::B4"],
+      ["main::B4", "main::B5"],
+      ["main::B1", "main::B3"],
+      ["main::B2", "main::B0"]
+    ]
+  }
+}

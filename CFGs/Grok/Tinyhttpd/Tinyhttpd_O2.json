@@ -1,0 +1,58 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Disassembly shows multiple functions identifiable by standard x86-64 prologues (push rbp, sub rsp), epilogues (pop rbp, ret), and call sites in .text section starting at 0x1230.",
+    "Major functions recovered: handle_client at 0x1330 (large request parser with recv loops), process_request at 0x1d70, main at 0x28d0, setup_socket at 0x27c0, and several error/send helpers (0x1810, 0x19b0, etc.).",
+    "Basic blocks identified by branch targets, conditional jumps (je, jne, jle, etc.), unconditional jmp, ret instructions; calls do not split blocks. Intraprocedural edges only; no inter-function edges.",
+    "Partial reconstruction due to complex recv loops and conditional paths in HTTP handling; some fallthroughs and loop back-edges included where clear from offsets."
+  ],
+  "cfg": {
+    "nodes": [
+      "error_exit::B0",
+      "start::B0",
+      "init::B0",
+      "fini::B0",
+      "handle_client::B0",
+      "handle_client::B1",
+      "handle_client::B2",
+      "handle_client::B3",
+      "handle_client::B4",
+      "handle_client::B5",
+      "read_line::B0",
+      "send_404::B0",
+      "send_forbidden::B0",
+      "serve_file::B0",
+      "process_request::B0",
+      "process_request::B1",
+      "process_request::B2",
+      "process_request::B3",
+      "send_bad_request::B0",
+      "transmit_file::B0",
+      "send_internal_error::B0",
+      "send_header::B0",
+      "setup_socket::B0",
+      "setup_socket::B1",
+      "main::B0",
+      "main::B1",
+      "main::B2"
+    ],
+    "edges": [
+      ["handle_client::B0", "handle_client::B1"],
+      ["handle_client::B1", "handle_client::B2"],
+      ["handle_client::B1", "handle_client::B3"],
+      ["handle_client::B2", "handle_client::B4"],
+      ["handle_client::B3", "handle_client::B5"],
+      ["handle_client::B4", "handle_client::B0"],
+      ["handle_client::B5", "handle_client::B0"],
+      ["read_line::B0", "read_line::B0"],
+      ["process_request::B0", "process_request::B1"],
+      ["process_request::B1", "process_request::B2"],
+      ["process_request::B2", "process_request::B3"],
+      ["process_request::B3", "process_request::B1"],
+      ["setup_socket::B0", "setup_socket::B1"],
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B1"]
+    ]
+  }
+}

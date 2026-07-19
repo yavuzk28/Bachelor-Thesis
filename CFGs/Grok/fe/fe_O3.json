@@ -1,0 +1,31 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "Disassembly shows .text section starting at 0x1120 with mixed code, PLT stubs, and no clear function symbols beyond sections and PLT entries.",
+    "Identified potential entry points and branches (je, jmp, call, ret) within .text for basic block construction.",
+    "Reconstructed minimal intraprocedural CFG for main .text block and key subroutines based on visible control transfers; many edges inferred from conditional jumps and sequential flow.",
+    "Limited by unlabeled functions and truncation; focused on intraprocedural edges only, avoiding calls/returns."
+  ],
+  "cfg": {
+    "nodes": [
+      "init::B0",
+      "plt_putchar::B0",
+      "text_main::B0",
+      "text_main::B1",
+      "text_main::B2",
+      "text_sub_1250::B0",
+      "text_sub_14d0::B0",
+      "fini::B0"
+    ],
+    "edges": [
+      ["init::B0", "init::B0"],
+      ["plt_putchar::B0", "plt_putchar::B0"],
+      ["text_main::B0", "text_main::B1"],
+      ["text_main::B1", "text_main::B2"],
+      ["text_main::B1", "text_sub_1250::B0"],
+      ["text_sub_1250::B0", "text_main::B0"],
+      ["text_sub_14d0::B0", "text_sub_14d0::B0"],
+      ["fini::B0", "fini::B0"]
+    ]
+  }
+}

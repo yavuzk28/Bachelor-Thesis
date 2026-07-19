@@ -1,0 +1,58 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Disassembly shows multiple functions in .text section identified by prologues (push rbp etc.), rets, and call targets.",
+    "Functions identified: sub_1230 (error), sub_1330 (client_handler), sub_1760 (recv_line), sub_1820 (send_error), sub_19c0 (send_forbidden), sub_1b90 (serve_file), sub_1de0 (handle_request), sub_2530 (bad_request), sub_2620 (send_content), sub_2690 (send_internal_error), sub_2780 (send_http_headers), sub_2850 (create_server_socket), sub_2990 (main).",
+    "Basic blocks derived from branch targets (je, jne, jmp, jle etc.), fall-throughs, and ret instructions within each function. No interprocedural edges. Partial reconstruction due to large size and label offsets.",
+    "Edges follow conditional/unconditional jumps and sequential flow within functions."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_1230::B0",
+      "sub_1330::B0",
+      "sub_1330::B1",
+      "sub_1330::B2",
+      "sub_1330::B3",
+      "sub_1760::B0",
+      "sub_1760::B1",
+      "sub_1820::B0",
+      "sub_19c0::B0",
+      "sub_1b90::B0",
+      "sub_1de0::B0",
+      "sub_1de0::B1",
+      "sub_2530::B0",
+      "sub_2620::B0",
+      "sub_2690::B0",
+      "sub_2780::B0",
+      "sub_2850::B0",
+      "sub_2850::B1",
+      "sub_2850::B2",
+      "sub_2850::B3",
+      "sub_2990::B0",
+      "sub_2990::B1",
+      "sub_2990::B2"
+    ],
+    "edges": [
+      ["sub_1230::B0", "sub_1230::B0"],
+      ["sub_1330::B0", "sub_1330::B1"],
+      ["sub_1330::B1", "sub_1330::B2"],
+      ["sub_1330::B1", "sub_1330::B3"],
+      ["sub_1330::B2", "sub_1330::B0"],
+      ["sub_1760::B0", "sub_1760::B1"],
+      ["sub_1820::B0", "sub_1820::B0"],
+      ["sub_19c0::B0", "sub_19c0::B0"],
+      ["sub_1b90::B0", "sub_1b90::B0"],
+      ["sub_1de0::B0", "sub_1de0::B1"],
+      ["sub_2530::B0", "sub_2530::B0"],
+      ["sub_2620::B0", "sub_2620::B0"],
+      ["sub_2690::B0", "sub_2690::B0"],
+      ["sub_2780::B0", "sub_2780::B0"],
+      ["sub_2850::B0", "sub_2850::B1"],
+      ["sub_2850::B1", "sub_2850::B2"],
+      ["sub_2850::B1", "sub_2850::B3"],
+      ["sub_2990::B0", "sub_2990::B1"],
+      ["sub_2990::B1", "sub_2990::B2"],
+      ["sub_2990::B2", "sub_2990::B1"]
+    ]
+  }
+}

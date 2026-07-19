@@ -1,0 +1,47 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Disassembly shows multiple functions in .text section starting at addresses like 0x2390, 0x2470, 0x25d0, 0x26c0 (likely main), and others up to ~0x10f60.",
+    "Basic blocks identified by branch targets (e.g., je, jne, jmp), function prologues (push rbp, sub rsp), and returns. PLT stubs treated as trivial functions.",
+    "Intraprocedural edges from conditional branches (je/jne at offsets like 0x23b8, 0x24f4), unconditional jmps, and fall-throughs within visible functions. Full CFG partial due to truncation but covers key control flow.",
+    "No interprocedural edges added; calls ignored per rules. Node names use generic 'sub_X' or inferred 'main' where clear."
+  ],
+  "cfg": {
+    "nodes": [
+      "error_handler::B0",
+      "error_handler::B1",
+      "error_handler::B2",
+      "print_error::B0",
+      "print_error::B1",
+      "print_error::B2",
+      "print_error::B3",
+      "_start::B0",
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "sub_26c0::B4",
+      "sub_26c0::B5",
+      "sub_26c0::B6",
+      "sub_2390::B0",
+      "sub_2470::B0"
+    ],
+    "edges": [
+      ["error_handler::B0", "error_handler::B1"],
+      ["error_handler::B0", "error_handler::B2"],
+      ["error_handler::B1", "error_handler::B2"],
+      ["print_error::B0", "print_error::B1"],
+      ["print_error::B1", "print_error::B2"],
+      ["print_error::B2", "print_error::B3"],
+      ["_start::B0", "_start::B0"],
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B3", "sub_26c0::B4"],
+      ["sub_26c0::B4", "sub_26c0::B5"],
+      ["sub_26c0::B5", "sub_26c0::B6"],
+      ["sub_2390::B0", "sub_2390::B0"],
+      ["sub_2470::B0", "sub_2470::B0"]
+    ]
+  }
+}

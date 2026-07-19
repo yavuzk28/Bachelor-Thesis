@@ -1,0 +1,60 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Identified multiple functions in .text section via address patterns and stack frames (push rbp, sub rsp).",
+    "Parsed basic blocks by locating branch targets (labels like je, jmp destinations), conditional jumps, and returns.",
+    "Reconstructed intraprocedural edges for key functions like the server loop at 2920, request handler at 1390, and utilities; ignored PLT stubs and interprocedural calls.",
+    "Basic blocks split only at control flow instructions or targets; calls do not split blocks per rules.",
+    "Partial coverage due to large disassembly size and some complex loops/conditions, but core flow recovered."
+  ],
+  "cfg": {
+    "nodes": [
+      "start::B0",
+      "init_dtor::B0",
+      "init_dtor::B1",
+      "handle_client::B0",
+      "handle_client::B1",
+      "handle_client::B2",
+      "handle_client::B3",
+      "recv_line::B0",
+      "recv_line::B1",
+      "recv_line::B2",
+      "send_headers::B0",
+      "send_headers::B1",
+      "serve_file::B0",
+      "serve_file::B1",
+      "serve_file::B2",
+      "execute_cgi::B0",
+      "execute_cgi::B1",
+      "execute_cgi::B2",
+      "execute_cgi::B3",
+      "create_server::B0",
+      "create_server::B1",
+      "main_loop::B0",
+      "main_loop::B1",
+      "main_loop::B2"
+    ],
+    "edges": [
+      ["start::B0", "start::B0"],
+      ["init_dtor::B0", "init_dtor::B1"],
+      ["handle_client::B0", "handle_client::B1"],
+      ["handle_client::B1", "handle_client::B2"],
+      ["handle_client::B2", "handle_client::B3"],
+      ["handle_client::B1", "handle_client::B0"],
+      ["recv_line::B0", "recv_line::B1"],
+      ["recv_line::B1", "recv_line::B2"],
+      ["recv_line::B0", "recv_line::B0"],
+      ["send_headers::B0", "send_headers::B1"],
+      ["serve_file::B0", "serve_file::B1"],
+      ["serve_file::B1", "serve_file::B2"],
+      ["execute_cgi::B0", "execute_cgi::B1"],
+      ["execute_cgi::B1", "execute_cgi::B2"],
+      ["execute_cgi::B2", "execute_cgi::B3"],
+      ["execute_cgi::B1", "execute_cgi::B0"],
+      ["create_server::B0", "create_server::B1"],
+      ["main_loop::B0", "main_loop::B1"],
+      ["main_loop::B1", "main_loop::B2"],
+      ["main_loop::B2", "main_loop::B0"]
+    ]
+  }
+}

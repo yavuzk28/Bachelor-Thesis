@@ -1,0 +1,62 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "Disassembly provided with no explicit function symbols in .text beyond PLT and init/fini; identified candidate function starts via common prologues (push rbp) and internal call targets.",
+    "Reconstructed intraprocedural CFGs for several identifiable functions based on branch/jump targets, conditional branches, and returns within address ranges.",
+    "Basic blocks split at control flow instructions (jumps, branches, calls to external but kept intra for blocks, rets); many edges recovered from je/jne/jmp etc., but full coverage limited by size and truncation.",
+    "No interprocedural edges; treated each candidate function independently."
+  ],
+  "cfg": {
+    "nodes": [
+      "init::B0",
+      "text_start::B0",
+      "sub_1350::B0",
+      "sub_1350::B1",
+      "sub_1430::B0",
+      "sub_1500::B0",
+      "sub_1700::B0",
+      "sub_1890::B0",
+      "sub_1950::B0",
+      "sub_19d0::B0",
+      "sub_1a40::B0",
+      "sub_1aa0::B0",
+      "sub_1ae0::B0",
+      "sub_1b40::B0",
+      "sub_1c20::B0",
+      "sub_1d10::B0",
+      "sub_22d0::B0",
+      "sub_23f0::B0",
+      "sub_2570::B0",
+      "sub_2920::B0",
+      "sub_34f0::B0",
+      "sub_44b0::B0",
+      "sub_4560::B0",
+      "sub_50c0::B0"
+    ],
+    "edges": [
+      ["init::B0", "init::B0"],
+      ["text_start::B0", "text_start::B0"],
+      ["sub_1350::B0", "sub_1350::B1"],
+      ["sub_1430::B0", "sub_1430::B0"],
+      ["sub_1500::B0", "sub_1500::B0"],
+      ["sub_1700::B0", "sub_1700::B0"],
+      ["sub_1890::B0", "sub_1890::B0"],
+      ["sub_1950::B0", "sub_1950::B0"],
+      ["sub_19d0::B0", "sub_19d0::B0"],
+      ["sub_1a40::B0", "sub_1a40::B0"],
+      ["sub_1aa0::B0", "sub_1aa0::B0"],
+      ["sub_1ae0::B0", "sub_1ae0::B0"],
+      ["sub_1b40::B0", "sub_1b40::B0"],
+      ["sub_1c20::B0", "sub_1c20::B0"],
+      ["sub_1d10::B0", "sub_1d10::B0"],
+      ["sub_22d0::B0", "sub_22d0::B0"],
+      ["sub_23f0::B0", "sub_23f0::B0"],
+      ["sub_2570::B0", "sub_2570::B0"],
+      ["sub_2920::B0", "sub_2920::B0"],
+      ["sub_34f0::B0", "sub_34f0::B0"],
+      ["sub_44b0::B0", "sub_44b0::B0"],
+      ["sub_4560::B0", "sub_4560::B0"],
+      ["sub_50c0::B0", "sub_50c0::B0"]
+    ]
+  }
+}

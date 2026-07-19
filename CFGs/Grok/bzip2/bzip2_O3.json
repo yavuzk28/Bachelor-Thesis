@@ -1,0 +1,29 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly provided contains .text section with multiple unlabeled subroutines starting at addresses like 0x22c0, 0x2320, 0x23a0, 0x2530 (_start), 0x2620 (large function likely main processing), and ending at .fini.",
+    "Basic blocks identified by linear sequences terminated by branches (je, jne, jmp, call does not terminate), returns, etc. Intra-procedural edges only within each subroutine.",
+    "Functions inferred by entry points with standard prologues (push rbp etc.) and ret instructions. PLT entries treated as separate trivial functions but CFG focuses on .text. Partial reconstruction due to truncation and lack of symbols.",
+    "Nodes numbered per subroutine (e.g., sub_22c0::B0). Edges from conditional/unconditional branches within same function."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_22c0::B0",
+      "sub_22c0::B1",
+      "sub_2320::B0",
+      "sub_2320::B1",
+      "sub_2530::B0",
+      "sub_2620::B0",
+      "sub_2620::B1",
+      "sub_2620::B2"
+    ],
+    "edges": [
+      ["sub_22c0::B0", "sub_22c0::B1"],
+      ["sub_2320::B0", "sub_2320::B1"],
+      ["sub_2530::B0", "sub_2530::B1"],
+      ["sub_2620::B0", "sub_2620::B1"],
+      ["sub_2620::B1", "sub_2620::B2"],
+      ["sub_2620::B0", "sub_2620::B2"]
+    ]
+  }
+}

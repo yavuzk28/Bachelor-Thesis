@@ -1,0 +1,53 @@
+{
+"cfg_confidence": 65,
+"reasoning": [
+"Identified multiple functions via standard x86-64 prologues (push rbp; mov rbp,rsp) and ret instructions in .text section.",
+"Main function recovered at 0x21e0 with extensive control flow including argument parsing, game loop with input handling, conditional branches for moves (w/a/s/d), and win/lose checks.",
+"Other functions identified at addresses like 0x1200 (byte manipulation), 0x1360 (digit count), 0x1390 (print), 0x17e0 (matrix rotate), 0x1c90 (random fill), 0x1ea0 (win check), etc., based on calls and structure.",
+"Basic blocks split at branches (jumps, conditional j* , ret), calls do not split BBs per rules. Intra-function edges only.",
+"Partial reconstruction due to large number of small functions and complex loops; omitted uncertain indirect edges."
+],
+"cfg": {
+"nodes": [
+"main::B0",
+"main::B1",
+"main::B2",
+"main::B3",
+"main::B4",
+"main::B5",
+"main::B6",
+"main::B7",
+"main::B8",
+"main::B9",
+"main::B10",
+"sub_1200::B0",
+"sub_1360::B0",
+"sub_1390::B0",
+"sub_17e0::B0",
+"sub_1c90::B0",
+"sub_1ea0::B0",
+"sub_21a0::B0"
+],
+"edges": [
+["main::B0", "main::B1"],
+["main::B1", "main::B2"],
+["main::B1", "main::B3"],
+["main::B2", "main::B4"],
+["main::B3", "main::B4"],
+["main::B4", "main::B5"],
+["main::B5", "main::B6"],
+["main::B6", "main::B7"],
+["main::B7", "main::B8"],
+["main::B8", "main::B9"],
+["main::B9", "main::B10"],
+["main::B6", "main::B10"],
+["sub_1200::B0", "sub_1200::B1"],
+["sub_1360::B0", "sub_1360::B1"],
+["sub_1390::B0", "sub_1390::B1"],
+["sub_17e0::B0", "sub_17e0::B1"],
+["sub_1c90::B0", "sub_1c90::B1"],
+["sub_1ea0::B0", "sub_1ea0::B1"],
+["sub_21a0::B0", "sub_21a0::B1"]
+]
+}
+}

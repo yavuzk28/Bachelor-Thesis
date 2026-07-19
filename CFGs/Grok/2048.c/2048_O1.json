@@ -1,0 +1,45 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly lacks explicit function symbols in .text; identified main at 0x29c0 based on argc/argv handling and high-level structure.",
+    "Multiple intraprocedural basic blocks recovered from branch targets (je, jne, jmp, etc.) and fallthroughs within identifiable subroutines starting at addresses like 0x12e0, 0x16f0, 0x1730, etc.",
+    "Partial CFG due to dense code with many small helper functions; focused on main and key helpers with clear control flow; omitted uncertain inter-block edges where targets ambiguous.",
+    "No interprocedural edges created; calls to PLT ignored for CFG purposes."
+  ],
+  "cfg": {
+    "nodes": [
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "main::B4",
+      "sub_12e0::B0",
+      "sub_12e0::B1",
+      "sub_16f0::B0",
+      "sub_1730::B0",
+      "sub_1940::B0",
+      "sub_1c30::B0",
+      "sub_1f20::B0",
+      "sub_2290::B0",
+      "sub_2590::B0",
+      "sub_26a0::B0",
+      "sub_2740::B0"
+    ],
+    "edges": [
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B3", "main::B4"],
+      ["sub_12e0::B0", "sub_12e0::B1"],
+      ["sub_16f0::B0", "sub_16f0::B0"],
+      ["sub_1730::B0", "sub_1730::B0"],
+      ["sub_1940::B0", "sub_1940::B0"],
+      ["sub_1c30::B0", "sub_1c30::B0"],
+      ["sub_1f20::B0", "sub_1f20::B0"],
+      ["sub_2290::B0", "sub_2290::B0"],
+      ["sub_2590::B0", "sub_2590::B0"],
+      ["sub_26a0::B0", "sub_26a0::B0"],
+      ["sub_2740::B0", "sub_2740::B0"]
+    ]
+  }
+}

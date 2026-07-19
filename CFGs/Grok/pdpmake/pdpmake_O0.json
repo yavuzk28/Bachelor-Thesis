@@ -1,0 +1,27 @@
+{
+  "cfg_confidence": 40,
+  "reasoning": [
+    "Disassembly contains PLT stubs and one large user function error@@Base along with its prologue error@@Base-0xa60.",
+    "Full CFG reconstruction for the very large error@@Base (thousands of instructions) is complex due to size and indirect control flow; partial reconstruction focuses on identified entry points and sample branches.",
+    "Basic blocks derived from branch targets (je, jmp, jne etc.) and function starts; edges are intraprocedural only within identified functions.",
+    "Many PLT entries are simple stubs with limited internal CFG."
+  ],
+  "cfg": {
+    "nodes": [
+      "error@@Base-0xa60::B0",
+      "error@@Base-0xa60::B1",
+      "error@@Base::B0",
+      "error@@Base::B1",
+      "error@@Base::B2",
+      ".init::B0",
+      "getenv@plt::B0"
+    ],
+    "edges": [
+      ["error@@Base-0xa60::B0", "error@@Base-0xa60::B1"],
+      ["error@@Base::B0", "error@@Base::B1"],
+      ["error@@Base::B1", "error@@Base::B2"],
+      [".init::B0", ".init::B0"],
+      ["getenv@plt::B0", "getenv@plt::B0"]
+    ]
+  }
+}

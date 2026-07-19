@@ -1,0 +1,38 @@
+{
+  "cfg_confidence": 45,
+  "reasoning": [
+    "Disassembly provided as .asm dump with .text section containing multiple functions identifiable by push rbp/mov rbp,rsp prologues and ret instructions.",
+    "Identified key functions: entry/_start at 0x2270, terminal setup ~0x23b0, get_key ~0x2490, render ~0x4100, main loop ~0x4880.",
+    "Basic blocks split at branches (je, jne, jmp, conditional), returns; calls do not split blocks. Partial reconstruction due to truncation and label offsets; focused on prominent intraprocedural flows.",
+    "No interprocedural edges; only within-function control transfers."
+  ],
+  "cfg": {
+    "nodes": [
+      "entry::B0",
+      "entry::B1",
+      "init_term::B0",
+      "init_term::B1",
+      "init_term::B2",
+      "get_key::B0",
+      "get_key::B1",
+      "get_key::B2",
+      "get_key::B3",
+      "get_key::B4",
+      "render::B0",
+      "main_loop::B0",
+      "main_loop::B1"
+    ],
+    "edges": [
+      ["entry::B0", "entry::B1"],
+      ["init_term::B0", "init_term::B1"],
+      ["init_term::B1", "init_term::B2"],
+      ["get_key::B0", "get_key::B1"],
+      ["get_key::B1", "get_key::B2"],
+      ["get_key::B2", "get_key::B3"],
+      ["get_key::B3", "get_key::B4"],
+      ["get_key::B1", "get_key::B4"],
+      ["main_loop::B0", "main_loop::B1"],
+      ["render::B0", "render::B0"]
+    ]
+  }
+}

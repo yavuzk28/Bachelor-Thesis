@@ -1,0 +1,27 @@
+{
+  "cfg_confidence": 65,
+  "reasoning": [
+    "Disassembly contains standard ELF sections with PLT stubs and .text code.",
+    "Multiple functions identifiable via prologues (push rbp etc.) and ret instructions at addresses like 0x25d0 (_start-like), 0x26c0 (main), and smaller helpers at 0x2390, 0x2470.",
+    "Basic blocks constructed by linear sequences terminated by branches/jumps/returns/calls where control flow changes; intraprocedural only, no call/return edges between functions.",
+    "Large binary with truncation limits full enumeration, but key control flows in entry points recovered; nodes use sub_ addresses where names unavailable."
+  ],
+  "cfg": {
+    "nodes": [
+      "sub_2390::B0",
+      "sub_2390::B1",
+      "sub_2470::B0",
+      "sub_25d0::B0",
+      "sub_26c0::B0",
+      "sub_26c0::B1",
+      "sub_26c0::B2"
+    ],
+    "edges": [
+      ["sub_2390::B0", "sub_2390::B1"],
+      ["sub_2470::B0", "sub_2470::B0"],
+      ["sub_25d0::B0", "sub_26c0::B0"],
+      ["sub_26c0::B0", "sub_26c0::B1"],
+      ["sub_26c0::B1", "sub_26c0::B2"]
+    ]
+  }
+}
