@@ -1,33 +1,33 @@
 {
 "cfg_confidence": 75,
 "reasoning": [
-"The input contains multiple functions, the largest of which is identified by the symbol 'error'.",
-"Basic blocks were identified by locating entry points (e.g., function start addresses, targets of jumps) and branch instructions (e.g., jmp, je, jne, ret).",
-"Calls to plt entries (like fprintf@plt, free@plt) do not terminate a basic block according to the provided rules.",
-"Unconditional and conditional jumps were mapped to define the edges between basic blocks.",
-"Certain code patterns (e.g., data16 prefixes, nop padding) were identified as non-terminating instructions within blocks.",
-"Functions were isolated based on endbr64 instructions and ret instructions, with intraprocedural edges mapped strictly within these boundaries."
+"The input contains a complex ELF binary disassembly, including .init, .plt, and .text sections.",
+"Functions like error@@Base contain multiple basic blocks with jumps, conditional branches, and function calls.",
+"The construction identifies multiple entry points (e.g., error@@Base at 23b0, and other sub-routines).",
+"Basic blocks are separated by control flow instructions such as jne, je, call, ret, and unconditional jumps.",
+"The CFG reconstruction follows intraprocedural rules, ensuring edges do not cross function boundaries.",
+"Some indirect jumps (e.g., jmp rax at 260f) create ambiguity in edge destination, but the structural flow of surrounding blocks is captured."
 ],
 "cfg": {
 "nodes": [
-"error::B0",
-"error::B1",
-"error::B2",
-"error::B3",
-"error::B4",
-"error::B5",
-"error::B6",
-"error::B7"
+"error@@Base::B0",
+"error@@Base::B1",
+"error@@Base::B2",
+"error@@Base::B3",
+"error@@Base::B4",
+"sub_25c0::B0",
+"sub_2660::B0",
+"sub_2660::B1",
+"sub_2660::B2"
 ],
 "edges": [
-["error::B0", "error::B1"],
-["error::B1", "error::B2"],
-["error::B1", "error::B3"],
-["error::B2", "error::B4"],
-["error::B3", "error::B4"],
-["error::B4", "error::B5"],
-["error::B5", "error::B6"],
-["error::B5", "error::B7"]
+["error@@Base::B0", "error@@Base::B1"],
+["error@@Base::B1", "error@@Base::B2"],
+["error@@Base::B1", "error@@Base::B3"],
+["error@@Base::B2", "error@@Base::B4"],
+["error@@Base::B3", "error@@Base::B4"],
+["sub_2660::B0", "sub_2660::B1"],
+["sub_2660::B1", "sub_2660::B2"]
 ]
 }
 }

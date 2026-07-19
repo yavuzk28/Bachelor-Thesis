@@ -1,11 +1,13 @@
 {
 "cfg_confidence": 75,
 "reasoning": [
-"The input contains multiple distinct code segments. The segment at 0x2390 and the segment at 0x2470 appear to be different functions, though they share very similar prologue patterns. The segment starting at 0x26c0 is a large, complex function containing the main logic for argument parsing and initialization.",
-"Basic blocks are identified by control flow instructions (jumps, conditional jumps, calls, returns) and branch targets. Many functions contain loops and conditional branches (e.g., test al,al; je ).",
-"Calls to library functions (e.g., fwrite@plt, vfprintf@plt, exit@plt) do not break the current basic block as per instructions.",
-"The function starting at 0x26c0 contains a complex switch-like structure implemented using a table of addresses at 0x12080, which is used for indirect jumps (jmp rax).",
-"Given the complexity and potential for missing jump target calculations in the jump table, the confidence is set to 75% for complete coverage of all paths."
+"The input contains multiple functions (including .init, plt entries, and numerous .text functions).",
+"Basic blocks are identified by control-flow altering instructions (call, ret, jmp, je, jne, jge, ja, jb).",
+"Function calls are treated as part of the basic block, not as edges, as per instructions.",
+"Edges represent intraprocedural transfers (conditional and unconditional branches).",
+"The reconstruction is partial, focusing on the main logic structures in .text.",
+"Functions lacking clear boundaries (e.g., jump tables, complex switch-like logic) were analyzed based on visible control flow.",
+"Some uncertain branches (e.g., computed jumps) were omitted to maintain soundness."
 ],
 "cfg": {
 "nodes": [
@@ -17,30 +19,50 @@
 "sub_2470::B2",
 "sub_2470::B3",
 "sub_2470::B4",
+"sub_2470::B5",
+"sub_2470::B6",
+"sub_2470::B7",
+"sub_25d0::B0",
+"sub_2600::B0",
+"sub_2600::B1",
+"sub_2600::B2",
+"sub_2630::B0",
+"sub_2630::B1",
+"sub_2670::B0",
+"sub_2670::B1",
+"sub_2670::B2",
+"sub_26b0::B0",
 "sub_26c0::B0",
 "sub_26c0::B1",
 "sub_26c0::B2",
 "sub_26c0::B3",
 "sub_26c0::B4",
 "sub_26c0::B5",
-"sub_26c0::B6"
+"sub_26c0::B6",
+"sub_26c0::B7"
 ],
 "edges": [
 ["sub_2390::B0", "sub_2390::B1"],
 ["sub_2390::B0", "sub_2390::B2"],
-["sub_2390::B1", "sub_2390::B2"],
 ["sub_2470::B0", "sub_2470::B1"],
 ["sub_2470::B0", "sub_2470::B2"],
-["sub_2470::B1", "sub_2470::B2"],
 ["sub_2470::B2", "sub_2470::B3"],
-["sub_2470::B2", "sub_2470::B4"],
 ["sub_2470::B3", "sub_2470::B4"],
+["sub_2470::B3", "sub_2470::B5"],
+["sub_2470::B5", "sub_2470::B6"],
+["sub_2470::B6", "sub_2470::B7"],
+["sub_2600::B0", "sub_2600::B1"],
+["sub_2600::B1", "sub_2600::B2"],
+["sub_2630::B0", "sub_2630::B1"],
+["sub_2670::B0", "sub_2670::B1"],
+["sub_2670::B1", "sub_2670::B2"],
 ["sub_26c0::B0", "sub_26c0::B1"],
 ["sub_26c0::B1", "sub_26c0::B2"],
 ["sub_26c0::B2", "sub_26c0::B3"],
-["sub_26c0::B3", "sub_26c0::B4"],
+["sub_26c0::B2", "sub_26c0::B4"],
 ["sub_26c0::B4", "sub_26c0::B5"],
-["sub_26c0::B5", "sub_26c0::B6"]
+["sub_26c0::B5", "sub_26c0::B6"],
+["sub_26c0::B6", "sub_26c0::B7"]
 ]
 }
 }
