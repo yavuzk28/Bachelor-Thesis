@@ -1,0 +1,33 @@
+{
+"cfg_confidence": 75,
+"reasoning": [
+"The input contains multiple functions, the largest of which is identified by the symbol 'error'.",
+"Basic blocks were identified by locating entry points (e.g., function start addresses, targets of jumps) and branch instructions (e.g., jmp, je, jne, ret).",
+"Calls to plt entries (like fprintf@plt, free@plt) do not terminate a basic block according to the provided rules.",
+"Unconditional and conditional jumps were mapped to define the edges between basic blocks.",
+"Certain code patterns (e.g., data16 prefixes, nop padding) were identified as non-terminating instructions within blocks.",
+"Functions were isolated based on endbr64 instructions and ret instructions, with intraprocedural edges mapped strictly within these boundaries."
+],
+"cfg": {
+"nodes": [
+"error::B0",
+"error::B1",
+"error::B2",
+"error::B3",
+"error::B4",
+"error::B5",
+"error::B6",
+"error::B7"
+],
+"edges": [
+["error::B0", "error::B1"],
+["error::B1", "error::B2"],
+["error::B1", "error::B3"],
+["error::B2", "error::B4"],
+["error::B3", "error::B4"],
+["error::B4", "error::B5"],
+["error::B5", "error::B6"],
+["error::B5", "error::B7"]
+]
+}
+}

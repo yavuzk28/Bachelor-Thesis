@@ -1,0 +1,53 @@
+{
+"cfg_confidence": 75,
+"reasoning": [
+"The analysis focused on the .text section, identifying the main function entry and several subroutines based on standard assembly patterns (prologues/epilogues).",
+"Basic blocks were identified by following sequential instruction flow and identifying control-flow instructions like 'jmp', 'call', 'ret', and 'je/jne' conditionals.",
+"Function boundary identification was based on 'endbr64', 'push rbp', 'mov rbp, rsp' patterns and return instructions.",
+"Multiple subroutines (sub_2390, sub_2430, sub_2470, sub_2480, sub_27b0, sub_2a80, sub_2ac0, sub_2ae0, sub_2bd0, sub_2c90, sub_2cd0, sub_2d20, sub_2d70, sub_2e20) were identified.",
+"Some edges involving plt calls were omitted or simplified to comply with intraprocedural requirements and the complexity of the PLT/GOT mechanism."
+],
+"cfg": {
+"nodes": [
+"sub_2390::B0",
+"sub_2390::B1",
+"sub_2430::B0",
+"sub_2430::B1",
+"sub_2430::B2",
+"sub_2430::B3",
+"sub_2470::B0",
+"sub_2480::B0",
+"sub_2480::B1",
+"sub_2480::B2",
+"sub_2480::B3",
+"sub_2480::B4",
+"sub_2480::B5",
+"sub_27b0::B0",
+"sub_27b0::B1",
+"sub_2a80::B0",
+"sub_2ac0::B0",
+"sub_2ae0::B0",
+"sub_2ae0::B1",
+"sub_2bd0::B0",
+"sub_2c90::B0",
+"sub_2cd0::B0",
+"sub_2d20::B0",
+"sub_2d70::B0",
+"sub_2e20::B0"
+],
+"edges": [
+["sub_2390::B0", "sub_2390::B1"],
+["sub_2430::B0", "sub_2430::B1"],
+["sub_2430::B1", "sub_2430::B2"],
+["sub_2430::B1", "sub_2430::B3"],
+["sub_2470::B0", "sub_2470::B0"],
+["sub_2480::B0", "sub_2480::B1"],
+["sub_2480::B1", "sub_2480::B2"],
+["sub_2480::B2", "sub_2480::B3"],
+["sub_2480::B2", "sub_2480::B4"],
+["sub_2480::B4", "sub_2480::B5"],
+["sub_27b0::B0", "sub_27b0::B1"],
+["sub_2ae0::B0", "sub_2ae0::B1"]
+]
+}
+}

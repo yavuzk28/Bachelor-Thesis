@@ -1,0 +1,46 @@
+{
+  "cfg_confidence": 70,
+  "reasoning": [
+    "The disassembly contains multiple functions and subroutines.",
+    "The main function entry point is identified at address 0x2530.",
+    "Control flow within functions is followed using conditional and unconditional jumps.",
+    "Some indirect jumps and calls to external functions make certain edges uncertain.",
+    "Edges are reconstructed based on the most likely execution paths from the disassembly.",
+    "The confidence score reflects the presence of indirect branches and unresolved targets."
+  ],
+  "cfg": {
+    "nodes": [
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "sub_22c0::B0",
+      "sub_22c0::B1",
+      "sub_2620::B0",
+      "sub_2620::B1",
+      "sub_2620::B2",
+      "sub_2620::B3",
+      "sub_2620::B4",
+      "sub_2620::B5",
+      "sub_2620::B6",
+      "sub_2620::B7",
+      "sub_2620::B8",
+      "sub_2620::B9",
+      "sub_2620::B10"
+    ],
+    "edges": [
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["sub_22c0::B0", "sub_22c0::B1"],
+      ["sub_2620::B0", "sub_2620::B1"],
+      ["sub_2620::B1", "sub_2620::B2"],
+      ["sub_2620::B1", "sub_2620::B3"],
+      ["sub_2620::B3", "sub_2620::B4"],
+      ["sub_2620::B3", "sub_2620::B5"],
+      ["sub_2620::B5", "sub_2620::B6"],
+      ["sub_2620::B6", "sub_2620::B7"],
+      ["sub_2620::B7", "sub_2620::B8"],
+      ["sub_2620::B8", "sub_2620::B9"],
+      ["sub_2620::B9", "sub_2620::B10"]
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+"cfg_confidence": 75,
+"reasoning": [
+"The input contains multiple distinct functions (e.g., .init, .text, and various plt entries).",
+"Basic blocks were identified by analyzing branch targets and fall-through instructions (e.g., test, je, jne, jmp, ret).",
+"Function calls (call instruction) were treated as internal to the basic block as per instructions.",
+"The control flow for smaller functions like '.init' and plt stubs is straightforward. Larger functions in '.text' are more complex and exhibit standard compiler-generated patterns including setup, switch-like structures (jump tables), and cleanup.",
+"Intraprocedural edges were mapped based on branch destinations; interprocedural calls were ignored as instructed."
+],
+"cfg": {
+"nodes": [
+".init::B0",
+".init::B1",
+".init::B2",
+"main::B0",
+"main::B1",
+"main::B2",
+"main::B3",
+"main::B4",
+"main::B5",
+"main::B6",
+"main::B7",
+"main::B8",
+"sub_25d0::B0",
+"sub_2600::B0",
+"sub_2600::B1",
+"sub_2600::B2",
+"sub_2630::B0",
+"sub_2630::B1",
+"sub_2630::B2",
+"sub_2670::B0",
+"sub_2670::B1",
+"sub_2670::B2",
+"sub_2670::B3",
+"sub_26b0::B0",
+"sub_26c0::B0"
+],
+"edges": [
+[".init::B0", ".init::B1"],
+[".init::B0", ".init::B2"],
+[".init::B1", ".init::B2"],
+["main::B0", "main::B1"],
+["main::B0", "main::B2"],
+["main::B2", "main::B3"],
+["main::B3", "main::B4"],
+["main::B4", "main::B5"],
+["main::B4", "main::B6"],
+["main::B6", "main::B7"],
+["main::B7", "main::B8"],
+["sub_2600::B0", "sub_2600::B1"],
+["sub_2600::B0", "sub_2600::B2"],
+["sub_2600::B1", "sub_2600::B2"],
+["sub_2630::B0", "sub_2630::B1"],
+["sub_2630::B0", "sub_2630::B2"],
+["sub_2630::B1", "sub_2630::B2"],
+["sub_2670::B0", "sub_2670::B1"],
+["sub_2670::B0", "sub_2670::B2"],
+["sub_2670::B2", "sub_2670::B3"],
+["sub_2670::B3", "sub_2670::B0"]
+]
+}
+}

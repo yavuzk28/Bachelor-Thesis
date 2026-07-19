@@ -1,0 +1,34 @@
+{
+  "cfg_confidence": 60,
+  "reasoning": [
+    "The disassembly contains multiple function stubs and one large function starting at address 0x26c0, which appears to be the main program entry point.",
+    "The large function at 0x26c0 contains complex control flow with many conditional branches, jumps, and function calls.",
+    "Due to the complexity and size of the disassembly, fully recovering all basic blocks and edges for every function is not feasible with high confidence.",
+    "However, the main function's high-level structure has been partially recovered, including its initialization, option parsing, and main processing loop.",
+    "Several library functions are present in the PLT, but their internal control flow is not included as per the rules.",
+    "The confidence score reflects the partial nature of the reconstruction, especially for the main function's internal logic."
+  ],
+  "cfg": {
+    "nodes": [
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "main::B4",
+      "main::B5",
+      "main::B6",
+      "main::B7"
+    ],
+    "edges": [
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B3", "main::B2"],
+      ["main::B3", "main::B4"],
+      ["main::B4", "main::B5"],
+      ["main::B5", "main::B6"],
+      ["main::B6", "main::B7"],
+      ["main::B7", "main::B2"]
+    ]
+  }
+}

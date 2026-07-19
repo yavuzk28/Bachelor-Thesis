@@ -1,0 +1,48 @@
+{
+"cfg_confidence": 75,
+"reasoning": [
+"The input contains multiple functions (including .init and a main-like function in .text) that were analyzed independently as required.",
+"Basic blocks were identified based on control-flow instructions (jmp, je, jne, call, ret) and branch targets, following the definition of a maximal linear sequence of instructions.",
+"Intraprocedural control flow was mapped by analyzing branch targets and fall-through behavior within each function.",
+"Call instructions and interprocedural transitions (e.g., PLT stubs, libc functions) were treated as part of the basic block, not as separate blocks or CFG edges.",
+"Uncertain or complex indirect control flow (like those involving GOT/PLT lookups) was omitted from the edges, while the rest of the intraprocedural CFG was preserved."
+],
+"cfg": {
+"nodes": [
+".init::B0",
+".init::B1",
+".init::B2",
+".text::B0",
+".text::B1",
+".text::B2",
+".text::B3",
+".text::B4",
+".text::B5",
+".text::B6",
+".text::B7",
+".text::B8",
+".text::B9",
+".text::B10",
+".text::B11",
+".text::B12"
+],
+"edges": [
+[".init::B0", ".init::B1"],
+[".init::B0", ".init::B2"],
+[".init::B1", ".init::B2"],
+[".text::B0", ".text::B1"],
+[".text::B0", ".text::B2"],
+[".text::B2", ".text::B3"],
+[".text::B3", ".text::B4"],
+[".text::B3", ".text::B5"],
+[".text::B5", ".text::B6"],
+[".text::B6", ".text::B7"],
+[".text::B7", ".text::B8"],
+[".text::B7", ".text::B9"],
+[".text::B8", ".text::B10"],
+[".text::B9", ".text::B10"],
+[".text::B10", ".text::B11"],
+[".text::B11", ".text::B12"]
+]
+}
+}

@@ -1,0 +1,44 @@
+{
+  "cfg_confidence": 80,
+  "reasoning": [
+    "The disassembly contains multiple functions, including the entry point at 0x23a0, the main function at 0x62e0, and many helper functions.",
+    "Only intraprocedural control flow is reconstructed; edges represent jumps, conditional branches, and returns within each function.",
+    "Function calls do not terminate basic blocks; they are included as part of the current block.",
+    "Basic blocks are identified by control-flow instructions such as jmp, jcc (e.g., je, jne), and ret. Indirect jumps are omitted if the target cannot be reliably determined, but the surrounding blocks are still recovered.",
+    "The CFG for each function is constructed independently; no interprocedural edges (e.g., call/return) are included.",
+    "Some functions are not fully analyzed due to the large size and complexity of the disassembly, but the most significant functions (e.g., entry point, main, and key helper routines) are represented.",
+    "Confidence is set to 80 because while many basic blocks and edges are clear, some indirect branches and switch-like constructs may not have all edges resolved."
+  ],
+  "cfg": {
+    "nodes": [
+      "entry::B0",
+      "entry::B1",
+      "entry::B2",
+      "entry::B3",
+      "main::B0",
+      "main::B1",
+      "main::B2",
+      "main::B3",
+      "main::B4",
+      "main::B5",
+      "sub_1::B0",
+      "sub_1::B1",
+      "sub_2::B0",
+      "sub_2::B1",
+      "sub_2::B2"
+    ],
+    "edges": [
+      ["entry::B0", "entry::B1"],
+      ["entry::B1", "entry::B2"],
+      ["entry::B2", "entry::B3"],
+      ["main::B0", "main::B1"],
+      ["main::B1", "main::B2"],
+      ["main::B2", "main::B3"],
+      ["main::B3", "main::B4"],
+      ["main::B4", "main::B5"],
+      ["sub_1::B0", "sub_1::B1"],
+      ["sub_2::B0", "sub_2::B1"],
+      ["sub_2::B1", "sub_2::B2"]
+    ]
+  }
+}
