@@ -35,7 +35,7 @@ find c_files -maxdepth 1 -type f -name "*.c" \
     ! -name "puredoom.c" \
     ! -name "minilua.c" \
     ! -name "chibicc.c" \
-    ! -name "oggenc.c" |
+    ! -name "gzip.c" |
 while read -r file; do
     name=$(basename "$file" .c)
 
