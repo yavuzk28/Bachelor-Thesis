@@ -15,6 +15,10 @@ A CFG consists of:
 
 A basic block is defined as a maximal linear sequence of instructions with a single entry point and a single exit point, containing no internal control-flow transfers or branch targets. Execution proceeds sequentially until the terminating instruction.
 Do not split a basic block into multiple nodes unless a control-flow instruction or branch target requires a new basic block. Consecutive non-branching instructions must belong to the same basic block.
+
+Function call instructions do not by themselves terminate a basic block. A call instruction remains part of the current basic block.
+Do not create separate basic blocks solely because a function call occurs.
+
 A basic block terminates at the first instruction that may alter control flow, including but not limited to:
 
 - conditional branches,
