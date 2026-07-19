@@ -93,7 +93,9 @@ def compile_llvm(files, bc_dir, ir_dir, program_name, opt, extra_flags=None):
         Path(bc).unlink(missing_ok=True)
 
 
-def compile_binary(files, out_dir, name, opt, extra_flags=None, link_flags=None):
+def compile_binary(files, out_dir, name, opt,
+                   extra_flags=None,
+                   link_flags=None):
 
     extra_flags = extra_flags or []
     link_flags = link_flags or []
@@ -125,6 +127,11 @@ for program in SRC_DIR.iterdir():
     ir_out.mkdir(parents=True, exist_ok=True)
     
     c_files = get_c_files(program)
+
+    if program.name == "Tinyhttpd":
+        c_files = [
+            str(program / "httpd.c")
+        ]
 
 
     # FE (special handling)
