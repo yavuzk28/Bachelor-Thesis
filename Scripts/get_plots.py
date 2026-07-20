@@ -82,12 +82,17 @@ for metric in METRICS:
         widths=0.6,
         patch_artist=True,
         showmeans=True,
+        medianprops={
+            "color": "black",
+            "linewidth": 2,
+        },
         meanprops={
             "marker": "D",
             "markerfacecolor": "white",
             "markeredgecolor": "black",
             "markersize": 5,
         },
+        
     )
 
     # Logarithmic y-axis
