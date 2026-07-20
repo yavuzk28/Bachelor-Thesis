@@ -1,19 +1,13 @@
 from pathlib import Path
-
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parent.parent
 
 CSV = ROOT / "Results" / "graph_metrics.csv"
-
-AVERAGE_DIR = ROOT / "Results" / "Plots" / "Average"
-INDIVIDUAL_DIR = ROOT / "Results" / "Plots" / "Individual"
-
-AVERAGE_DIR.mkdir(parents=True, exist_ok=True)
-INDIVIDUAL_DIR.mkdir(parents=True, exist_ok=True)
-
+OUTPUT_DIR = ROOT / "Results" / "Plots"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 METRICS = [
     "Node_Count",
@@ -30,6 +24,21 @@ OPT_ORDER = [
     "O3",
 ]
 
+TOOLS = [
+    "LLVM",
+    "Ghidra",
+    "Rizin",
+    "DeepSeek",
+    "Gemini",
+    "Grok",
+]
+
+opt_colors = {
+    "O0": "#1f77b4",  # Blue
+    "O1": "#ff7f0e",  # Orange
+    "O2": "#2ca02c",  # Green
+    "O3": "#d62728",  # Red
+}
 
 df = pd.read_csv(CSV)
 
@@ -39,98 +48,121 @@ df["Optimization"] = pd.Categorical(
     ordered=True,
 )
 
-TOOLS = sorted(df["Tool"].unique())
-PROGRAMS = sorted(df["Program"].unique())
-
-
-
-# Average plots
 for metric in METRICS:
 
-    plt.figure(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(20, 6))
 
-    avg = (
-        df.groupby(["Tool", "Optimization"])[metric]
-        .mean()
-        .reset_index()
+    data = []
+    positions = []
+    labels = []
+
+    pos = 1
+
+    for opt in OPT_ORDER:
+
+        for tool in TOOLS:
+
+            values = df[
+                (df["Optimization"] == opt)
+                & (df["Tool"] == tool)
+            ][metric]
+
+            data.append(values)
+            positions.append(pos)
+            labels.append(tool)
+
+            pos += 1
+
+        # Gap between optimization groups
+        pos += 1
+
+    bp = ax.boxplot(
+        data,
+        positions=positions,
+        widths=0.6,
+        patch_artist=True,
+        showmeans=True,
+        meanprops={
+            "marker": "D",
+            "markerfacecolor": "white",
+            "markeredgecolor": "black",
+            "markersize": 5,
+        },
     )
 
-    for tool in TOOLS:
+    # Logarithmic y-axis
+    ax.set_yscale("log")
 
-        subset = avg[avg["Tool"] == tool].sort_values("Optimization")
+    # Color boxes by optimization level
+    box_index = 0
 
-        plt.plot(
-            subset["Optimization"],
-            subset[metric],
-            marker="o",
-            linewidth=2,
-            label=tool,
+    for opt in OPT_ORDER:
+        for _ in TOOLS:
+            bp["boxes"][box_index].set_facecolor(opt_colors[opt])
+            bp["boxes"][box_index].set_edgecolor("black")
+            box_index += 1
+
+    # Centers for optimization labels
+    centers = []
+
+    pos = 1
+
+    for _ in OPT_ORDER:
+        centers.append(pos + (len(TOOLS) - 1) / 2)
+        pos += len(TOOLS) + 1
+
+    ax.set_xticks(centers)
+    ax.set_xticklabels(OPT_ORDER, fontsize=12)
+
+    # Tool names below each box
+    ymin, ymax = ax.get_ylim()
+
+    for x, label in zip(positions, labels):
+        ax.text(
+            x,
+            ymin / 1.8,
+            label,
+            rotation=90,
+            ha="center",
+            va="top",
+            fontsize=11,
         )
 
-    plt.title(f"Average {metric.replace('_', ' ')}")
-    plt.xlabel("Optimization Level")
-    plt.ylabel(metric.replace("_", " "))
-    plt.grid(True)
-    plt.legend()
+
+    ax.set_title(
+        metric.replace("_", " "),
+        fontsize=15,
+    )
+
+    ax.set_xlabel(
+        "Optimization Level",
+        fontsize=13,
+        labelpad=40,
+    )
+
+    ax.set_ylabel(
+        f"{metric.replace('_', ' ')} (log scale)",
+        fontsize=13,
+    )
+
+    ax.grid(
+        axis="y",
+        linestyle="--",
+        alpha=0.4,
+        which="both",
+    )
 
     plt.tight_layout()
 
     plt.savefig(
-        AVERAGE_DIR / f"{metric.lower()}.png",
+        OUTPUT_DIR / f"{metric.lower()}.png",
         dpi=300,
+        bbox_inches="tight",
     )
 
     plt.close()
 
-
-
-# Individual plots
-for metric in METRICS:
-
-    metric_dir = INDIVIDUAL_DIR / metric
-    metric_dir.mkdir(parents=True, exist_ok=True)
-
-    for program in PROGRAMS:
-
-        plt.figure(figsize=(8, 5))
-
-        subset_program = df[df["Program"] == program]
-
-        for tool in TOOLS:
-
-            subset = subset_program[
-                subset_program["Tool"] == tool
-            ].sort_values("Optimization")
-
-            plt.plot(
-                subset["Optimization"],
-                subset[metric],
-                marker="o",
-                linewidth=2,
-                label=tool,
-            )
-
-        plt.title(
-            f"{metric.replace('_', ' ')} - {program}"
-        )
-
-        plt.xlabel("Optimization Level")
-        plt.ylabel(metric.replace("_", " "))
-        plt.grid(True)
-        plt.legend()
-
-        plt.tight_layout()
-
-        plt.savefig(
-            metric_dir / f"{program}.png",
-            dpi=300,
-        )
-
-        plt.close()
-
-
 print()
 print("Plots generated successfully.")
 print()
-print(f"Average plots:    {AVERAGE_DIR}")
-print(f"Individual plots: {INDIVIDUAL_DIR}")
+print(f"Saved to: {OUTPUT_DIR}")

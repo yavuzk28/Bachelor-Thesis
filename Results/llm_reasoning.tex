@@ -3,23 +3,35 @@
 
 \subsection{DeepSeek -- 2048.c (\texttt{2048\_O0.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 70
 
 \textbf{Reasoning}
 
-Identified multiple functions: main, sub\_1200, sub\_1360, sub\_1390, sub\_1630, sub\_16d0, sub\_17e0, sub\_1970, sub\_19e0, sub\_1a40, sub\_1aa0, sub\_1b00, sub\_1b90, sub\_1c00, sub\_1c90, sub\_1da0, sub\_1e10, sub\_1ea0, sub\_21a0, and sub\_21e0 (likely main based on entry point and argument handling).
+Function boundaries were identified based on known PLT stubs, standard ELF entry patterns, and user-defined function prologues.
 
-Constructed CFG for each function independently, grouping instructions into basic blocks based on control-flow instructions (jumps, branches, calls, returns).
+Control-flow instructions such as calls (jmp), conditional branches (je, jne), direct jumps (jmp), rets, and hlt were used to mark basic block termination.
 
-For main (sub\_21e0), identified all basic blocks and edges including conditional branches, switch table, and function calls. Omitted edges for indirect jump targets that could not be resolved.
+Switch statements (indirect jumps) such as the jump table at 0x3010 were reconstructed conservatively; the destination for each case was traced using the base address of the jump table.
 
-For helper functions, reconstructed basic blocks and intraprocedural edges based on conditional and unconditional jumps, and returns.
+Function calls were kept within the same basic block; edges were not introduced for calls or returns.
 
-Omitted edges where branch target could not be determined with confidence, e.g., indirect jumps or unresolved jump table entries.
+The internal control flow of library functions (e.g., puts, printf, rand, etc.) was not modeled because their definitions are not present in the disassembly.
 
-Did not create interprocedural edges such as call or return edges between functions.
+Some basic blocks have fall-through paths that were inferred from sequential execution where no explicit jump exists.
 
-Confidence is set to 85 due to indirect control-flow uncertainty but high confidence in most direct branches and sequential flow.
+Unconditional hlt at 0x1135 marks the end of a basic block with no outgoing edge.
+
+Edges from indirect jumps (e.g., jmp rax) were omitted when the destination could not be resolved, but the rest of the CFG was preserved.
+
+The function sub\_1200 includes a computed load and direct byte access but no branching; it was treated as one basic block.
+
+Functions sub\_13A0, sub\_1630, sub\_16D0, sub\_17E0, sub\_1970, sub\_19E0, sub\_1AA0, sub\_1B00, sub\_1B90, sub\_1C00, sub\_1C90, sub\_1DA0, sub\_1E10, sub\_1EA0, sub\_21A0, and sub\_21E0 were reconstructed from their prologues and ret instructions.
+
+No interprocedural edges were added between any functions.
+
+Some functions (like sub\_1200) were analyzed entirely without branching and considered as single-block functions.
+
+All edges were verified to be intraprocedural.
 
 \bigskip
 \hrule
@@ -27,29 +39,23 @@ Confidence is set to 85 due to indirect control-flow uncertainty but high confid
 
 \subsection{DeepSeek -- 2048.c (\texttt{2048\_O1.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions, including the main entry point at 0x29c0, which is identified as `main` due to the calling convention and initialization patterns.
+The disassembly contains multiple identifiable functions: main (0x29c0), sub\_12e0 (0x12e0), sub\_2590 (0x2590), sub\_26a0 (0x26a0), sub\_2740 (0x2740), and others.
 
-Several helper functions are present (sub\_1200, sub\_12e0, sub\_16f0, sub\_1730, sub\_17d0, sub\_1870, sub\_1940, sub\_1c30, sub\_1f20, sub\_2200, sub\_2250, sub\_2290, sub\_2590, sub\_2680, sub\_26a0, sub\_2740, sub\_2990) and are reconstructed with their own CFGs.
+The .text section includes the entry point and various helper functions. I have reconstructed CFGs for all major functions where control flow is discernible.
 
-Control flow edges are identified based on explicit jumps, conditional branches (jcc), returns, and fall-throughs. Indirect jumps (e.g., call rax, jmp rax) are omitted when the target is not statically determinable.
+Some functions (like sub\_12e0) have complex control flow with multiple branches and loops, which I have modeled based on the conditional jumps and loop patterns.
 
-Basic blocks are split at every control-flow instruction (jmp, jcc, ret, call, etc.) and at branch targets (labels referenced by jumps or calls).
+For functions with indirect jumps (e.g., switch-like structures such as in main and sub\_2740), I have identified the possible targets based on the jump table or comparison patterns.
 
-Interprocedural edges (e.g., call edges, return edges) are excluded; only intraprocedural jumps and conditional branches are represented.
+Edges are drawn strictly within each function; no interprocedural edges (calls or returns) are included.
 
-Some functions (e.g., sub\_1940, sub\_1c30, sub\_1f20) contain multiple conditional branches and loops that are fully traced based on the disassembly.
+I omitted edges for branch destinations that could not be resolved with reasonable confidence, but still included all resolved intraprocedural edges.
 
-The `main` function includes several string comparisons and command-line argument handling, leading to multiple branches and terminal outputs.
-
-The confidence score is set to 75 because while most control flow is recoverable, some indirect jumps (e.g., the jump table at 0x2bda) and signal handling edges are not fully resolved.
-
-No interprocedural edges are introduced; library calls (printf, puts, etc.) are treated as terminal basic block instructions without internal CFG expansion.
-
-All identified functions are included; the CFG is not empty and represents the best reconstruction based on the provided disassembly.
+The confidence score reflects that while most control flow is recoverable, some indirect jumps and unreachable paths reduce certainty.
 
 \bigskip
 \hrule
@@ -57,21 +63,27 @@ All identified functions are included; the CFG is not empty and represents the b
 
 \subsection{DeepSeek -- 2048.c (\texttt{2048\_O2.json})}
 
-\textbf{Confidence:} 80
+\textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions including main, init, plt stubs, and various helper functions.
+Identified function boundaries based on labels and call targets from the disassembly.
 
-The primary function is main (0x2bf0), with identifiable functions: sub\_12e0, sub\_2580, sub\_2820, sub\_28c0, sub\_2bc0, and others.
+Recovered control flow for functions: \_init, \_start, call\_\_\_do\_global\_dtors\_aux, do\_global\_ctors\_aux, sub\_1200, digit\_count, sub\_12e0, sub\_1c10, sub\_1c60, sub\_1d50, sub\_1e20, sub\_1f90, sub\_20e0, sub\_2250, sub\_22b0, sub\_2300, sub\_2580, sub\_2800, sub\_2820, sub\_28c0, sub\_2bc0, main, and \_fini.
 
-Control flow within each function is reconstructed based on conditional jumps, unconditional jumps, calls, and returns.
+Each function's basic blocks are determined by control-flow instructions (jmp, je, jne, ja, jbe, ret, call, hlt) and branch targets.
 
-Interprocedural edges (calls and returns) are excluded from the CFG.
+Function calls do not terminate basic blocks; they are included in the current block.
 
-Indirect jumps and dynamic calls (e.g., call rax) are omitted when destination cannot be determined.
+Edges are only intraprocedural. Calls to external functions (e.g., printf, puts, srand, time) are not expanded with edges.
 
-The CFG includes only intraprocedural edges within each identified function.
+Interprocedural edges are excluded. There are no edges between different functions.
+
+Some indirect jumps (e.g., call rax, jmp QWORD PTR) have undetermined destinations and are omitted as per instructions.
+
+Switch jump table at 0x2d45 is partially resolved; only identified branches are included.
+
+The cfg\_confidence is set to 85 because the control flow of most functions is clearly recoverable, though some indirect branches and switch cases are uncertain.
 
 \bigskip
 \hrule
@@ -79,33 +91,367 @@ The CFG includes only intraprocedural edges within each identified function.
 
 \subsection{DeepSeek -- 2048.c (\texttt{2048\_O3.json})}
 
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions identified by their entry points and linking conventions.
+
+Function `main` starts at address 0x2dc0 and includes the program's entry logic and main loop.
+
+Function `sub\_12e0` starts at 0x12e0 and is called from `main` to update a display.
+
+Function `sub\_1fe0` starts at 0x1fe0 and appears to update state based on input characters.
+
+Function `sub\_21e0` starts at 0x21e0 and handles a specific transformation.
+
+Function `sub\_22e0` starts at 0x22e0 and handles another transformation.
+
+Function `sub\_23c0` starts at 0x23c0 and handles a third transformation.
+
+Function `sub\_2570` starts at 0x2570 and performs a check on the state.
+
+Function `sub\_27f0` starts at 0x27f0 and initializes or randomizes state.
+
+Function `sub\_2a70` starts at 0x2a70 and calls `sub\_27f0` twice.
+
+Function `sub\_2a90` starts at 0x2a90 and manages terminal settings.
+
+Function `sub\_2b30` starts at 0x2b30 and displays a debug or test output.
+
+Function `sub\_2d90` starts at 0x2d90 and is a signal handler that exits.
+
+Edges are constructed based on conditional jumps, unconditional jumps, and returns.
+
+Indirect calls (e.g., via `call rax`) and some computed jumps make exact edge recovery uncertain in some places.
+
+Where destination is certain (e.g., `je` to a fixed address), edges are added.
+
+Where a jump table or indirect branch is used (e.g., `jmp [rax*4+rcx]`), only the clearly identifiable direct targets are included.
+
+No interprocedural edges are added; calls are treated as part of the current basic block.
+
+All identified functions and their basic blocks are included; uncertain edges are omitted.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Notepad-- (\texttt{Notepad--\_O0.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions, including the main function starting at 0x4580.
+
+For each function, basic blocks were identified by analyzing control-flow instructions (jumps, conditional jumps, calls to exit, etc.).
+
+Intraprocedural edges were constructed based on direct jumps, conditional branches, and fall-through behavior.
+
+Edges for indirect jumps or calls (e.g., call rax) were omitted due to unknown targets.
+
+Edges to external functions (e.g., exit) are not represented as edges to other basic blocks.
+
+Some functions like \_\_cxa\_finalize@plt are not modeled as they are library stubs without internal control flow.
+
+The CFG is a partial reconstruction; some indirect control flow could not be resolved with high confidence.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Notepad-- (\texttt{Notepad--\_O1.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+Function boundaries recovered from disassembly: start and end addresses of each function are determined by labels and section layout. Functions identified include: sub\_1000 (init), sub\_1020 (plt), sub\_1240, sub\_1250, sub\_12f0, sub\_1330, sub\_1340, sub\_1400, sub\_1440, sub\_1460, sub\_14f0, sub\_1510, sub\_1690, sub\_1730, sub\_18c0, sub\_1980, sub\_1a00, sub\_1a70, sub\_1ad0, sub\_1b20, sub\_1b70, sub\_1c50, sub\_1d40, sub\_2370, sub\_2490, sub\_2630, sub\_2710, sub\_2830, sub\_2930, sub\_2950, sub\_2960, sub\_2970, sub\_2990, sub\_29d0, sub\_2a00, sub\_2ad0, sub\_2b10, sub\_2b40, sub\_2c60, sub\_2c80, sub\_2d20, sub\_2d90, sub\_2ed0, sub\_2f30, sub\_3060, sub\_31c0, sub\_3410, sub\_3470, sub\_3520, sub\_4280, sub\_4330, sub\_43a0, sub\_4480, sub\_4650, sub\_46c0, sub\_49b0, sub\_4b20, sub\_4b60, sub\_4ba0, sub\_4bd0, and sub\_4ec0.
+
+For each function, basic blocks are determined by scanning instructions for control-flow instructions (jmp, je, jne, jg, jle, jl, jge, ja, jbe, jae, jb, ret, hlt, etc.) and target labels (e.g., address references used as jump targets). Consecutive non-branching instructions are grouped into the same block.
+
+Edges are created for each branch: for unconditional jumps, add one edge; for conditional jumps, add two edges (taken and fall-through) when the target can be determined. If a target is unknown or beyond the function boundary, the edge is omitted. For indirect jumps (e.g., jmp rax), edges are omitted because the destination is not statically determinable.
+
+Unreachable instructions (e.g., hlt after a call) terminate a basic block without outgoing edges.
+
+Functions that contain only calls and no intraprocedural control-flow (e.g., .plt stubs) are modeled as single basic blocks with no outgoing edges, since the control flow goes to the callee (interprocedural edge omitted).
+
+Some functions have complex control flow with multiple branches, loops, and nested conditionals; these are reconstructed to the best ability. For uncertain indirect branches, edges are omitted but the rest of the CFG is preserved.
+
+The overall confidence is moderate (75) because some indirect jumps and calls with dynamic targets cannot be resolved, and some function boundaries are inferred from the disassembly without debug symbols.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Notepad-- (\texttt{Notepad--\_O2.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions including the entry point, initialization routines, and various helper functions.
+
+The entry point at 0x1260 calls \_\_libc\_start\_main, which invokes main-like functionality at 0x4dc0.
+
+Basic blocks are identified based on control flow instructions (conditional/unconditional jumps, calls, returns).
+
+Function boundaries are determined from the disassembly layout and calling conventions.
+
+The main function at 0x4dc0 contains a loop that reads input and processes commands.
+
+Several helper functions are identified: 0x13f0 (write\_buffer), 0x14f0 (setup\_terminal), 0x1500 (init\_editor), 0x1670 (add\_buffer), 0x1700 (load\_file), 0x1890 (free\_all), 0x1950 (get\_word), 0x19d0 (set\_word), 0x1a40 (copy\_string), 0x1aa0 (init\_string), 0x1ae0 (delete\_buffer), 0x1b40 (insert\_buffer), 0x1c20 (remove\_buffer), 0x1d10 (insert\_char), 0x22d0 (process\_command), 0x23f0 (undo), 0x2570 (display\_status), 0x2650 (print\_status), 0x2770 (handle\_escape), 0x2850 (scroll\_up), 0x2870 (scroll\_down), 0x2880 (scroll\_right), 0x2890 (scroll\_left), 0x28b0 (scroll\_home), 0x28f0 (scroll\_end), 0x2920 (insert\_string), 0x29f0 (delete\_char), 0x2ac0 (delete\_backward), 0x2af0 (insert\_char\_at), 0x2c10 (insert\_space), 0x2c40 (delete\_char\_at), 0x2ce0 (delete\_word), 0x2d50 (enter\_command\_mode), 0x2e90 (print\_message), 0x2ef0 (read\_escape\_sequence), 0x3020 (handle\_key), 0x3190 (read\_command), 0x33e0 (check\_interrupt), 0x3440 (print\_prompt), 0x34f0 (process\_buffer), 0x44b0 (analyze\_buffer), 0x4560 (find\_pattern), 0x45d0 (replace\_pattern), 0x46b0 (expand\_macros), 0x4850 (remove\_markers), 0x48c0 (load\_config), 0x4ba0 (save\_file), 0x4d10 (file\_size), 0x4d50 (check\_word\_boundary), 0x4d90 (strip\_whitespace), and 0x4dc0 (main).
+
+Edges are established based on conditional and unconditional jumps within each function.
+
+Some indirect jumps (e.g., jump tables) cannot be fully resolved, so those specific edges are omitted while the rest of the CFG is preserved.
+
+Interprocedural edges (calls and returns) are excluded per the instructions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Notepad-- (\texttt{Notepad--\_O3.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+The disassembly contains numerous functions, including \_init, .plt stubs, .text, and .fini sections.
+
+Functions were identified based on entry points, call/ret patterns, and prologue/epilogue sequences.
+
+Unnamed functions in .text were assigned generated names (sub\_1260, sub\_1350, sub\_13f0, etc.) based on their starting addresses.
+
+Basic blocks were determined by identifying terminating instructions (jmp, je, jne, jg, jle, ret, etc.) and branch targets.
+
+Indirect jumps (e.g., call rax, jmp rax) were identified but their destinations could not be resolved; edges to unknown targets were omitted.
+
+Function calls (e.g., call <plt> entries) were treated as part of the basic block and not as control-flow terminators.
+
+Some conditional branches have computed targets or rely on external data; only edges with resolvable destinations were included.
+
+The CFG is partial but captures the majority of intraprocedural control flow for each identified function.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Tinyhttpd (\texttt{Tinyhttpd\_O0.json})}
+
+\textbf{Confidence:} 80
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions: .init, .plt, .plt.got, .text, and .fini sections. The main executable code is in .text.
+
+Identified functions: sub\_1390, sub\_1840, sub\_1930, sub\_1bc0, sub\_1ea0, sub\_1f70, sub\_2380, sub\_2470, sub\_2510, sub\_2670, sub\_2690, sub\_27f0, sub\_2920 (likely main).
+
+sub\_1390 is a large function that handles client requests, parsing input and performing actions based on the request type. It has multiple branches.
+
+sub\_1840 is a recv-line function that reads a line from a socket.
+
+sub\_1930 and sub\_1bc0 are error/send functions that output messages.
+
+sub\_1ea0 and sub\_1f70 handle file operations and CGI execution.
+
+sub\_2380, sub\_2470, sub\_2510, sub\_2670, sub\_2690 are helper functions for sending error messages or file contents.
+
+sub\_27f0 sets up a listening socket.
+
+sub\_2920 appears to be the main function: it creates a socket, listens, accepts connections, and spawns threads.
+
+For each function, I constructed basic blocks based on control-flow instructions: conditional jumps (je, jne, jge, jle), unconditional jumps (jmp), ret, and function calls that might alter flow (call followed by test, but calls are not terminating).
+
+Some indirect jumps (e.g., call rax, jmp rax) are not resolved, so I omitted edges from those instructions.
+
+I included all identifiable branches where the destination is known (e.g., direct jumps to labels).
+
+The CFG includes all functions with their internal basic blocks and edges. Intraprocedural edges are drawn from each block's terminating instruction to its possible successors.
+
+Edges are only within the same function. No cross-function edges are included.
+
+Confidence is set to 80 because some indirect control flows and library call targets are not fully resolved, but the main flow is clear.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Tinyhttpd (\texttt{Tinyhttpd\_O1.json})}
+
 \textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-Identified functions: main (0x2dc0), sub\_1200 (0x1200), sub\_12b0 (0x12b0), sub\_12e0 (0x12e0), sub\_1f90 (0x1f90), sub\_1fe0 (0x1fe0), sub\_2130 (0x2130), sub\_2180 (0x2180), sub\_21e0 (0x21e0), sub\_22e0 (0x22e0), sub\_23c0 (0x23c0), sub\_24c0 (0x24c0), sub\_2520 (0x2520), sub\_2570 (0x2570), sub\_27f0 (0x27f0), sub\_2a70 (0x2a70), sub\_2a90 (0x2a90), sub\_2b30 (0x2b30), sub\_2d90 (0x2d90).
+The disassembly contains multiple functions including main (0x24f0), a thread handler (0x1330), and various subroutines.
 
-main function at 0x2dc0 includes argument parsing, signal setup, terminal handling, and a game loop with multiple branches based on input characters.
+Function boundaries were identified based on call targets, entry points, and return instructions.
 
-Constructed CFG for main with basic blocks: B0 (entry, parse args), B1 (invalid arg print), B2 (handle -h), B3 (handle -v), B4 (handle -d), B5 (handle -t), B6 (handle -s), B7 (setup signal and terminal), B8 (game loop entry), B9..B14 (character handling branches), B15..B18 (various call branches), B19 (quit handler), B20 (reset terminal and exit), B21 (return).
+Basic blocks were determined by analyzing control-flow instructions (jmp, jcc, call, ret) and branch targets.
 
-For sub\_1200, identified basic blocks B0..B4 for the data processing and lookup logic.
+Intraprocedural edges were constructed based on direct jumps, conditional branches, and fall-through paths.
 
-For sub\_12e0, identified loops and conditional branches based on the printed output and character mapping.
+Indirect jumps and calls to library functions were not resolved with certainty; however, direct intraprocedural transitions were recovered.
 
-For sub\_27f0, identified initialization and random generation with multiple conditional blocks for array population.
+CFG confidence is set to 85 due to the presence of indirect calls and some unresolved branch destinations.
 
-For sub\_2a90, identified terminal attribute manipulation with conditional restore logic.
+\bigskip
+\hrule
+\bigskip
 
-For sub\_2b30, identified comparison loop with printf branches.
+\subsection{DeepSeek -- Tinyhttpd (\texttt{Tinyhttpd\_O2.json})}
 
-For sub\_2d90, identified signal handler with terminal restore and exit.
+\textbf{Confidence:} 70
 
-Omitted edges for indirect jumps (e.g., jump table at 0x2f2e) because destination cannot be determined with confidence; only the direct branches and fall-through edges are included.
+\textbf{Reasoning}
 
-Omitted edges for calls to library functions (printf, puts, getc, etc.) as per rules.
+The disassembly contains multiple functions, including what appears to be a main-like function at 0x28d0 that sets up a socket, accepts connections, and creates threads.
 
-No interprocedural edges added between different functions.
+Function boundaries are not explicitly marked by symbols, but are inferred from entry points, call patterns, and the typical structure of the code.
+
+Many functions rely on dynamic library calls (e.g., recv, send, printf) and process data from network sockets.
+
+Some control flow is challenging to recover due to indirect jumps and incomplete information about some branches.
+
+I have reconstructed intraprocedural CFGs for each identifiable function, using inferred names such as 'main', 'handle\_connection', 'read\_until\_newline', etc.
+
+Edges are based on explicit jumps, conditional branches, calls to exit or perror, and fall-through paths.
+
+Edges that are uncertain (e.g., due to missing targets or indirect jumps) are omitted rather than guessed.
+
+Function calls are not represented as edges, in accordance with the instructions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- Tinyhttpd (\texttt{Tinyhttpd\_O3.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions, including what appears to be a main-like function at 0x28d0 that sets up a socket, accepts connections, and creates threads.
+
+Function boundaries are not explicitly marked by symbols, but are inferred from entry points, call patterns, and the typical structure of the code.
+
+Many functions rely on dynamic library calls (e.g., recv, send, printf) and process data from network sockets.
+
+Some control flow is challenging to recover due to indirect jumps and incomplete information about some branches.
+
+I have reconstructed intraprocedural CFGs for each identifiable function, using inferred names such as 'main', 'handle\_connection', 'read\_until\_newline', etc.
+
+Edges are based on explicit jumps, conditional branches, calls to exit or perror, and fall-through paths.
+
+Edges that are uncertain (e.g., due to missing targets or indirect jumps) are omitted rather than guessed.
+
+Function calls are not represented as edges, in accordance with the instructions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- bzip2 (\texttt{bzip2\_O0.json})}
+
+\textbf{Confidence:} 60
+
+\textbf{Reasoning}
+
+Disassembly contains many functions, including standard library PLT stubs and an extensive .text section with numerous user-defined functions.
+
+The function at address 0x22a0 is the entry point (\_start), and it calls 0x11030 (which appears to be main) via a GOT entry.
+
+Many functions are present, such as sub\_2390, sub\_25c0, sub\_2e30, sub\_3a00, sub\_3990, sub\_42d0, sub\_4590, sub\_4650, sub\_4700, sub\_4b90, sub\_8de0, sub\_8e50, sub\_dcb0, sub\_dd60, sub\_df60, sub\_f650, sub\_f760, sub\_f9b0, sub\_fc20, sub\_10ac0, sub\_10df0, sub\_10e60, and many more.
+
+The disassembly is extensive and includes many control-flow instructions (conditional jumps, unconditional jumps, calls, returns), making full manual reconstruction impractical.
+
+All functions can be identified, and for many functions, the basic blocks can be determined by identifying branch targets and fall-through instructions.
+
+However, due to the sheer size and complexity of the code, a complete and accurate CFG reconstruction for every function would require a sophisticated decompiler and significant manual effort.
+
+The provided confidence score reflects that while the structure is recoverable, the full CFG is not manually reconstructed in this answer.
+
+The output shows a representative structure for the main function based on the disassembly, but many other functions are present but not fully expanded.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- bzip2 (\texttt{bzip2\_O1.json})}
+
+\textbf{Confidence:} 60
+
+\textbf{Reasoning}
+
+The disassembly contains many functions, but many are unnamed library functions or PLT stubs. I have identified several probable user-defined functions based on their structure and address ranges.
+
+For the sub\_22c0 function, I have identified a clear control flow pattern: it starts with a conditional jump based on ebx, and then always calls exit.
+
+For the sub\_2320 function, I have identified several conditional branches and calls to other functions, but the exact internal logic is complex.
+
+For the sub\_2620 function, I have reconstructed a large CFG with many basic blocks based on the conditional branches, jumps, and loops present in the disassembly.
+
+Many functions, like sub\_4810, sub\_7fc0, sub\_ab10, etc., show clear control-flow structures including conditional jumps and function calls, which have been modeled as basic blocks and intraprocedural edges.
+
+For functions with indirect jumps or switch-like structures (e.g., sub\_7fc0 uses a jump table), I have omitted edges where the destination is uncertain but still included the basic block structure.
+
+The CFG does not include interprocedural edges (e.g., no call edges or return edges between functions), only intraprocedural control flow within each function.
+
+The PLT stubs and library functions (e.g., getenv, malloc) are not analyzed as their internal control flow is not present in the disassembly.
+
+The reasoning list contains multiple concise justifications for the reconstruction choices.
+
+The confidence score is 60, reflecting a partial but sound reconstruction where some edges are uncertain but the main structure is recoverable.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- bzip2 (\texttt{bzip2\_O2.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions and subroutines.
+
+The main function entry point is identified at address 0x2530.
+
+Control flow within functions is followed using conditional and unconditional jumps.
+
+Some indirect jumps and calls to external functions make certain edges uncertain.
+
+Edges are reconstructed based on the most likely execution paths from the disassembly.
+
+The confidence score reflects the presence of indirect branches and unresolved targets.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- bzip2 (\texttt{bzip2\_O3.json})}
+
+\textbf{Confidence:} 80
+
+\textbf{Reasoning}
+
+The provided disassembly contains multiple functions. I have identified and named the entry point function `main` (at address 0x2530) and several other functions based on their roles.
+
+I have traced the control flow within each function to identify basic blocks. Basic blocks are terminated by control-flow instructions such as conditional jumps (`je`, `jne`, `jg`, `jl`, etc.), unconditional jumps (`jmp`), returns (`ret`), and indirect jumps (`jmp rax`).
+
+For the `main` function, I have reconstructed the CFG including the initialization, signal setup, environment variable parsing, argument handling, and the final call to `13520`, `142e0`, or `15250` based on command-line options.
+
+For the `sub\_2620` function, I have identified the main loop and its branches based on the value of `r13d` and the control flow in the large loop.
+
+For other identified functions like `sub\_5be0`, `sub\_aa50`, `sub\_f4a0`, `sub\_ff40`, `sub\_10020`, `sub\_10eb0`, `sub\_10f30`, `sub\_11060`, `sub\_11240`, `sub\_115a0`, `sub\_11880`, `sub\_11b30`, `sub\_12020`, `sub\_12310`, `sub\_12350`, `sub\_12390`, `sub\_12560`, `sub\_13520`, `sub\_142e0`, `sub\_15250`, and `sub\_15ac0`, I have created nodes and edges based on their internal control-flow instructions.
+
+Some edges, particularly those involving indirect jumps (`jmp rax`) and computed branches (e.g., jump tables), are challenging to resolve statically. I have omitted edges where the destination could not be determined with reasonable confidence.
+
+I have not created edges for function calls (e.g., `call 2180`), as per the instructions. The control flow remains within the current basic block after a call.
+
+The `cfg\_confidence` is set to 80, reflecting a high but not perfect degree of confidence. The main control flow and structure are well-recovered, but some indirect and dynamic branches are omitted.
 
 \bigskip
 \hrule
@@ -113,23 +459,25 @@ No interprocedural edges added between different functions.
 
 \subsection{DeepSeek -- fe (\texttt{fe\_O0.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 70
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions: .init, .plt stubs, .text functions (including startup code, utility functions, and main logic).
+The disassembly contains many functions, but function boundaries are not explicitly marked with labels. Most code appears to be part of a single large function or multiple functions without clear starting points.
 
-Function boundaries are inferred from call targets, jump targets, and ret instructions.
+Control flow instructions such as conditional jumps (je, jne, jmp), calls, and ret are present, but many branch targets are computed dynamically or reference unknown offsets.
 
-Control flow edges are constructed based on conditional jumps (je, jne, jmp), unconditional jumps, and returns.
+Basic blocks can be recovered at the instruction level, but function boundaries are uncertain because the disassembly lacks function entry labels.
 
-Indirect calls and jumps (e.g., call rax, jmp rax) are noted but their exact targets cannot be determined statically; only intraprocedural edges that are resolvable are included.
+Library functions are called but their internal control flow is not present, so they are ignored.
 
-Library functions (e.g., printf, strcmp) are treated as calls but no interprocedural edges are created.
+I will treat the entire .text section as a single function named 'sub\_main' because the entry point at 0x1120 appears to be the program entry and no other clear function entry points are identifiable.
 
-The main function (starting at 0x3c60) and helper functions such as sub\_1220, sub\_1350, sub\_1500, etc., are identified and their CFGs partially reconstructed.
+Within this single function, I identified sequential instruction sequences separated by control-flow instructions (jmp, je, jne, jmp rax, ret, etc.).
 
-Edges that are ambiguous or indirect (e.g., jump tables) are omitted when the destination cannot be determined with confidence.
+Some indirect jumps (e.g., jmp rax) have unknown targets, so those edges are omitted, but the blocks themselves are included.
+
+The CFG is constructed by scanning the disassembly and splitting at every control-flow instruction that can alter the linear execution flow.
 
 \bigskip
 \hrule
@@ -137,29 +485,27 @@ Edges that are ambiguous or indirect (e.g., jump tables) are omitted when the de
 
 \subsection{DeepSeek -- fe (\texttt{fe\_O1.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 75
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions, including init, plt stubs, and the main application code.
+The disassembly contains multiple functions identified by entry points and control flow patterns.
 
-Functions are identified based on entry points, call sites, and function prologues/epilogues.
+Functions identified: sub\_1120 (startup), sub\_1150, sub\_1180, sub\_11b0, sub\_11f0, sub\_1230, sub\_1240, sub\_1250, sub\_1320, sub\_1360, sub\_13b0, sub\_13d0, sub\_13e0, sub\_1410, sub\_1420, sub\_1430, sub\_14b0, sub\_1540, sub\_15e0, sub\_1670, sub\_1750, sub\_1820, sub\_1a00, sub\_1a90, sub\_1b20, sub\_1bf0, sub\_1c60, sub\_1cc0, sub\_1d30, sub\_2020, sub\_2040, sub\_2050, sub\_2070, sub\_20d0, sub\_2130, sub\_2140, sub\_2170, sub\_27e0, sub\_2810, sub\_2830, sub\_2840, sub\_35c0, sub\_3760, sub\_3780, sub\_3860, sub\_39c0, sub\_3a90, sub\_3b90, sub\_3c20.
 
-The primary function starts at 0x3860 and is identified as `main` based on the standard `\_\_libc\_start\_main` call pattern.
+Each function's CFG was reconstructed by identifying basic blocks delimited by control-flow instructions (conditional jumps, unconditional jumps, calls to \_\_cxa\_finalize, ret, etc.) and branch targets.
 
-Several helper functions are present: sub\_1250, sub\_2170, sub\_2840, sub\_35c0, sub\_3780, etc.
+For many functions, indirect jumps (e.g., call rax, jmp rax, jmp QWORD PTR) make precise destination recovery uncertain; only direct intraprocedural edges are included.
 
-Basic blocks are split at conditional branches, unconditional jumps, returns, and indirect jumps.
+Edges that are direct and confidently determined are included; indirect edges are omitted where target cannot be resolved.
 
-Edges are created for conditional branches (e.g., je, jne) and unconditional jumps (e.g., jmp, ret).
+Function call instructions (e.g., call 10c0 <fprintf@plt>) are treated as part of the current basic block and do not terminate the block.
 
-Indirect jumps (e.g., call rax, jmp rax) are included where the target cannot be determined, but the fall-through path is still modeled.
+The CFG includes all functions with at least one basic block and confidently identifiable control flow.
 
-Interprocedural call edges (e.g., call 0x10c0) are NOT included, as per the rules.
+Some functions (e.g., sub\_1120, sub\_1150) have incomplete CFG due to indirect jumps or unresolved targets, but basic blocks are still reconstructed.
 
-The confidence is high for most control flow, but some indirect jumps and dynamic dispatches reduce confidence slightly.
-
-The reconstruction focuses on intraprocedural edges only, respecting the given constraints.
+Edges between functions (interprocedural) are omitted per instructions.
 
 \bigskip
 \hrule
@@ -167,23 +513,33 @@ The reconstruction focuses on intraprocedural edges only, respecting the given c
 
 \subsection{DeepSeek -- fe (\texttt{fe\_O2.json})}
 
-\textbf{Confidence:} 70
+\textbf{Confidence:} 80
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions, including initialization routines, PLT stubs, and main program logic.
+The disassembly contains both .init and .fini sections, but these are not user functions and contain minimal control flow.
 
-I have identified several distinct functions based on entry points and control flow patterns, including sub\_1120, sub\_1240, sub\_1250, sub\_1320, sub\_1360, sub\_13b0, sub\_13d0, sub\_13e0, sub\_1410, sub\_1420, sub\_1430, sub\_14b0, sub\_1540, sub\_15c0, sub\_15e0, sub\_1670, sub\_1750, sub\_1820, sub\_1a50, sub\_1ad0, sub\_1b50, sub\_1c20, sub\_1c90, sub\_1cf0, sub\_1d60, sub\_21a0, sub\_21c0, sub\_21d0, sub\_21f0, sub\_2250, sub\_22b0, sub\_22c0, sub\_22f0, sub\_29a0, sub\_29d0, sub\_29f0, sub\_2a00, sub\_3730, sub\_38c0, sub\_38e0, sub\_39c0, sub\_3b30, sub\_3c00, sub\_3d10, sub\_3db0.
+The .text section contains multiple identifiable functions. The function at 0x1120 appears to be \_start, which sets up the runtime and calls \_\_libc\_start\_main.
 
-I have reconstructed intraprocedural CFGs for each function based on the disassembly.
+The function at 0x1250 appears to be an error reporting function, as it calls fprintf with a format string and longjmp.
 
-Some indirect jumps and calls (e.g., call rax, jmp rax) have uncertain destinations, so I omitted those edges but kept the blocks containing them.
+The function at 0x3730 (likely a custom initialization function) constructs a data structure, initializes arrays, and contains loops for building linked lists.
 
-Edges are only drawn between blocks within the same function; no interprocedural edges (calls, returns) are included.
+The function at 0x38e0 appears to be a cleanup/teardown function that iterates through internal data structures.
 
-For functions with many basic blocks and complex control flow, I captured the main structure but may have omitted some less certain edges due to indirect control flow or incomplete information.
+The function at 0x39c0 appears to be main, based on the argument handling and file operations.
 
-The confidence score reflects that many edges are recoverable, but some indirect jumps and calls remain uncertain.
+Several other functions (sub\_14b0, sub\_1540, sub\_1670, sub\_1750, sub\_1820, sub\_1d60, sub\_22f0, sub\_2a00) contain complex control flow with conditional branches, loops, and indirect calls.
+
+Edges are constructed based on conditional jumps, unconditional jumps, and fall-through paths in the disassembly.
+
+Some indirect jumps (e.g., jmp rax) and computed jumps (jmp [rip+...]) cannot be resolved with certainty, so edges for those destinations are omitted.
+
+Function calls (call instructions) do not terminate basic blocks and are not represented as CFG edges.
+
+Library functions (printf, fprintf, strlen, etc.) are not expanded; their calls remain inside the basic blocks of the calling functions.
+
+The CFG for each function is constructed independently, with no edges between different functions.
 
 \bigskip
 \hrule
@@ -191,27 +547,25 @@ The confidence score reflects that many edges are recoverable, but some indirect
 
 \subsection{DeepSeek -- fe (\texttt{fe\_O3.json})}
 
-\textbf{Confidence:} 40
+\textbf{Confidence:} 70
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions, but many are from libc and are not part of the program's logic.
+Function boundaries are identified by call/ret patterns and PLT stubs.
 
-Function boundaries are not explicitly marked, making precise identification difficult.
+Control-flow instructions are identified: conditional jumps, unconditional jumps, calls, returns.
 
-Some functions are likely stubs or wrapper functions with minimal control flow.
+Basic blocks are split at branch targets and terminating instructions.
 
-The main function appears to start at address 0x35a0, but its exact boundaries are unclear.
+Library functions (plt) are not analyzed internally.
 
-Basic blocks were reconstructed based on control flow instructions (jmp, call, ret, etc.) and branch targets.
+Indirect jumps and calls are not resolved, so some edges are omitted.
 
-Several functions have complex control flow with multiple branches and loops, but not all edges could be reliably determined.
+The main executable functions are recovered: init, fini, and a large body starting at 0x1120.
 
-Some branches use indirect jumps or computed addresses, making their destinations uncertain.
+Internal function names are not present; generated names like sub\_1120 are used.
 
-Only intraprocedural edges are included; call edges are omitted.
-
-The confidence score reflects the uncertainty in function boundaries and some control flow edges.
+CFG is constructed for each distinct function based on its local control flow.
 
 \bigskip
 \hrule
@@ -223,25 +577,17 @@ The confidence score reflects the uncertainty in function boundaries and some co
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions: the initialization routine (.init), the PLT stubs, the .text section containing several functions including main-like entry points and helper functions.
+The disassembly contains multiple functions including main, various subroutines, and PLT stubs.
 
-I identified the following functions with recoverable intraprocedural control flow: sub\_2270 (startup), sub\_22a0, sub\_22d0, sub\_2310, sub\_2350, sub\_2360, sub\_23a0, sub\_23b0, sub\_2490, sub\_2670, sub\_2760, sub\_2880, sub\_28e0, sub\_2980, sub\_2fa0, sub\_3010, sub\_30f0, sub\_32b0, sub\_34a0, sub\_34e0, sub\_35c0, sub\_36e0, sub\_3830, sub\_38d0, sub\_3950, sub\_3a50, sub\_3bc0, sub\_3d70, sub\_3ed0, sub\_3fb0, sub\_4060, sub\_40e0, sub\_4100, sub\_4880, sub\_4db0, sub\_50b0, sub\_52a0, sub\_52f0, sub\_5350, sub\_53d0, sub\_5450 (atexit wrapper), and the fini routine.
+PLT stubs are library wrappers and contain only jumps to library code; their internal control flow is not part of the analyzed program and is excluded from the CFG.
 
-I reconstructed basic blocks based on control-flow instructions (jmp, call, ret, je, jne, jg, jl, jge, jle, ja, jbe, jmp, hlt). Basic blocks terminate at these instructions or at unreachable instructions.
+Function boundaries are identified based on labels and call/ret patterns. The .init and .fini sections are excluded as they are not part of the program's main control flow.
 
-For each function, I traced direct intraprocedural jumps and conditional branches. Indirect jumps (e.g., call rax, jmp rax) were omitted because the target cannot be determined reliably.
+Basic blocks are identified by sequential instructions ending at control-flow instructions such as conditional/unconditional jumps, ret, or hlt.
 
-Some conditional branches have targets within the same function, and I included those edges. Where the target was unknown or to a different function (e.g., PLT stubs), I omitted that edge.
+Some functions (e.g., sub\_22a0, sub\_2310) contain indirect jumps or calls via function pointers, making some edges uncertain. However, the main control flow and many branches are recoverable.
 
-I did not include edges for function calls (e.g., call <plt>) or returns from calls, as per the instructions.
-
-Confidence is moderate (75) because some indirect control-flow (e.g., jump tables, indirect calls) could not be fully resolved, and some functions have complex switch-like constructs where not all targets are clearly identifiable.
-
-I included all functions that have at least one basic block with an intraprocedural edge or that are reachable via such edges.
-
-I omitted functions that are solely PLT stubs or that have no internal control-flow (e.g., sub\_5450 is just a tail call).
-
-I did not create edges between different functions, and I ensured each basic block belongs to exactly one function.
+The main function (0x53d0) calls initialization and then enters an event loop. All control-flow edges within each function are intraprocedural.
 
 \bigskip
 \hrule
@@ -249,23 +595,29 @@ I did not create edges between different functions, and I ensured each basic blo
 
 \subsection{DeepSeek -- kilo (\texttt{kilo\_O1.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions including .init, .plt, .text, .fini and many subroutines.
+The disassembly contains multiple functions: the startup code at .text (0x2270), \_\_libc\_csu\_init (0x22a0), \_\_libc\_csu\_fini (0x2350), \_fini (0x4e94), and several application functions.
 
-Functions identified from code patterns and calls include main-like routines (4d10, 4c80, 4bc0, 4c00, 4bb0), input handling (2490, 2630, 26f0), terminal setup (23c0, 2390, 2360), string processing (2970, 2ea0, 3290, 3350, 33c0), formatting (39d0, 3af0, 4400), and various helpers.
+Function boundaries were inferred from entry points and return instructions, as well as the presence of function prologues/epilogues and calls.
 
-Basic blocks are split at control flow instructions: conditional jumps (je, jne, jg, jge, jl, jle, ja, jbe), unconditional jumps (jmp), calls (call), and returns (ret).
+The functions recoverable with high confidence include: start (0x2270), \_\_libc\_csu\_init (0x22a0), \_\_libc\_csu\_fini (0x2350), \_fini (0x4e94), and sub\_2360, sub\_2390, sub\_23c0, sub\_2490, sub\_2630, sub\_26f0, sub\_28e0, sub\_2930, sub\_2970, sub\_2e00, sub\_2e20, sub\_2ea0, sub\_2fb0, sub\_30e0, sub\_3100, sub\_31d0, sub\_3290, sub\_3350, sub\_33c0, sub\_3400, sub\_34a0, sub\_3590, sub\_3740, sub\_3870, sub\_39d0, sub\_3a80, sub\_3ae0, sub\_3af0, sub\_43f0, sub\_47f0, sub\_49d0, sub\_4bb0, sub\_4bc0, sub\_4c00, sub\_4c80, sub\_4d10.
 
-Indirect jumps (jmp rax) and switch tables (e.g., at 2e0f, 3c5e, 4835, 49fa) prevent precise edge resolution for some cases, but the main sequential flow and likely targets are included.
+For each function, basic blocks were determined by scanning for control-flow instructions: conditional jumps (je, jne, jg, jl, etc.), unconditional jumps (jmp), indirect jumps (jmp rax, jmp QWORD PTR), and returns (ret).
 
-Interprocedural edges (calls to plt stubs and library functions) are omitted per the instructions, but intraprocedural jumps within each function are preserved.
+Branch target addresses were computed from relative offsets or from register values where possible. For indirect jumps where the target could not be resolved, outgoing edges were conservatively omitted for that specific jump, but the block was still included.
 
-Some functions contain unreachable code (e.g., after hlt at 2295) but are still represented as basic blocks.
+Function calls (call) do not terminate basic blocks; the instruction following the call remains in the same block.
 
-Confidence is moderate (60) because many indirect branches and switch destinations could not be fully resolved, but the primary control flow of each identified function is recoverable.
+Edges were added for all resolved intraprocedural transfers: fall-through to next block, conditional branches to taken and fall-through targets, unconditional jumps, and returns to the function's epilogue.
+
+All functions and their basic blocks were included. No interprocedural edges (calls, returns) were added.
+
+Some blocks end with ret and have no outgoing edges, which is correct for leaf functions or function exits.
+
+The confidence is 85 because while most control flow is recoverable, a few indirect jumps and some computed branch targets (like switch tables) could not be fully resolved from the disassembly alone.
 
 \bigskip
 \hrule
@@ -273,27 +625,25 @@ Confidence is moderate (60) because many indirect branches and switch destinatio
 
 \subsection{DeepSeek -- kilo (\texttt{kilo\_O2.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 75
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions including initialization code (.init, .fini), PLT stubs, and many subroutines.
+The disassembly contains multiple functions, including main (at 0x51b0), sub\_2490 (read key), sub\_26f0 (ioctl), sub\_2930, sub\_2970, sub\_2ed0, sub\_3100, sub\_3290, sub\_3380, sub\_35a0, sub\_3660, sub\_3710, sub\_3860, sub\_3950, sub\_3b00, sub\_3c30, sub\_4020, sub\_4cf0, sub\_4f00, and several helper functions.
 
-Function boundaries are inferred from the disassembly layout and control flow; however, function names are not always available.
+Control flow within each function is reconstructed based on conditional jumps, unconditional jumps, calls, and returns.
 
-The functions at 0x2270, 0x23c0, 0x2490, 0x26f0, 0x2970, 0x2ed0, 0x3100, 0x32b0, 0x3380, 0x35a0, 0x3660, 0x3710, 0x3860, 0x3950, 0x3b00, 0x3c30, 0x4020, 0x4950, 0x4cf0, 0x4f00, and 0x51b0 have significant control flow.
+Function calls (e.g., call instructions) do not terminate basic blocks; edges are only drawn for intraprocedural control transfers.
 
-The function at 0x51b0 likely corresponds to main, as it handles command-line arguments and calls other subroutines.
+Indirect jumps (e.g., jmp rax) and computed branches (e.g., switch tables) are partially resolved when targets are identifiable; uncertain edges are omitted.
 
-Some functions like 0x2490, 0x26f0, 0x2970, 0x2ed0, 0x3100, 0x32b0, 0x3380, 0x35a0, 0x3660, 0x3710, 0x3860, 0x3950, 0x3b00, 0x3c30, 0x4020, 0x4950, 0x4cf0, and 0x4f00 contain complex control flow with branches, loops, and returns.
+Some functions, such as sub\_2930 and sub\_2970, are small and have straightforward linear or conditional flow.
 
-Basic blocks are identified by finding control-flow instructions such as conditional jumps (je, jne, jg, jle), unconditional jumps (jmp), indirect jumps, and return instructions (ret).
+The main function includes a loop that processes commands and calls sub\_4f00, sub\_4020, and other handlers.
 
-Some indirect jumps (e.g., `jmp rax`, `jmp QWORD PTR [...]`) are difficult to resolve precisely, so some edges are omitted.
+The CFG is not fully complete for every function due to indirect jumps and switch tables where targets could not be determined with high confidence.
 
-Each function's CFG is reconstructed independently, with no interprocedural edges (no call edges, no return edges).
-
-The confidence is moderate because some indirect control flows are not fully resolvable, but the main structure is recoverable.
+All basic blocks are numbered sequentially within each function, and edges are listed for intraprocedural jumps and branches.
 
 \bigskip
 \hrule
@@ -301,25 +651,25 @@ The confidence is moderate because some indirect control flows are not fully res
 
 \subsection{DeepSeek -- kilo (\texttt{kilo\_O3.json})}
 
-\textbf{Confidence:} 70
+\textbf{Confidence:} 75
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions, including main-like entry code, signal handlers, terminal setup functions, and various utility functions.
+The disassembly contains multiple functions including main-like entry at 0x52e0, signal handlers, and various subroutines.
 
-Function boundaries are identified by call targets, plt entries, and common function prologues/epilogues. The entry point at 0x2270 sets up the runtime environment and calls the main function.
+The entry point at 0x52e0 corresponds to the 'main' function based on typical startup behavior and argument handling.
 
-The main function appears to be at 0x52e0 based on the call from the entry point. It handles argument processing, terminal initialization, signal setup, and enters a command loop.
+Several functions are identifiable from their use of library calls and control flow patterns, but many are anonymous subroutines.
 
-Several functions are identified: terminal setup (0x23c0, 0x2390), key reading (0x24a0, 0x2650), command processing (0x4a60), and various helper functions.
+Function boundaries are inferred from call/ret patterns and alignment directives.
 
-Control flow within each function is reconstructed from conditional jumps, unconditional jumps, and calls. Indirect jumps and computed branches are partially resolved.
+Some indirect jumps and computed branches (e.g., switch tables) are partially recoverable from jump tables in the .text section.
 
-Some control flow is uncertain due to indirect calls, switch statements, and computed jumps. These are represented with confidence appropriately.
+Edges involving indirect calls or jumps whose targets cannot be determined with confidence are omitted.
 
-Interprocedural edges (calls and returns) are excluded per the requirements. Each function's CFG is reconstructed independently.
+Library functions (e.g., puts, malloc) are treated as leaves; no interprocedural edges are created for calls to them.
 
-The CFG includes all confidently identifiable functions with their basic blocks and intraprocedural edges. Some edges are omitted where the destination cannot be determined with confidence.
+The CFG is constructed on a per-function basis without interprocedural edges, as required.
 
 \bigskip
 \hrule
@@ -327,21 +677,19 @@ The CFG includes all confidently identifiable functions with their basic blocks 
 
 \subsection{DeepSeek -- lsh (\texttt{lsh\_O0.json})}
 
-\textbf{Confidence:} 70
+\textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-Function names are not explicitly provided in the disassembly, but based on calls to standard library functions and program structure, several functions can be identified: main (starting at 0x1710), a shell-like command loop (0x16b0), command dispatcher (0x13e0), fork/exec wrapper (0x1330), parser (0x1580), input reader (0x1480), and several helper functions.
+Function names are partially identifiable from PLT calls and context; functions include main, sub\_1210 (chdir), sub\_1270 (print commands), sub\_1310, sub\_1320 (get count), sub\_1330 (execute command), sub\_13e0 (dispatch), sub\_1480 (read line), sub\_1580 (tokenize), sub\_16b0 (shell loop), and sub\_1710 (entry).
 
-Basic blocks are determined by analyzing control-flow instructions: conditional jumps (je, jne, jge, jl), unconditional jumps (jmp), calls (call), and returns (ret). Each block is terminated by one of these instructions.
+Basic blocks are split at conditional jumps, unconditional jumps, returns, and indirect calls. Call instructions do not terminate blocks.
 
-Edges are drawn between blocks based on fall-through and explicit jumps. When a conditional branch is present, both taken and fall-through edges are included if the target is resolvable.
+Edges are constructed based on conditional branches and fall-through paths. Indirect call edges are omitted as targets are not statically resolvable.
 
-Some edges are omitted when the target address cannot be resolved with confidence, e.g., indirect calls through function pointers (at 0x144d) are not modeled as CFG edges because the exact target depends on runtime data.
+No interprocedural edges are created; edges only within each function.
 
-Function boundaries are inferred from entry points and return instructions. The disassembly shows multiple functions: sub\_1120 (startup), sub\_1150, sub\_1180, sub\_11c0, sub\_1200, sub\_1210 (chdir\_command), sub\_1270 (list\_commands), sub\_1310 (placeholder), sub\_1320 (get\_num\_commands), sub\_1330 (execute\_command), sub\_13e0 (dispatch\_command), sub\_1480 (read\_line), sub\_1580 (parse\_line), sub\_16b0 (main\_loop), and main (0x1710).
-
-The CFG is reconstructed for each identifiable function, omitting only uncertain indirect edges. The confidence score reflects the partial recovery of some function internals and the uncertainty around indirect calls.
+Some uncertainty exists in the dispatch function due to indirect call through function pointer table; the fallback to execute is included, but the exact target of the indirect call is not resolved, so that edge is omitted.
 
 \bigskip
 \hrule
@@ -353,35 +701,35 @@ The CFG is reconstructed for each identifiable function, omitting only uncertain
 
 \textbf{Reasoning}
 
-Function names are not present in the disassembly, but multiple standalone subroutines can be identified by call targets and function prologue/epilogue patterns.
+The disassembly contains multiple function bodies: the main entry point at 0x1130, and several subroutines at 0x1220, 0x1270, 0x12e0, 0x12f0, 0x1300, 0x1390, 0x1410, 0x14c0, 0x15a0, and 0x1660.
 
-Each function's CFG has been reconstructed independently; no interprocedural edges (calls/returns) are included.
+The function at 0x1130 is the startup code that calls \_\_libc\_start\_main, which eventually invokes the function at 0x1660 (likely main). The CFG for 0x1130 shows no conditional branching and ends with a call, then hlt, so it is one basic block.
 
-Indirect jumps (e.g., call QWORD PTR [rip+...]) and dynamic calls to library functions are treated as calls, not intraprocedural edges.
+The function at 0x1220 (sub\_1220) handles chdir and has conditional branches and a return. It has basic blocks B0 (entry and chdir), B1 (error handling), B2 (success return), B3 (failure branch).
 
-For sub\_1000 (init) and sub\_166c (fini), control flow is linear with no branches.
+The function at 0x1270 (sub\_1270) prints a menu and returns. It has a loop, but no conditional jumps except the loop condition; it is a single basic block ending with ret.
 
-For sub\_1130 (start), it contains a single indirect call followed by hlt, treated as terminating block.
+The function at 0x12e0 (sub\_12e0) is a simple return, one basic block.
 
-For sub\_1220, conditional branch at 122f creates two edges; true path leads to B2 and false path to B1; B2 has an unconditional jump back to B0.
+The function at 0x12f0 (sub\_12f0) returns a constant, one basic block.
 
-For sub\_1270, no internal branches, linear block.
+The function at 0x1300 (sub\_1300) forks and waits for child, with conditional branches for fork failure, success, and child exec. It contains basic blocks for entry, child path, wait loop, success return, and error handling.
 
-For sub\_12e0 and sub\_12f0, simple return blocks.
+The function at 0x1390 (sub\_1390) checks a command against a table and either executes it or calls sub\_1300. It has a loop for string comparison and conditional jumps to internal functions.
 
-For sub\_1300, fork, waitpid loop, and execvp create multiple blocks; the waitpid loop is modeled with a back edge from B2 to B1.
+The function at 0x1410 (sub\_1410) reads input with getc, handles memory allocation, and has loops and error handling. It has multiple basic blocks for allocation, reading, reallocation, error, and normal return.
 
-For sub\_1390, strcmp loop with fall-through and jump table; indirect jump via jump table is modeled as an edge to the appropriate function (but no edge to the called function because that would be interprocedural).
+The function at 0x14c0 (sub\_14c0) tokenizes a string with strtok and builds an array, with allocation, loop, and error handling. It has basic blocks for entry, allocation success, token loop, reallocation, error, and return.
 
-For sub\_1410, malloc, getc loop with realloc; branching on EOF/newline creates separate terminal blocks.
+The function at 0x15a0 (sub\_15a0) is the main loop that reads input, parses it, executes built-ins or external commands, and loops until exit. It has basic blocks for entry, loop, parsing, executing, freeing, and conditional loop continuation.
 
-For sub\_14c0, strtok loop with realloc; branching on failure and success.
+The function at 0x1660 is the actual main function that calls sub\_15a0 and returns. It is one basic block.
 
-For sub\_15a0, main-like loop with free and conditional branch; includes calls to sub\_1300 and sub\_14c0 but no interprocedural edges.
+All intraprocedural edges are determined from branch instructions (jcc, jmp, call, ret). Calls to library functions are not followed inside the CFG, but the call instruction remains in the basic block.
 
-Some branches are data-dependent or indirect; where the target could not be resolved with confidence, the edge is omitted.
+Edges for indirect jumps (e.g., jmp [rcx+rax]) are omitted when the target cannot be resolved, but the basic block still ends with that jump. The function may still be partially reconstructed.
 
-All identified functions and basic blocks are included; no function is omitted due to uncertainty.
+No interprocedural edges are created; each function's CFG is independent.
 
 \bigskip
 \hrule
@@ -393,27 +741,23 @@ All identified functions and basic blocks are included; no function is omitted d
 
 \textbf{Reasoning}
 
-Identified functions based on entry points and call patterns: main (entry at 0x16a0), parse\_input (0x1430), parse\_command (0x14e0), execute\_command (0x1310), cd (0x1220), builtin\_handlers (0x12f0, 0x1300, 0x1270), and initialization/fini routines.
+The disassembly contains multiple functions: `\_init`, `\_start`, `deregister\_tm\_clones`, `register\_tm\_clones`, `\_\_do\_global\_dtors\_aux`, `frame\_dummy`, `cd\_to\_home`, `print\_banner`, `main`, `fork\_exec`, `builtin\_handler`, `read\_line`, `parse\_input`, `shell\_loop`, and `\_fini`.
 
-Constructed basic blocks by scanning each function for control-flow instructions: conditional jumps, unconditional jumps, calls (treated as terminators without edges), and returns.
+For each function, basic blocks were identified based on control flow instructions (jumps, branches, calls to `exit`, returns) and branch targets.
 
-For main: entry block calls parse\_input, then parse\_command, then loops based on command type using strcmp and jump table. Edges connect blocks for loop, command execution, and cleanup.
+Edges were constructed based on fall-through, conditional jumps, and unconditional jumps within the same function.
 
-For parse\_input: reads input with getc, reallocates buffer as needed, handles newline and EOF. Blocks for read loop, buffer expansion, and error handling.
+Interprocedural edges (calls and returns) were omitted; library calls like `printf`, `puts`, `strcmp`, `perror`, etc., are not expanded.
 
-For parse\_command: uses strtok to split input into argv array, reallocates as needed. Blocks for tokenization loop and error handling.
+Indirect jumps (e.g., `jmp QWORD PTR [rcx+rax*8]`) in `builtin\_handler` are resolved to specific targets based on the jump table at `0x40b0`.
 
-For execute\_command: forks, child calls execvp, parent waits with waitpid loop handling signals. Blocks for fork, child, parent wait loop, and error cases.
+Uncertainty exists around the indirect jump in `builtin\_handler` if the jump table entries were not fully identifiable, but the targets were recovered from the data section references.
 
-For cd: changes directory or prints error. Blocks for argument check, chdir call, success/failure paths.
+Some functions like `\_init` and `\_fini` have straightforward control flow and are included.
 
-Builtin handlers: simple functions returning constants (0,1,2,3).
+The `shell\_loop` function has a complex loop structure with conditional breaks; all intraprocedural edges are recovered.
 
-Uncertainty in jump table edges (main::B5 to builtin handlers) because the exact targets are computed from table but can be inferred; edges added for the three known handlers based on strcmp results.
-
-No interprocedural edges: calls are terminators, no edges to callees or returns.
-
-Confidence slightly reduced due to indirect jump table and potential signal handling details in waitpid loop.
+Confidence is set to 85 due to indirect jump resolution being mostly certain but relying on static analysis of the jump table.
 
 \bigskip
 \hrule
@@ -425,35 +769,33 @@ Confidence slightly reduced due to indirect jump table and potential signal hand
 
 \textbf{Reasoning}
 
-Identified six functions: \_init, free@plt, puts@plt, chdir@plt, printf@plt, strcmp@plt, malloc@plt, realloc@plt, waitpid@plt, perror@plt, strtok@plt, execvp@plt, exit@plt, fwrite@plt, getc@plt, fork@plt, \_\_cxa\_finalize@plt, \_start, call\_gmon\_start, \_\_do\_global\_dtors\_aux, frame\_dummy, chdir\_fail\_test, print\_versions, get\_version\_index, fork\_and\_execute, run\_command, read\_line, tokenize\_line, main, \_fini.
+Identified 8 functions based on entry points and code patterns: sub\_1130 (start), sub\_1220 (cd\_handler), sub\_1280 (show\_info), sub\_1300, sub\_1310, sub\_1320 (exec\_cmd), sub\_13b0 (cmd\_dispatcher), sub\_1440 (read\_line), sub\_14f0 (tokenize), sub\_15d0 (main\_loop), and sub\_16b0 (main).
 
-Startup functions (\_init, \_start, etc.) have internal control flow but no calls to main; they are included with their own CFG.
+For sub\_1130 (start): B0 ends with call and then hlt (unreachable), no outgoing edges.
 
-Function chdir\_fail\_test (0x1220) is called from run\_command but no interprocedural edge is added; its CFG includes conditional branch to perror and return.
+For sub\_1220 (cd\_handler): B0 checks rdi, branches to B1 if zero; B1 calls chdir and branches on result; B2 handles error; B3 prints error and returns.
 
-print\_versions (0x1280) is called from main but no interprocedural edge; its CFG includes multiple puts and printf calls, but no internal branch.
+For sub\_1280 (show\_info): Single linear block with no branches, returns at end.
 
-get\_version\_index (0x13b0) is called from main; it compares strings and uses jump table at 0x40b0; conditional edges to three targets and fall-through to fork\_and\_execute are included.
+For sub\_1300: Single block returning 0.
 
-fork\_and\_execute (0x1320) has fork, then conditional branches on fork result, waitpid loop, and execvp; includes edges for fork success (child and parent), fork failure, and loop back.
+For sub\_1310: Single block returning 3.
 
-run\_command (0x15d0) reads input, tokenizes, compares command strings, invokes get\_version\_index, calls corresponding command functions, frees memory, and loops; includes all edges based on strcmp results and return values.
+For sub\_1320 (exec\_cmd): B0 forks; branches to B1 (child), B2 (error), B3 (parent wait loop). B1 calls execvp, exits on failure. B3 loops on waitpid until child terminates, then returns. B2 prints error and jumps to return.
 
-read\_line (0x1440) allocates buffer, reads characters with getc, reallocates on overflow, returns on newline or EOF; includes edges for allocation failure and EOF.
+For sub\_13b0 (cmd\_dispatcher): B0 checks if command is NULL; B1 compares against builtins; B2, B3, B4 handle matches; B5 calls sub\_1320 for unknown commands. Edges are conditional based on strcmp results.
 
-tokenize\_line (0x14f0) uses strtok to split string, reallocates as needed; includes edges for allocation failure and empty input.
+For sub\_1440 (read\_line): B0 allocates buffer; B1 reads chars in loop; B2 handles newline; B3 handles EOF; B4 handles realloc failure. Edges reflect loop and exit conditions.
 
-main (0x16b0) simply calls run\_command and returns 0; its CFG has one basic block.
+For sub\_14f0 (tokenize): B0 allocates tokens; B1 first strtok; B2 loop over subsequent tokens; B3 handles realloc; B4 handles error and free; B5 returns token array.
 
-Uncertain edges: jump table at 0x40b0 used by get\_version\_index; we infer three possible targets based on string comparisons and default to fork\_and\_execute.
+For sub\_15d0 (main\_loop): B0 prints prompt; B1 reads line; B2 tokenizes; B3 checks if tokens empty; B4 dispatches builtins; B5 loops if command failed; B6 exits on success. Edges reflect loop and conditional branches.
 
-Also uncertain: indirect jump at 0x142e is resolved using the jump table; we include the three possible targets based on the comparison results.
+Function sub\_16b0 is main: calls main\_loop, then returns 0.
 
-All edges are intraprocedural; no interprocedural call or return edges are included.
+Uncertainty in sub\_1320 wait loop edge from waitpid to itself is represented with a self-loop; also the indirect jump from command dispatcher to builtin handlers is resolved via known function pointers.
 
-Some library functions (.plt) have no internal control flow beyond jump and push; we treat each as a single basic block with no outgoing edges except the jmp to the resolver, but since resolver is not part of the binary, we include no edges.
-
-Overall, the CFG is mostly complete with partial reconstruction of jump table targets.
+Confidence lowered slightly due to indirect jump in sub\_13b0 and incomplete recovery of all possible paths, but most control flow is deterministic.
 
 \bigskip
 \hrule
@@ -465,45 +807,31 @@ Overall, the CFG is mostly complete with partial reconstruction of jump table ta
 
 \textbf{Reasoning}
 
-Function \_init and \_fini are not user functions and have no recoverable intraprocedural CFG beyond linear execution; they are excluded.
+Identified functions: main, sub\_1180, sub\_1260, sub\_1290, sub\_12e0, sub\_1400, sub\_1590, sub\_1770, sub\_17e0 based on call targets and labels.
 
-Function at 0x1090 is the entry point (\_start); it sets up arguments and calls \_\_libc\_start\_main, then halts. Its only intraprocedural edge is from B0 to B1 (the call) and no return edge is modeled.
+main function spans from 0x11e0 to 0x125a, with conditional branch at 0x11f6 leading to two separate paths.
 
-Function at 0x10c0 is a constructor-like function (\_init) that checks if \_\_cxa\_finalize is present and calls it, but it has no conditional branch within the function; it is linear.
+sub\_1180 is a loop printing characters from a buffer, with clear jump at 0x11bb to 0x1193.
 
-Function at 0x10f0 is another constructor-like function (\_fini) that computes the number of elements in a list and conditionally calls a function; it has a conditional branch and an unconditional return.
+sub\_1260 performs a rotate-left operation and has no branches, single block.
 
-Function at 0x1130 is a frame setup function that conditionally calls \_\_cxa\_finalize and then calls 0x10c0; it has a conditional branch and a return.
+sub\_1290 initializes MD5 context with constants, no branches.
 
-Function at 0x1170 is a trampoline that jumps to 0x10f0; it is a single block.
+sub\_12e0 updates MD5 context with input bytes, has conditional loop and inner block for processing 64-byte chunks.
 
-Function at 0x1180 is a helper that prints characters from a buffer; it has a loop with a conditional jump back and a conditional exit; it also calls printf.
+sub\_1400 performs MD5 compression round, has a loop with switch-like behavior based on round index.
 
-Function at 0x11e0 is the main function; it parses command-line arguments, calls a hash function (0x1770 or 0x17e0) and then calls 0x1180; it has conditional jumps and a return.
+sub\_1590 finalizes MD5 hash with padding and bit length, includes loops and calls to sub\_12e0 and sub\_1400.
 
-Function at 0x1260 is a rotate-left function; it is linear with no branches.
+sub\_1770 computes MD5 hash of a string, calls strlen, sub\_12e0, and sub\_1590.
 
-Function at 0x1290 initializes an MD5 context; it is linear.
+sub\_17e0 reads a file in 1024-byte chunks, updates MD5 context, then finalizes.
 
-Function at 0x12e0 is an MD5 update function; it has a loop over input bytes and calls the compression function when a block is full; it has conditional jumps and a return.
+No interprocedural edges are added; edges only represent intraprocedural jumps, conditional branches, and fall-through.
 
-Function at 0x1400 is the MD5 compression function; it has a loop over 64 rounds with a switch-like structure using conditional jumps; it has a return.
+Confidence is high because control flow is mostly explicit with direct jumps and conditional branches; some indirect calls (e.g., at 0x10af, 0x10df) are not modeled as they are interprocedural.
 
-Function at 0x1590 is the MD5 finalization function; it pads the message, appends length, calls compression, and stores the digest in little-endian; it has loops and conditional jumps.
-
-Function at 0x1770 computes the hash of a string; it initializes an MD5 context, updates with the string, finalizes, and returns the digest; it is linear except for the call to strlen.
-
-Function at 0x17e0 computes the hash of a file; it allocates a buffer, reads the file in chunks, updates the MD5 context, and finalizes; it has a loop for reading chunks and a conditional jump.
-
-All calls to library functions (printf, malloc, free, fread, strlen, \_\_cxa\_finalize) are treated as calls and do not create intraprocedural edges.
-
-All conditional and unconditional jumps within functions are represented as edges.
-
-Indirect jumps (e.g., call rax) are not resolved; they are omitted as uncertain edges.
-
-Unreachable instructions (hlt at 0x10b5) terminate the block with no outgoing edges.
-
-The CFG includes all identified user functions and their basic blocks with edges for all confidently determined control-flow transfers.
+Each function's basic blocks are numbered sequentially from B0.
 
 \bigskip
 \hrule
@@ -511,21 +839,41 @@ The CFG includes all identified user functions and their basic blocks with edges
 
 \subsection{DeepSeek -- md5-c (\texttt{md5\_O1.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 85
 
 \textbf{Reasoning}
 
-Identified functions based on entry points and calling conventions: main at 0x11e0, sub\_1190 at 0x1190, sub\_12b0 at 0x12b0, sub\_12c0 at 0x12c0, sub\_12e0 at 0x12e0, sub\_1370 at 0x1370, sub\_14d0 at 0x14d0, sub\_15c0 at 0x15c0, sub\_17c0 at 0x17c0. Some functions are likely helper functions for cryptographic operations.
+The disassembly contains functions for initialization (.init), procedure linkage table (.plt), and finalization (.fini), which are not part of the main program logic. Their internal control flow is straightforward and not part of the recoverable application functions.
 
-For each function, basic blocks are determined by control-flow instructions (jmp, je, jne, jbe, jmp, ret) and branch targets (e.g., call targets and jump targets within the same function). Consecutive non-branching instructions are grouped into single basic blocks.
+The .plt section contains stubs for external functions (free, putchar, fread, strlen, printf, malloc). These are library calls and their internal control flow is not present; no interprocedural edges are created from or to these stubs.
 
-Edges represent intraprocedural control flow: conditional jumps have two outgoing edges (fall-through and taken), unconditional jumps have one, returns have no outgoing edges. Indirect calls to functions like printf, putchar, fread, malloc, free, strlen, and \_\_cxa\_finalize are treated as calls and do not create edges to their implementations.
+The .plt.got section contains a single stub for \_\_cxa\_finalize. No internal control flow is present.
 
-Some edges are omitted where the destination is uncertain (e.g., indirect jumps via register, or calls to addresses computed at runtime). However, most direct jumps and conditional branches are resolved.
+The .text section contains several identifiable functions: the startup routine (likely \_start), \_\_do\_global\_dtors\_aux, frame\_dummy, a function at 0x1190 (call it sub\_1190), the main function at 0x11e0, and several helper functions at 0x12b0, 0x12c0, 0x12e0, 0x1370, 0x14d0, 0x15c0, and 0x17c0.
 
-The main function has clear control flow with loops and conditionals. The overall structure suggests a program that reads input, processes it with SHA-like functions, and prints output.
+The function at 0x1190 (sub\_1190) is a small loop that prints 16 bytes from a buffer and a newline. It has a single basic block (B0) ending with an unconditional jump to putchar@plt (which is not part of this function's CFG). There is no conditional branch, so it terminates at the jump.
 
-Confidence is set to 75 due to some indirect jumps and possible missing edges from unresolved branches.
+The main function at 0x11e0 has multiple conditional branches and calls. It has a call to sub\_15c0, which modifies the local buffer, then prints it. After that, it returns. The function also has a path for no arguments where it reads from stdin into a buffer. The control flow includes branches and loops, which are captured in the basic blocks.
+
+The helper function at 0x12b0 (sub\_12b0) performs a rotation and returns. It has a single basic block.
+
+The helper function at 0x12c0 (sub\_12c0) initializes a structure with zeros and a constant XMM value, then returns. Single basic block.
+
+The helper function at 0x12e0 (sub\_12e0) is a complex function with loops and conditional branches for processing data. It has multiple basic blocks due to conditional jumps and loops.
+
+The helper function at 0x1370 (sub\_1370) is a hashing-like function with a loop and conditional branches. It has multiple basic blocks.
+
+The helper function at 0x14d0 (sub\_14d0) performs padding and processing with loops and branches. It has multiple basic blocks.
+
+The helper function at 0x15c0 (sub\_15c0) computes a hash (likely MD5 or similar) of a string, with a main loop and multiple branches. It has several basic blocks.
+
+The helper function at 0x17c0 (sub\_17c0) reads from a file, processes the data in chunks, and computes a hash. It has loops and branches. It calls free at the end.
+
+For each function, basic blocks are identified by the first instruction that is a branch target or a control-flow instruction. Edges are created for conditional and unconditional jumps, and for fall-through. Indirect jumps (like call rax) are not resolved into edges because the target is unknown, but the basic block terminates with the call instruction and fall-through to the next instruction is assumed, as the call does not transfer control within the same function.
+
+Return instructions (ret) terminate a basic block and have no outgoing edges (except to the caller, which is interprocedural and excluded).
+
+The confidence is set to 85 because while most functions and edges are recoverable, there are indirect calls (call rax) that are not resolved, and some conditional branches may have unresolved destinations, but the overall CFG is mostly complete.
 
 \bigskip
 \hrule
@@ -537,39 +885,19 @@ Confidence is set to 75 due to some indirect jumps and possible missing edges fr
 
 \textbf{Reasoning}
 
-The disassembly contains multiple code sections including .init, .plt, .text, and .fini. The .text section contains several identifiable functions based on entry points and call/ret patterns.
+Identified functions: main (entry at 0x1290) and sub\_1190 (helper printing function), plus several other subroutines.
 
-Function at 0x1290 is identified as 'main' because it handles command-line arguments (argc/argv), calls sub\_1610 to process each argument, and eventually returns.
+Constructed CFG for main using its control-flow instructions: conditional jumps, unconditional jumps, calls (ignored as edges), and ret.
 
-Function at 0x1190 is a helper that prints 16 bytes of a buffer using printf and putchar; it is called by main and sub\_1610.
+Constructed CFG for sub\_1190 using its sequential printing calls and final unconditional jump to putchar.
 
-Function at 0x1610 processes a string (likely MD5-like hash computation) and calls sub\_1520 at the end.
+Constructed CFG for sub\_1300, sub\_1310, sub\_1330, sub\_13c0, sub\_1520, sub\_1610, sub\_1830 based on their control-flow instructions.
 
-Function at 0x1520 performs padding and finalization of the hash computation; called by sub\_1610 and sub\_1830.
+Edges reflect intraprocedural jumps and branches; call instructions are not represented as edges.
 
-Function at 0x1830 reads from a file using fread, processes data in chunks using the hash logic, and calls free.
+Some indirect jumps (e.g., call rax) and data-dependent branches are omitted where destination cannot be determined, but basic blocks remain.
 
-Function at 0x13c0 is a core hash transformation function called by sub\_1330, sub\_1520, and others.
-
-Function at 0x1330 is a helper that copies data into a buffer and calls sub\_13c0; it is called indirectly via function pointers? Actually it appears standalone.
-
-Several functions contain indirect jumps (call rax, jmp rax) whose targets cannot be resolved statically, so edges to those targets are omitted.
-
-Functions at 0x10a0, 0x10d0, 0x1100, 0x1140, 0x1180 are likely runtime initialization and registration code (\_\_libc\_csu\_init, etc.) not part of the application logic, so they are omitted from the CFG.
-
-Function at 0x1300 is a simple rotate function, called by? Actually not called directly in this disassembly, but it's a leaf function; included as a separate function.
-
-Basic blocks are derived by scanning each function for control-flow instructions (jmp, jcc, call, ret). Conditional branches create two edges; unconditional jumps create one; ret creates no outgoing edge.
-
-For each function, I identified the entry point, then followed the execution linearly, splitting at every branch or jump target that appears as a label in the code.
-
-Edges are intraprocedural only: calls to library functions (printf, strlen, malloc, free, fread, putchar) are treated as instructions that do not create CFG edges to the callee; they are simply part of the basic block.
-
-Indirect calls (call rax) are not resolved; they are treated as instructions that may transfer control, but the target is unknown, so no edge is added.
-
-The CFG includes all recoverable edges; uncertain destinations are omitted, but the rest of the graph is reconstructed.
-
-The confidence is set to 85 due to the presence of indirect jumps and calls, and some functions that appear to be library stubs or initialization routines which are not fully analyzed.
+All functions are identified by their starting addresses; main is identified by the entry point referenced in the startup code.
 
 \bigskip
 \hrule
@@ -581,25 +909,241 @@ The confidence is set to 85 due to the presence of indirect jumps and calls, and
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions including main (at 0x1290), a function printing hex bytes (0x1190), SHA-256 compression and padding functions (0x1430, 0x1330, 0x1590, 0x1660, 0x16c0), and PLT stubs.
+Function names are not explicitly provided, but based on the disassembly, I can identify multiple functions: the entry point at 0x10a0, a function at 0x1190 (likely a helper to print bytes), a function at 0x1290 (likely main or a top-level function), a function at 0x1330 (likely a padding/processing function), a function at 0x1430 (a cryptographic-like transform function), a function at 0x1590 (a finalization or hash function), a function at 0x1660 (a string processing function), and a function at 0x16c0 (a file reading function).
 
-Main function at 0x1290 handles command-line arguments: if argc >= 2, it processes each argument through a string-to-hash function at 0x1660; otherwise reads from stdin using a file reading function at 0x16c0.
+I reconstructed the CFG for each identified function independently, using basic block boundaries based on control-flow instructions such as conditional jumps (je, jne, jbe, jl), unconditional jumps (jmp), and returns (ret).
 
-Function 0x1190 prints the bytes of a 16-byte hash using printf and putchar; it has a single linear basic block ending with a jump to putchar.
+For the entry point at 0x10a0, it calls an external function via a pointer and then halts, so it has a single basic block with no internal edges except the call, which does not terminate the block. The block ends with hlt, which is considered a terminal instruction.
 
-Function 0x1330 is a SHA-256 message padding function with a loop for processing input chunks and a call to compression function 0x1430; it has multiple basic blocks including conditional branches and a return.
+For the function at 0x1190, it has a series of printf calls and a final jmp to putchar, so it is a single basic block ending with an unconditional jump.
 
-Function 0x1590 performs SHA-256 padding and finalization, calling 0x1330 and 0x1430, with a linear flow.
+For the function at 0x1290, it has conditional branches (jl, jne, jmp) and calls to helper functions, so I split it into multiple basic blocks: B0 (prologue and conditional check), B1 (loop body), B2 (fallback path for no arguments), and B3 (final return block).
 
-Function 0x1660 calculates SHA-256 hash of a string, calling 0x1060 (strlen), 0x1330, and 0x1590, with a linear flow.
+For the function at 0x1330, it has a conditional branch (je) and a loop with conditional jumps (jbe, jne, jmp), so I split it into B0 (initial setup and early return), B1 (loop body), B2 (after loop), and B3 (return block).
 
-Function 0x16c0 reads data from a file stream, processes it in chunks through padding and compression, and frees the buffer, with a loop and conditional branches.
+For the function at 0x1430, it has a loop with conditional branches (je, jne, jmp) and ends with a ret, so I split it into B0 (prologue and setup), B1 (loop body with multiple branches), B2 (update and check), and B3 (final update and return).
 
-The PLT stubs and initialization/finalization sections are not considered as they are not part of the main program logic.
+For the function at 0x1590, it has a single unconditional jump to another function and a ret, so it is one basic block ending with a ret.
 
-Indirect calls (e.g., to function pointers at 0x10bf, 0x10ef, 0x1130) are not resolved; edges to their targets are omitted per the rules.
+For the function at 0x1660, it calls strlen and then calls other functions, but has no conditional branches, so it is one basic block ending with a ret.
 
-All identified intraprocedural control-flow transitions within each function have been reconstructed based on the disassembly.
+For the function at 0x16c0, it has a loop with conditional branches (je, jne) and ends with a ret, so I split it into B0 (prologue and initial read), B1 (loop body), and B2 (finalization and return).
+
+I omitted edges for indirect calls or jumps where the destination could not be determined (e.g., call rax at 0x1014, jmp rax at 0x10ef), but I retained all other confidently identifiable edges.
+
+I assigned node names based on inferred function purposes: 'entry' for the startup code, 'print\_bytes' for 0x1190, 'main' for 0x1290, 'pad\_process' for 0x1330, 'transform' for 0x1430, 'finalize' for 0x1590, 'process\_string' for 0x1660, and 'read\_file' for 0x16c0.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- pdpmake (\texttt{pdpmake\_O0.json})}
+
+\textbf{Confidence:} 80
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions, including the entry point at 0x23a0, the main function at 0x62e0, and many helper functions.
+
+Only intraprocedural control flow is reconstructed; edges represent jumps, conditional branches, and returns within each function.
+
+Function calls do not terminate basic blocks; they are included as part of the current block.
+
+Basic blocks are identified by control-flow instructions such as jmp, jcc (e.g., je, jne), and ret. Indirect jumps are omitted if the target cannot be reliably determined, but the surrounding blocks are still recovered.
+
+The CFG for each function is constructed independently; no interprocedural edges (e.g., call/return) are included.
+
+Some functions are not fully analyzed due to the large size and complexity of the disassembly, but the most significant functions (e.g., entry point, main, and key helper routines) are represented.
+
+Confidence is set to 80 because while many basic blocks and edges are clear, some indirect branches and switch-like constructs may not have all edges resolved.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- pdpmake (\texttt{pdpmake\_O1.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions identified by labels and function boundaries (e.g., error@@Base, main, etc.).
+
+Control flow instructions such as conditional jumps (je, jne), unconditional jumps (jmp), calls, and returns are present and used to identify basic block boundaries.
+
+Indirect jumps and calls (e.g., call rax, jmp QWORD PTR) introduce uncertainty, but many direct branches are recoverable.
+
+Function call instructions (e.g., call <plt>) do not terminate basic blocks and are treated as part of the current block.
+
+Interprocedural edges (call/return) are omitted as per instructions.
+
+Some functions (e.g., error@@Base) have multiple basic blocks with clear conditional and unconditional jumps.
+
+The main function (starting at 0x6d50) is identified and has several basic blocks with conditional and unconditional branches.
+
+Some indirect jumps (e.g., jmp rax, jmp QWORD PTR) are not resolved, so some edges are omitted, but the overall CFG is reconstructed as completely as possible.
+
+All identifiable functions are included, and basic blocks are numbered sequentially within each function.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- pdpmake (\texttt{pdpmake\_O2.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+Function boundaries are inferred from the disassembly, using labels such as error@@Base, main, and others.
+
+Basic blocks are identified by sequences of instructions that are not terminated by control-flow changing instructions (jumps, branches, ret, etc.).
+
+Edges are established based on direct jumps and conditional branches where the target address is within the same function.
+
+Indirect jumps (e.g., call rax, jmp rax, jmp QWORD PTR) are not resolved to specific targets, so edges for those blocks may be incomplete.
+
+Interprocedural control flow such as call and ret instructions are ignored; edges are only intraprocedural.
+
+Some functions like \_\_libc\_csu\_init and \_\_libc\_csu\_fini are recognized and their internal control flow is reconstructed.
+
+Due to the presence of many unresolved indirect jumps and dynamic calls, the CFG is partial but represents the most sound reconstruction possible.
+
+The 'error@@Base' function has multiple sequential basic blocks with direct jumps, making its CFG relatively complete.
+
+The 'main' function uses dynamic dispatch and indirect calls, so some edges are omitted.
+
+Other functions like 'sub\_2960', 'sub\_3930', 'sub\_5040', etc., are included with their internal control flow where possible.
+
+A total of 42 functions are identified and basic blocks are numbered per function.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- pdpmake (\texttt{pdpmake\_O3.json})}
+
+\textbf{Confidence:} 60
+
+\textbf{Reasoning}
+
+The disassembly contains multiple functions, including error@@Base, which appears to be a custom error handling function, and main-like code starting at 0x23b0.
+
+The primary function identified is error@@Base (starting at 0x23b0), which handles variable arguments and calls vfprintf and exit.
+
+There are several helper functions identified such as sub\_2970, sub\_3430, sub\_3480, sub\_34A0, sub\_34C0, sub\_3550, sub\_35F0, sub\_36A0, sub\_3710, sub\_38B0, sub\_3990, sub\_3AB0, sub\_5480, sub\_5D90, sub\_5E80, sub\_68D0, sub\_69A0, sub\_6BD0, sub\_6CE0, sub\_6ED0, sub\_70B0, sub\_70F0, sub\_7140, sub\_71E0, sub\_7230, sub\_7370, sub\_73A0, sub\_8120, sub\_8520, sub\_8600, sub\_8810, sub\_8830, sub\_8890, sub\_9850, sub\_9880, sub\_9C30, sub\_A330, sub\_A430, sub\_A4E0, sub\_A510, sub\_A610, sub\_A830, sub\_A860, sub\_A920, sub\_A990, and sub\_AA20.
+
+The function at 0x73A0 appears to be the main entry point (\_start-like), with a call to \_\_libc\_start\_main.
+
+Control flow within error@@Base is primarily sequential with a single unconditional call to exit, making it a leaf function with no internal branches.
+
+sub\_2970 contains several conditional branches (e.g., comparisons with 0x24, 0x7b, 0x28) and loops, indicating it is a complex string processing function.
+
+The function sub\_3AB0 is large and contains many conditional jumps, loops, and calls to other functions, indicating it is a major parsing or execution function.
+
+The function sub\_73A0 contains the program's entry point and calls into other functions, but its internal control flow is limited to a few branches based on argc.
+
+The CFG reconstruction includes all identified functions, but due to the complexity and the presence of indirect jumps (e.g., jmp rax), some edges are uncertain.
+
+The confidence score is reduced because of the large number of unresolved indirect branches and the lack of symbol information for many functions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- wak (\texttt{wak\_O0.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The disassembly includes multiple functions, but many are library stubs or small helper routines with no control-flow complexity.
+
+The primary function of interest is at address 0x2480, which contains argument parsing, option handling, and calls to various subroutines. I will refer to this as 'main'.
+
+The control flow within main includes a loop around getopt\_long and several conditional branches, making it the most complex recoverable CFG.
+
+Several helper functions are present but are either trivial (e.g., return immediately) or contain straightforward linear code without branching.
+
+Function names could not be definitively recovered, so generated names are used for non-main functions.
+
+Edges that involve indirect jumps or calls to unknown destinations are omitted to maintain accuracy.
+
+Overall, the reconstruction focuses on the main function and its immediate subroutines, omitting library calls and uncertain indirect transitions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- wak (\texttt{wak\_O1.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The disassembly includes multiple functions, but many are library stubs or small helper routines with no control-flow complexity.
+
+The primary function of interest is at address 0x26c0, which contains argument parsing, option handling, and calls to various subroutines. I will refer to this as 'main'.
+
+The control flow within main includes a loop around getopt\_long and several conditional branches, making it the most complex recoverable CFG.
+
+Several helper functions are present but are either trivial (e.g., return immediately) or contain straightforward linear code without branching.
+
+Function names could not be definitively recovered, so generated names are used for non-main functions.
+
+Edges that involve indirect jumps or calls to unknown destinations are omitted to maintain accuracy.
+
+Overall, the reconstruction focuses on the main function and its immediate subroutines, omitting library calls and uncertain indirect transitions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- wak (\texttt{wak\_O2.json})}
+
+\textbf{Confidence:} 60
+
+\textbf{Reasoning}
+
+The disassembly contains multiple function stubs and one large function starting at address 0x26c0, which appears to be the main program entry point.
+
+The large function at 0x26c0 contains complex control flow with many conditional branches, jumps, and function calls.
+
+Due to the complexity and size of the disassembly, fully recovering all basic blocks and edges for every function is not feasible with high confidence.
+
+However, the main function's high-level structure has been partially recovered, including its initialization, option parsing, and main processing loop.
+
+Several library functions are present in the PLT, but their internal control flow is not included as per the rules.
+
+The confidence score reflects the partial nature of the reconstruction, especially for the main function's internal logic.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{DeepSeek -- wak (\texttt{wak\_O3.json})}
+
+\textbf{Confidence:} 40
+
+\textbf{Reasoning}
+
+The disassembly contains a large number of functions and library calls.
+
+Function boundaries are not clearly defined in the provided disassembly, which lacks standard ELF symbols.
+
+I can identify the likely entry point at address 0x26c0, which initializes the program and processes command-line options via getopt\_long.
+
+The entry point function has a large body of code with many conditional branches and jumps, but its exact control flow is complex and difficult to fully reconstruct without dynamic analysis.
+
+Several other functions can be identified by their entry points and exit points, such as the functions at 0x2390, 0x2470, 0x4dc0, 0x4f40, 0x6040, 0x6830, 0x6a00, 0x71c0, 0x73f0, 0x8300, 0x8bf0, 0x90f0, 0xb610, 0xaa00, 0xaac0, 0xaf40, 0xb2e0, and 0xb470.
+
+I am able to reconstruct basic blocks and edges for these functions based on direct branches and conditional jumps that are present in the code.
+
+However, many control flow edges are indirect (e.g., jmp rax, jmp QWORD PTR [rip+...]) or depend on complex data structures, making them impossible to resolve statically.
+
+I will include the confidently identified functions and their basic blocks, omitting only edges that cannot be determined with reasonable confidence.
+
+The overall confidence is low due to the large number of unresolved indirect branches and the lack of clear function boundaries.
 
 \bigskip
 \hrule
@@ -607,19 +1151,17 @@ All identified intraprocedural control-flow transitions within each function hav
 
 \subsection{Gemini -- 2048.c (\texttt{2048\_O0.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input assembly file contains several functions, including '.init', a set of PLT stubs, and several functions in the .text section starting at 0x1110.
+Analyzed the provided disassembly to identify individual function entry points and boundaries.
 
-Functions were identified by scanning for 'endbr64', 'push rbp', and 'mov rbp, rsp' patterns, which indicate function starts.
+Mapped out the basic blocks within each function according to the rules (splitting at control-flow altering instructions like jumps, conditional branches, and returns).
 
-Basic blocks were identified based on control-flow instructions ('jmp', 'je', 'jne', 'jge', 'call', 'ret') and fall-through behavior.
+Ignored interprocedural calls and modeled only intraprocedural execution paths.
 
-Edges were constructed by analyzing jumps and conditional branches within each function independently.
-
-Some ambiguity exists due to incomplete function signatures, but intraprocedural edges have been identified for all recognizable functions.
+Constructed sequential, conditional, and loop control structures within functions like sub\_1200, sub\_1360, sub\_1390, sub\_1630, sub\_16d0, sub\_17e0, sub\_1970, sub\_19e0, sub\_1a40, sub\_1aa0, sub\_1b00, sub\_1b90, sub\_1c00, sub\_1c90, sub\_1da0, sub\_1e10, sub\_1ea0, sub\_21a0, and main/sub\_21e0.
 
 \bigskip
 \hrule
@@ -627,19 +1169,23 @@ Some ambiguity exists due to incomplete function signatures, but intraprocedural
 
 \subsection{Gemini -- 2048.c (\texttt{2048\_O1.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input contains multiple functions within the .text section. Each function is identified by a unique entry point (e.g., 1110, 11b0, 1200, 12e0, 16f0, 1730, 17d0) and handles its own control flow.
+Identified sub\_1200 as an independent function that formats items, containing a single basic block (B0) ending in ret at 12a5.
 
-Functions are reconstructed by identifying branch instructions (je, jne, jmp, cmp) that define the boundaries of basic blocks.
+Identified sub\_12b0 as a helper loop function with B0 from 12b0 to 12ce, B1 at 12c0 (loop body) conditionally looping back to 12c0 or returning at 12d3.
 
-The basic blocks are labeled <function\_address>::B based on the starting address in the .text section.
+Identified sub\_12e0 as a complex print/display routine. B0 goes from 12e0 to 135d. B1 starts at 1360 (loop over 4 elements) and has branches at 142b (loop back to 1360 or fall through). It contains nested logic, loops from 1475 to 1571 with branch at 1571, loop over 15c0 to 168e, and exits at 16e3.
 
-Edges are established between basic blocks where control flow transitions occur, either sequentially or via jumps/branches.
+Identified sub\_16f0 as a character matching/scoring function with basic blocks handling branches at 16f4, 170f, 1717.
 
-Library functions and plt entries are ignored in the CFG as they do not contain internal control flow logic for the purpose of this intraprocedural CFG.
+Identified sub\_1730 as a movement or matrix transformation handler (e.g., 2048 game slide logic) containing several nested conditional blocks and loops.
+
+Identified sub\_17d0, sub\_1870, sub\_1940, sub\_1c30, sub\_1f20, sub\_2200, sub\_2250, sub\_2290, sub\_2590, sub\_2680, sub\_26a0, sub\_2740, sub\_2990 as various grid checking, transformation, and initialization procedures typical of an interactive terminal puzzle game.
+
+Identified sub\_29c0 as the main function containing command line argument validation (via strcmp chain starting at 29f0), terminal initialization via tcgetattr/tcsetattr, game loop driving input from getc, dynamic switch dispatch or if-else chain handling directions, usleep, and game ending screens.
 
 \bigskip
 \hrule
@@ -647,17 +1193,17 @@ Library functions and plt entries are ignored in the CFG as they do not contain 
 
 \subsection{Gemini -- 2048.c (\texttt{2048\_O2.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input assembly code contains multiple distinct functions, recognizable by their function entry sequences (e.g., endbr64, push rbp, mov rbp, rsp).
+Analyzed the intraprocedural control flow within each function in the text section.
 
-Basic block boundaries were identified by locating control-flow instructions such as jmp, je, jne, call, and ret.
+Functions extracted include sub\_1000 (.init), sub\_1110, sub\_1140, sub\_1170, sub\_11b0, sub\_11f0, sub\_1200, sub\_12b0, sub\_12e0, sub\_1c10, sub\_1c60, sub\_1d00, sub\_1d50, sub\_1e20, sub\_1f8b, sub\_20e0, sub\_2250, sub\_22b0, sub\_2300, sub\_2580, sub\_2800, sub\_2820, sub\_28c0, sub\_2bc0, main (sub\_2bf0), and sub\_3110 (.fini).
 
-Functions like the init code, plt stubs, and main-like procedures were treated as separate entities, and control-flow edges were mapped within these functions based on branch targets and fall-through behavior.
+Extracted basic block headers and edges using termination points such as conditional jumps (je, jne, ja, jb, jl, etc.), unconditional jumps (jmp), and function returns (ret).
 
-The graph accurately reflects local control flow transitions; interprocedural calls and plt transitions are not treated as edges in the CFG.
+Ignored interprocedural control flow such as calls and returns between caller and callee.
 
 \bigskip
 \hrule
@@ -665,23 +1211,247 @@ The graph accurately reflects local control flow transitions; interprocedural ca
 
 \subsection{Gemini -- 2048.c (\texttt{2048\_O3.json})}
 
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Analyzed the function at 0x12e0, which performs comprehensive game-state visualization with high register utilization (r15, r14, r12, rbx, rbp) and multiple inner loop/conditional branches printing data through printf.
+
+Identified function starting at 0x1f90 as a helper that uses backward branching (0x1fb6 to 0x1fa0).
+
+Identified function starting at 0x1fe0 (sub\_1fe0), which contains intensive state-manipulation logic, shifts, and conditional jumps (e.g., 0x1fe6, 0x2001, 0x2008, 0x203e, 0x204a, 0x206e, 0x207a, 0x2090, 0x20b9, 0x20d0, 0x20d8, 0x20dd, 0x20f5, 0x2104).
+
+Analyzed function at 0x24c0 checking matching byte pairs sequentially, terminating early on failure via multiple jumps to 0x2517.
+
+Reconstructed the main control loop at 0x2dc0 (main) which features option parsing via strcmp, calls terminal configuration adjustments via tcgetattr/tcsetattr, and incorporates a central dispatch loop reading keyboard scan-codes using a jump table or multiple branches (0x2f28, 0x2f5f, 0x2fef, 0x3030, 0x3035, 0x304f, 0x3064, 0x3082) to perform game logic updates (e.g., 0x21e0 for shift up, 0x22e0 for rotation, 0x23c0 for slide down).
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Notepad-- (\texttt{Notepad--\_O0.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Identified the main function loop at sub\_4580 based on argument verification (argc == 2 check).
+
+Traced the control flow of sub\_4580 including conditional branches at 0x459f and 0x45c0.
+
+Mapped the infinite loop structure in sub\_4580 starting from 0x45e3 which calls terminal IO and processing functions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Notepad-- (\texttt{Notepad--\_O1.json})}
+
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+Reconstructed intraprocedural CFG for multiple recovered functions based on the provided disassembly.
+
+Identified function boundaries, basic block structures, conditional jumps, unconditional loops, and function returns.
+
+Mapped standard control flow patterns within individual procedures without crossing function boundaries.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Notepad-- (\texttt{Notepad--\_O2.json})}
+
+\textbf{Confidence:} 90
+
+\textbf{Reasoning}
+
+Identified several prominent procedural entry points from the symbol markers including .init, sub\_1350, sub\_1450, sub\_14e0, sub\_1500, sub\_1670, sub\_1700, sub\_1890, sub\_1950, sub\_19d0, sub\_1a40, sub\_1aa0, sub\_1ae0, sub\_1b40, sub\_1c20, sub\_1d10, sub\_22d0, sub\_23f0, sub\_2570, sub\_2650, sub\_2770, sub\_2850, sub\_2870, sub\_2880, sub\_2890, sub\_28b0, sub\_28f0, sub\_291e, sub\_29f0, sub\_2ab5, sub\_2af0, sub\_2c0e, sub\_2c40, sub\_2cd3, sub\_2d50, sub\_2e90, sub\_2ef0, sub\_3020, sub\_3190, sub\_33e0, sub\_3440, sub\_34f0, sub\_44b0, sub\_4554, sub\_45d0, sub\_46b0, sub\_484a, sub\_48c0, sub\_4ba0, sub\_4d10, sub\_4d50, sub\_4d90, main (sub\_4dc0), and .fini.
+
+Constructed intraprocedural structural edges focusing heavily on branch targets (e.g., je, jne, jmp, jl, jge) inside complex functions like sub\_1350, sub\_1500, sub\_1700, sub\_1d10, and main.
+
+Omitted interprocedural function calls (e.g., call 10c0 snprintf@plt) and focused solely on within-boundary control flow structures.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Notepad-- (\texttt{Notepad--\_O3.json})}
+
+\textbf{Confidence:} 90
+
+\textbf{Reasoning}
+
+Analyzed the intraprocedural control flow transitions from the disassembled text section.
+
+Isolated standard entry/exit markers, loops, conditional branches, and jumps within each distinct routine.
+
+Omitted standard library function calls and target resolution for dynamic symbols where internal CFG structure was absent.
+
+Identified several loops and multi-way conditional switches based on jump targets within larger functions such as sub\_1d10 and sub\_3510.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Tinyhttpd (\texttt{Tinyhttpd\_O0.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Identified the main function and several subroutines from the disassembly section .text.
+
+Parsed intraprocedural conditional branches (e.g., jne, je, jge, jle) and unconditional jumps (jmp) to establish basic block boundaries and connect nodes with edges.
+
+Followed the rule that function calls do not terminate a basic block unless they are followed by control-altering instructions or act as branch targets.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Tinyhttpd (\texttt{Tinyhttpd\_O1.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Reconstructed the control flow graphs for major procedures in the disassembly, including sub\_1230, sub\_1270, sub\_12a0, sub\_12e0, sub\_1330 (request handler), sub\_1610 (readline), sub\_16f0, sub\_1890, sub\_1a60, sub\_1ba0 (handle\_cgi/request), sub\_20c0, sub\_21b0, sub\_2220, sub\_2310, sub\_23e0 (startup/bind), and sub\_24f0 (main loop).
+
+Basic blocks are split on control-flow instructions such as je, jne, jmp, jb, ja, js, jle, and ret.
+
+Function calls (like perror, exit, accept, pthread\_create) do not terminate basic blocks unless accompanied by a branching instruction or terminating the function.
+
+All edges are intraprocedural, respecting the independent function CFG requirement.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Tinyhttpd (\texttt{Tinyhttpd\_O2.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Reconstructed intraprocedural CFG for multiple recovered functions based on branch and jump targets.
+
+Isolated function call targets and model-internal branches according to specifications.
+
+Functions mapped include: .text initialization placeholders (sub\_1230), sub\_1270, sub\_12a0, sub\_12e0, sub\_1330, sub\_1750, sub\_1810, sub\_19b0, sub\_1b80, sub\_1d70, sub\_24a0, sub\_2590, sub\_2600, sub\_26f0, sub\_27c0, and sub\_28d0 (main/server loop).
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- Tinyhttpd (\texttt{Tinyhttpd\_O3.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Analyzed the intraprocedural control flow for all functions in the .text section.
+
+Identified function boundaries based on entry points (endbr64, push rbp) and returns (ret).
+
+Function sub\_1230 is an initialization or error wrapper starting at 0x1230, which calls perror and exit.
+
+Function sub\_1270 handles initialization or finalization with conditional checks at 0x1281 and 0x128d.
+
+Function sub\_12a0 handles frame setup and conditionally jumps or returns.
+
+Function sub\_12e0 is \_\_do\_global\_dtors\_aux with checks for a flag, calling \_\_cxa\_finalize.
+
+Function sub\_1330 is a large request handling function (likely a worker or thread routine) containing numerous conditional branches for reading sockets (recv), string matching (strcasecmp), and parsing HTTP-like paths, dispatching to error/response helpers (sub\_1820, sub\_19c0, sub\_1b90, sub\_1de0).
+
+Function sub\_1760 reads a line from a socket dynamically with termination checks.
+
+Function sub\_1820 constructs and sends specific network headers and text.
+
+Function sub\_19c0 constructs and sends an alternative set of responses.
+
+Function sub\_1b90 processes a file read or socket loop, conditionally loading files via fopen and sending contents.
+
+Function sub\_1de0 executes a CGI-like fork/exec pipeline or returns error responses, tracking pipeline states.
+
+Function sub\_2530 sends basic request errors.
+
+Function sub\_2620 wraps fgets and loops until feof.
+
+Function sub\_2690 and sub\_2780 send static error blocks.
+
+Function sub\_2850 sets up a server socket (socket, setsockopt, bind, listen) with multiple error handling blocks.
+
+Function sub\_2990 is the main server loop (main) which invokes sub\_2850, prints status, enters an accept loop, and creates a thread via pthread\_create for each incoming connection.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- bzip2 (\texttt{bzip2\_O0.json})}
+
+\textbf{Confidence:} 90
+
+\textbf{Reasoning}
+
+Identified function sub\_2390 starting at 0x2390 and ending at 0x25b7.
+
+Traced all conditional and unconditional jumps within sub\_2390 to construct its basic blocks.
+
+The disassembly becomes truncated towards the end, so focus was placed on fully recovering the complete sub\_2390 function graph.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- bzip2 (\texttt{bzip2\_O1.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Reconstructed function-level control flow graphs for several functions extracted from the disassembly text section.
+
+Functions identified include helper blocks around exit/perror, standard assembly initialization loops, several distinct custom logic algorithms (like a sorting routine, tree or map builder, dynamic memory layouts).
+
+Model boundaries follow explicit conditional splits (e.g., je, jne, jg, jl, jbe, jae) and absolute jumps or sequential drops to subsequent offsets.
+
+Intraprocedural boundaries strictly maintained; intraprocedural returns (ret) correctly mapped without outbound links to dynamic caller contexts.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- bzip2 (\texttt{bzip2\_O2.json})}
+
+\textbf{Confidence:} 90
+
+\textbf{Reasoning}
+
+Reconstructed the control flow graph for the .init section and the first function in the .text section (sub\_22c0) based on conditional branches and terminal instructions.
+
+In .init, the conditional jump at 2012 splits the flow into a branch containing a function call and a fallthrough/target block at 2016 which concludes with a return.
+
+In sub\_22c0, a comparison and conditional jump at 22ed splits execution into a block performing a write operation (22ef) and a block leading to program termination via exit (2308).
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- bzip2 (\texttt{bzip2\_O3.json})}
+
 \textbf{Confidence:} 75
 
 \textbf{Reasoning}
 
-The input assembly code contains multiple disjointed sections, with '.text' containing the main logic which appears to be a sequence of function-like blocks.
+Identified internal functions corresponding to section markers and symbols within .text (e.g., .text block entry at 22c0, loops and complex block construction logic up to address 83a9).
 
-Functions were identified by looking for 'endbr64' instructions, which typically mark the start of functions in x86-64 CET-enabled binaries.
+Analyzed the basic block boundaries using branching instructions (je, jne, jg, jl, jmp, call) and sequential flow constraints.
 
-Basic blocks were defined by identifying control-flow instructions like 'call', 'jmp', 'je', 'jne', 'ret', and 'hlt' as terminators.
+Modeled intraprocedural structural loops and conditional jumps inside the main compression/decompression function (.text section body).
 
-Intraprocedural edges were added based on the jump targets (e.g., direct jumps and conditional branches within the same function) and sequential execution flow.
-
-Calls to plt entries (like printf, putchar) were treated as calls and thus skipped in the CFG reconstruction per the instructions, though their entry points are not included as nodes, the flow continues from them after they return.
-
-Some functions are large and have complex loop structures, for which I've reconstructed the primary control paths based on the explicit jumps provided in the assembly.
-
-I have identified several functions such as 'sub\_1110', 'sub\_1140', 'sub\_1170', 'sub\_11b0', 'sub\_11f0', 'sub\_1200', 'sub\_12b0', and 'sub\_12e0'.
+Excluded interprocedural function call destinations (e.g., fprintf@plt, fwrite@plt) from structural edges as per graph definition instructions.
 
 \bigskip
 \hrule
@@ -689,19 +1459,15 @@ I have identified several functions such as 'sub\_1110', 'sub\_1140', 'sub\_1170
 
 \subsection{Gemini -- fe (\texttt{fe\_O0.json})}
 
-\textbf{Confidence:} 70
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input assembly code contains multiple functions identified by their entry points (e.g., 0x1120, 0x11c0, 0x1210, 0x1220, 0x12f0, 0x1350, 0x13f0, 0x1430, 0x1460, 0x14c0, 0x14e0, 0x1500, 0x15d0, 0x1620, 0x16b0, 0x16f0, 0x1730).
+Reconstructed intraprocedural CFGs for multiple recovered functions based on the branch and jump targets in the disassembly.
 
-Each function's CFG was reconstructed by grouping instructions into basic blocks and identifying control-flow instructions like 'jmp', 'je', 'jne', 'ret', and 'call'.
+Isolated basic blocks per function according to linear execution flow and branch targets, observing that function calls do not break a basic block.
 
-Internal control flow within each function was mapped by following jump/branch targets and sequential execution flow.
-
-Interprocedural edges (calls to library functions and other internal functions) were excluded to focus on intraprocedural CFG as requested.
-
-Function 0x1220 shows complex control flow with multiple conditional jumps (je, jne, jmp) leading to distinct blocks.
+Mapped edges based on unconditional jumps, conditional branches (je, jne, jg, etc.), switch dispatch jump tables, and returns.
 
 \bigskip
 \hrule
@@ -709,19 +1475,15 @@ Function 0x1220 shows complex control flow with multiple conditional jumps (je, 
 
 \subsection{Gemini -- fe (\texttt{fe\_O1.json})}
 
-\textbf{Confidence:} 70
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input assembly code contains multiple functions identified by entry points (e.g., .init at 1000, .text entries starting from 1120).
+Reconstructed intraprocedural CFG for multiple functions in the binary by identifying split points at conditional/unconditional branches, returns, and jumps.
 
-Basic blocks were identified based on sequential instructions terminated by control-flow instructions such as 'ret', 'jmp', 'je', 'jne', 'call', and 'hlt'.
+Functions like .init, putchar@plt, and several internal subroutines (sub\_1120, sub\_1180, sub\_11b0, sub\_11f0, sub\_1250, sub\_1320, sub\_1360, sub\_1430, etc.) were parsed into sequential basic blocks.
 
-Due to the complexity of the assembly and the length of the code, only a subset of the functions were fully mapped (e.g., the function at 1120, 1150, 1180, 11b0, 11f0, 1230, 1250, 1320, 1360, 13d0, 13e0, 1420, 1430).
-
-Intraprocedural edges were added based on the target addresses of conditional and unconditional branch instructions within each function.
-
-Interprocedural edges (calls) were excluded according to the provided instructions.
+Ensured all function calls do not terminate their respective basic blocks but remain part of them, keeping control flow strictly intraprocedural.
 
 \bigskip
 \hrule
@@ -729,19 +1491,17 @@ Interprocedural edges (calls) were excluded according to the provided instructio
 
 \subsection{Gemini -- fe (\texttt{fe\_O2.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The provided disassembly contains several functions identified by their entry points (e.g., .init, .plt entries, .text functions).
+Analyzed the intraprocedural control flow transitions from the disassembly of multiple functions.
 
-Basic blocks were identified by locating entry points (e.g., endbr64, function starts) and branch/return instructions.
+Functions like sub\_1000 (.init), sub\_1120, sub\_1180, sub\_11b0, sub\_11f0, sub\_1230, sub\_1240, sub\_1250, sub\_1320, sub\_1360, sub\_13b0, sub\_13d0, sub\_13e0, sub\_13fe, sub\_1420, sub\_1430, sub\_14b0, sub\_1540, sub\_15e0, sub\_1670, sub\_1750, sub\_1820, sub\_1a50, sub\_1ad0, sub\_1b50, sub\_1c20, sub\_1c90, sub\_1cf0, sub\_1d60, sub\_21a0, sub\_21c0, sub\_21d0, sub\_21f0, sub\_22c0, sub\_22f0, sub\_29a0, sub\_29d0, sub\_29f0, sub\_3730, sub\_38e0, sub\_39c0 (main), sub\_3b30, sub\_3c00, sub\_3d10, sub\_3da5, sub\_4058 (.fini) have been mapped.
 
-Intraprocedural edges were inferred from jump (jmp), conditional branch (je, jne, jb), and call instructions that transfer control within the function context.
+Basic blocks are split by conditional branches (je, jne, jb, ja, jl, jge, etc.), unconditional jumps, and return instructions.
 
-Functions were treated as separate entities, and edges were restricted to remain within the scope of each identified function.
-
-Some uncertainty remains due to the complexity of indirect jumps and calls, but the fundamental control flow structure is sound.
+Interprocedural function calls are treated as normal instructions inside a block and do not introduce edges.
 
 \bigskip
 \hrule
@@ -749,17 +1509,15 @@ Some uncertainty remains due to the complexity of indirect jumps and calls, but 
 
 \subsection{Gemini -- fe (\texttt{fe\_O3.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The disassembly clearly identifies multiple functions and basic blocks within the .text section. Each block is determined by sequential instructions followed by a control-flow instruction (jmp, call, ret, conditional branches).
+Analyzed the intraprocedural control flow transitions across all recovered functions within the .text section.
 
-Function entry points were identified by the 'endbr64' instruction or the start of sequences immediately following a 'ret'.
+Correctly identified function boundaries, call sites, and branch terminations including conditional jumps (je, jne, jl, jge, jb, jne), unconditional jumps (jmp), and function returns (ret).
 
-Control-flow edges were established by mapping branch targets (je, jne, jmp) to the start of their corresponding basic blocks.
-
-The reconstruction focuses solely on intraprocedural flow, as per the requirements, ignoring calls to external library functions in the .plt section.
+Isolated basic blocks per function sequentially without drawing interprocedural edges for functions like sub\_1120, sub\_1180, sub\_11b0, sub\_11f0, sub\_1250, sub\_1320, sub\_1360, sub\_13e0, sub\_1430, sub\_14d0, and others.
 
 \bigskip
 \hrule
@@ -767,19 +1525,19 @@ The reconstruction focuses solely on intraprocedural flow, as per the requiremen
 
 \subsection{Gemini -- kilo (\texttt{kilo\_O0.json})}
 
-\textbf{Confidence:} 75
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The provided assembly code contains multiple distinct functions, recognizable by 'endbr64' or 'push rbp' at the start of basic blocks.
+Reconstructed intraprocedural control flow for all identifiable functions in the .text section.
 
-Control flow is reconstructed by identifying basic blocks that end with control-flow instructions (jmp, je, jne, jge, jl, call, ret).
+Functions extracted based on entry points (such as push rbp, mov rbp, rsp or endbr64) and separated by blocks of nop/ret.
 
-Edges are created based on the destination addresses of jumps and branches within the same function.
+Identified branch destinations from relative jump instructions (e.g., je, jne, jmp) to compute target blocks accurately.
 
-Functions are processed independently to ensure intraprocedural CFG integrity, and call/return edges between functions are intentionally excluded as per the instructions.
+Modelled switch dispatch tables and conditional bounds logic accurately within the specific processing functions (e.g., 2fa0, 3010).
 
-Confidence is 75 due to the complexity of the provided disassembly, where some indirect jumps (e.g., jmp rax) and large function structures make mapping all possible paths difficult without deeper analysis of the data flow.
+Excluded function call edges and external/plt entries to ensure strict intraprocedural constraints.
 
 \bigskip
 \hrule
@@ -787,19 +1545,23 @@ Confidence is 75 due to the complexity of the provided disassembly, where some i
 
 \subsection{Gemini -- kilo (\texttt{kilo\_O1.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 100
 
 \textbf{Reasoning}
 
-Functions were identified based on the provided disassembly, using entry points labeled by addresses and explicit 'endbr64' or standard prologue patterns.
+Analyzed the function at 0x23c0 (tcgetattr/tcsetattr handling) for linear flow and standard block termination.
 
-Basic blocks were identified by following linear control flow and breaking at control-flow instructions such as 'jmp', 'je', 'jne', 'ret', 'call', and 'ja'.
+Analyzed the function at 0x2490 (read loop and complex multi-way conditional handling for escape sequence decoding) to split basic blocks on conditional jumps (je, jne, ja, jae) and the indirect jump (jmp rax) resulting from a switch dispatch.
 
-Edges were added for both taken and not-taken paths of conditional branches and for unconditional jumps within the same function.
+Analyzed the function at 0x2630 (vsnprintf / sscanf helper) mapping out conditional branches around read loops and validation checks.
 
-Call sites were identified, but per instructions, no call edges were created.
+Analyzed the function at 0x26f0 (ioctl and dual-sscanf/snprintf flow) checking branches on ioctl result, read success, and string conversions.
 
-Function-level separation was maintained to ensure no interprocedural edges exist.
+Analyzed the function at 0x28e0 (ctype\_b\_loc / memchr verification) separating logic based on test/je/jne instructions.
+
+Analyzed the function at 0x2930 (simple structural check with early returns) identifying basic blocks separated by conditional jumps.
+
+Analyzed the main entry point function at 0x4d10 (argument verification, signal setup, tracking loop) isolating blocks up to the infinite interactive execution loop.
 
 \bigskip
 \hrule
@@ -807,21 +1569,19 @@ Function-level separation was maintained to ensure no interprocedural edges exis
 
 \subsection{Gemini -- kilo (\texttt{kilo\_O2.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-The input assembly code contains multiple functions identified by labels and endbr64 instructions.
+Analyzed the provided disassembly to identify individual function entry points and boundaries.
 
-Functions are defined at specific addresses (e.g., .init at 2000, .text at 2270, 2310, 2350, 2360, 2390, 23c0, 2490, 2630, 26f0).
+Mapped out the basic blocks within each function based on control-flow instructions such as jmp, je, jne, ja, jae, jl, jle, and ret.
 
-Basic blocks were identified by segmenting the code at jumps, conditional branches, and function boundaries.
+Identified function calls (e.g., call 2110 <read@plt>) and treated them as part of the continuous basic block, adhering to the requirement that call instructions do not terminate basic blocks.
 
-Intraprocedural edges were reconstructed based on conditional (je, jne, js, jnz) and unconditional (jmp) branches, adhering strictly to keeping edges within the same function.
+Isolated intraprocedural control flow within functions like sub\_2000, sub\_2270, sub\_23c0, sub\_2490, sub\_2630, sub\_26e7, and main (sub\_51b0).
 
-Calls to library functions (e.g., call 2060 [isatty@plt](mailto:isatty@plt)) were treated as non-branching instructions within a block, as they return and execution continues linearly.
-
-Some uncertainty exists regarding certain jumps (e.g., indirect jumps), which are handled by terminating the block and not adding an edge if the target is not determinable.
+Ensured no interprocedural edges were created between distinct functions.
 
 \bigskip
 \hrule
@@ -829,19 +1589,17 @@ Some uncertainty exists regarding certain jumps (e.g., indirect jumps), which ar
 
 \subsection{Gemini -- kilo (\texttt{kilo\_O3.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-Reconstructed the Control Flow Graph by parsing the .text section and identifying basic blocks based on jump, conditional jump, return, and call instructions.
+Analyzed the provided disassembly to identify individual function entry points and basic block boundaries based on control flow instructions (jumps, branches, returns, and calls).
 
-Functions were identified based on the function entry points marked by 'endbr64' or standard function preamble patterns (push/sub rsp).
+Extracted internal intraprocedural structures for key functions, ignoring interprocedural transitions (calls/returns between different functions).
 
-Edges were created based on explicit jump targets and sequential flow within functions, ensuring all edges are intraprocedural.
+Successfully mapped basic blocks sequentially, resolving conditional jumps (e.g., je, jne, jg, jl) and unconditional jumps into explicit directional edges.
 
-Standard library calls and PLT entries were treated as call sites within the functions, and control flow resumes sequentially after them unless a branch is specified.
-
-Certain functions (like the one starting at 0x24a0) have complex control flow involving jump tables or indirect branches which were mapped as closely as possible based on the assembly.
+Functions recovered include .init, free@plt, and various numbered sub-routines in the .text section matching pattern rules.
 
 \bigskip
 \hrule
@@ -853,13 +1611,25 @@ Certain functions (like the one starting at 0x24a0) have complex control flow in
 
 \textbf{Reasoning}
 
-Identified function boundaries based on function prologues (endbr64/push rbp/mov rbp, rsp) and exits (ret).
+Analyzed the provided x86\_64 disassembly to extract function boundaries and build intraprocedural CFGs.
 
-Analyzed control flow instructions (jmp, je, jne, jge, call) within each function to determine basic block boundaries and intraprocedural transitions.
+Identified function starting at 0x1210 (possibly 'builtin\_cd'). It has conditional branches at 0x1225 and 0x1251, leading to basic blocks terminating at 0x126b (ret).
 
-Functions identified: sub\_1000 (.init), sub\_1120, sub\_1150, sub\_1180, sub\_11c0, sub\_1210, sub\_1270, sub\_1310, sub\_1320, sub\_1330, sub\_13e0, sub\_1480, sub\_1580, sub\_16b0, sub\_1710 (entry point), and .fini at 1734.
+Identified function starting at 0x1270 (possibly 'builtin\_help'). Contains a loop back edge from 0x12e7 to 0x12ad based on the comparison and conditional branch at 0x12bf.
 
-Edges represent only intraprocedural jumps (conditional/unconditional); calls and returns to/from library or other internal functions are excluded per instructions.
+Identified short helper functions at 0x1310 and 0x1320.
+
+Identified function starting at 0x1330 (possibly 'execute\_command\_fork'). Contains a loop at 0x138b based on the conditional jump at 0x13ca.
+
+Identified function starting at 0x13e0 (possibly 'execute\_builtin\_or\_external'). Has a loop from 0x145f back to 0x1406.
+
+Identified function starting at 0x1480 (possibly 'read\_line'). Loop from 0x156d to 0x14d2.
+
+Identified function starting at 0x1580 (possibly 'split\_line'). Loop from 0x1682 back to 0x15e8.
+
+Identified function starting at 0x16b0 (possibly 'sh\_loop'). Loop from 0x16fe back to 0x16b8.
+
+Identified function starting at 0x1710 ('main'). Sequential flow calling sh\_loop and returning.
 
 \bigskip
 \hrule
@@ -871,17 +1641,11 @@ Edges represent only intraprocedural jumps (conditional/unconditional); calls an
 
 \textbf{Reasoning}
 
-Identified several functions based on standard entry patterns (endbr64, prologue, return).
+Identified sub\_1220 (likely a cd command implementation), sub\_1270 (help command), sub\_12e0, sub\_12f0, sub\_1300 (process spawning / fork / execvp loop), sub\_1390 (command dispatcher), sub\_1410 (line reader), sub\_14c0 (tokenizer), and main (starting at 15a0 or 1660, with 15a0 being the main shell loop).
 
-sub\_1130 corresponds to the main entry point logic.
+Analyzed control flow transitions based on conditional branches, unconditional jumps, and function boundary instructions (returns/calls).
 
-sub\_1160, sub\_1190, sub\_11d0, sub\_1210, sub\_1270, sub\_1300, sub\_1390, sub\_1410, sub\_14c0, sub\_15a0 represent distinct subroutines based on entry points and logic flow.
-
-Basic blocks are delineated by branch targets (jumps, conditional jumps, calls, returns) as per standard disassembly analysis.
-
-Edges are mapped based on control flow transfers within each function.
-
-PLT entries are excluded from CFG nodes as they are library interface stubs.
+Constructed intraprocedural edges for all identified functions.
 
 \bigskip
 \hrule
@@ -893,15 +1657,27 @@ PLT entries are excluded from CFG nodes as they are library interface stubs.
 
 \textbf{Reasoning}
 
-Function boundaries identified based on entry points (endbr64, function prologues) and ret instructions.
+Analyzed the intraprocedural control flow from the provided disassembly.
 
-Basic blocks defined by identifying entry points (branch targets) and termination points (branches, calls leading to jumps, returns).
+Identified several functions, including helper functions for a shell-like application (e.g., handling chdir, help, command execution, input reading, tokenization, and main loop).
 
-Internal function flow includes conditional jumps (je, jne, jg, jl, js, jz) and unconditional jumps (jmp).
+Function at 0x1220 handles 'cd' command: branches at 1228 (je 123a), 1231 (jne 125c), with 125a and 1268 jumping back to 1233.
 
-Library calls (plt) are treated as atomic operations within a block; they do not terminate a block unless followed by a control flow change.
+Function at 0x1270 prints help or prompt info and returns sequentially.
 
-Functions identified: sub\_1000 (.init), sub\_1130 (entry point), sub\_1160, sub\_1190, sub\_11d0, sub\_1210, sub\_1220, sub\_1270, sub\_12f0, sub\_1300, sub\_1310, sub\_13a0, sub\_1430, sub\_14e0, sub\_15c0, sub\_16a0.
+Function at 0x12f0 and 0x1300 are simple stub/return functions.
+
+Function at 0x1310 handles process forking and execution: branches at 131e (je 1372), 1320 (js 1364), loop at 1355 (jl 1330), and branches inside child path at 1380.
+
+Function at 0x13a0 matches commands against builtins and executes or dispatches via an indirect jump table at 141e.
+
+Function at 0x1430 reads input line-by-line (getc loop) with dynamic resizing via realloc: loop branches at 146c (je 14c3), 1471 (je 14d9), and 147d (jg 1460), 1497 (jne 1460).
+
+Function at 0x14e0 tokenizes the input string: dynamic token loop with branches at 150e, 1543, 1552, 1567.
+
+Function at 0x15c0 is the main shell loop: loops back from 1685 (jne 15f3).
+
+Function at 0x16a0 is the main entry wrapper calling the main shell loop.
 
 \bigskip
 \hrule
@@ -909,19 +1685,15 @@ Functions identified: sub\_1000 (.init), sub\_1130 (entry point), sub\_1160, sub
 
 \subsection{Gemini -- lsh (\texttt{lsh\_O3.json})}
 
-\textbf{Confidence:} 85
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-Function entry points were identified at 1000, 1130, 1160, 1190, 1210, 1310, 1320, 13b0, 1440, 14f0, 15d0, 16b0 based on disassembly structure.
+Analyzed the provided assembly code and parsed individual functions based on entry points, branch targets, and return statements.
 
-Basic blocks were defined by identifying instructions that alter control flow (calls, jumps, returns, tests).
+Identified several intraprocedural functions including .init (1000), .text (1130), sub\_1160 (1160), sub\_1190 (1190), sub\_11d0 (11d0), sub\_1210 (1210), sub\_1220 (1220), sub\_1280 (1280), sub\_1300 (1300), sub\_1310 (1310), sub\_1320 (1320), sub\_13b0 (13b0), sub\_1440 (1440), sub\_14f0 (14f0), sub\_15d0 (15d0), main (16b0), and .fini (16bc).
 
-Intraprocedural edges were mapped based on conditional and unconditional branch destinations.
-
-Library call destinations (e.g., free@plt) were treated as terminal instructions within the calling block and not included in interprocedural edges.
-
-Some complex control flow involving indirect jumps (e.g., at 142e) implies dynamic dispatch; the graph reflects observed direct targets and fall-through paths.
+Divided each function into basic blocks at control flow alters like je, jne, jmp, and ret instructions, while ignoring function call destinations to keep the CFG purely intraprocedural.
 
 \bigskip
 \hrule
@@ -929,19 +1701,15 @@ Some complex control flow involving indirect jumps (e.g., at 142e) implies dynam
 
 \subsection{Gemini -- md5-c (\texttt{md5\_O0.json})}
 
-\textbf{Confidence:} 90
+\textbf{Confidence:} 95
 
 \textbf{Reasoning}
 
-Functions were identified based on standard entry patterns like 'endbr64' and 'push rbp; mov rbp, rsp'.
+Analyzed the provided disassembly to identify individual functions and their internal basic block control flow structures.
 
-Basic blocks were defined by splitting at control flow instructions (jcc, jmp, ret, call).
+Isolated functions: .init, sub\_1020, free, fread, strlen, printf, malloc, \_\_cxa\_finalize, sub\_1090, sub\_10c0, sub\_1130, sub\_1170, sub\_1180, sub\_11e0 (main-like), sub\_1260, sub\_1290, sub\_12e0, sub\_1400, sub\_1590, sub\_1770, sub\_17e0, and .fini.
 
-Library calls (printf, malloc, etc.) and plt stubs were identified and treated as part of the calling block without creating interprocedural edges.
-
-The code implements an MD5-like hashing algorithm based on constants like 0x67452301 and specific transformation operations.
-
-Intraprocedural edges were mapped based on branch targets and fall-through behavior.
+Created intraprocedural edges based on branch instructions (je, jne, jmp, jae, jle, jge, jbe), making sure not to cross function boundaries.
 
 \bigskip
 \hrule
@@ -953,25 +1721,11 @@ Intraprocedural edges were mapped based on branch targets and fall-through behav
 
 \textbf{Reasoning}
 
-Identified several distinct functions based on function prologues (endbr64/push rbp/mov rbp,rsp) and typical layout.
+Reconstructed intraprocedural CFGs for the individual functions found in the .text section: sub\_10a0, sub\_10d0, sub\_1100, sub\_1140, sub\_1180, sub\_1190, main\_or\_similar (11e0), rotate\_left (12b0), md5\_init (12c0), md5\_update (12e0), md5\_transform (1370), md5\_final (14d0), md5\_string (15c0), and md5\_file (17c0).
 
-sub\_1000 (.init): Standard init block, linear control flow with a conditional branch.
+Modelled loop back-edges accurately based on conditional jumps to earlier targets (e.g., in md5\_transform 1421 -> 1494 or jump back to 13d0/1423).
 
-sub\_10a0 (main): Entry point with typical C startup sequence, branches to sub\_11e0 and sub\_1140.
-
-sub\_1140: Contains logic to verify a state and call initialization/setup routines.
-
-sub\_1190: Prints hex representation of a buffer, contains loop.
-
-sub\_11e0: Handles arguments, branches based on arg count, calls helper functions.
-
-sub\_12b0, sub\_12c0: Simple helper routines (byte rotation, memory clearing).
-
-sub\_12e0, sub\_1370, sub\_14d0, sub\_15c0, sub\_17c0: Complex arithmetic/logic functions, likely cryptographic (MD5/SHA-like), containing multiple loops and conditional branches.
-
-Each block defined as maximal linear sequence ending in jump/ret/call/conditional-branch.
-
-Edges only included for intraprocedural jumps, branches, and falls-through.
+Calls to PLT or internal functions are contained within their respective basic blocks without introducing interprocedural or call edges.
 
 \bigskip
 \hrule
@@ -979,31 +1733,15 @@ Edges only included for intraprocedural jumps, branches, and falls-through.
 
 \subsection{Gemini -- md5-c (\texttt{md5\_O2.json})}
 
-\textbf{Confidence:} 95
+\textbf{Confidence:} 90
 
 \textbf{Reasoning}
 
-Identified several functions based on standard entry patterns (endbr64, function prologues) and control flow.
+Identified several functions from the disassembly including sub\_1190, sub\_1290, sub\_1300, sub\_1310, and sub\_1330.
 
-sub\_1000: Initial block performs stack setup and conditional check before return.
+Reconstructed the control flow for sub\_1290 based on conditional jump (jl 12ce) and loop (jne 12b0).
 
-sub\_10a0 (Entry/main): Performs complex environment setup and calls initializers, followed by exit.
-
-sub\_1140: Manages initialization logic with internal branching.
-
-sub\_1190: Prints hex representation of data through a loop.
-
-sub\_1290: Orchestrates main logic, iterating through arguments and processing data.
-
-sub\_13c0: Implements an MD5 transform function with complex block structure and branches.
-
-sub\_1520: Implements MD5 finalization (padding/processing).
-
-sub\_1610: Implements MD5 data processing loop.
-
-sub\_1830: Implements file reading and hashing loop.
-
-Edges are strictly intraprocedural; call sites and returns are not modeled as edges.
+Reconstructed the control flow for sub\_1330 involving multiple nested loops and conditional jumps.
 
 \bigskip
 \hrule
@@ -1015,17 +1753,195 @@ Edges are strictly intraprocedural; call sites and returns are not modeled as ed
 
 \textbf{Reasoning}
 
-Identified function boundaries based on function entry points (endbr64 instructions) and ret instructions.
+Reconstructed intraprocedural CFG for multiple functions in the disassembly.
 
-Basic blocks were defined by splitting at control-flow instructions (jmp, conditional branches, calls, and returns).
+Functions like sub\_1190 contain sequential basic blocks with a single exit point (putchar@plt via jmp).
 
-Analyzed jumps and conditional branches to map internal CFG edges within each function.
+Functions like sub\_1290 contain conditional jumps (jl 12ce, jne 12b0), forming loops and branches.
 
-Functions identified: sub\_1000 (.init), sub\_10a0 (main-like entry point), sub\_10d0, sub\_1100, sub\_1140, sub\_1180, sub\_1190, sub\_1290, sub\_1300, sub\_1310, sub\_1330, sub\_1430, sub\_1590, sub\_1660, sub\_16c0, sub\_175c (.fini).
+Functions like sub\_1330 contain conditional branches (je 142e, jbe 1420, jne 1370) that form complex loops and conditional blocks.
 
-Excluded call instructions from edges as per requirements.
+Functions like sub\_1430 (MD5/cryptographic step-like layout) contain conditional jumps (je 1554, je 1520, je 1490, jne 1540).
 
-Basic blocks are numbered B0, B1... within each function.
+All function calls are treated as internal instructions and do not break basic blocks.
+
+Interprocedural edges (calls/returns) are omitted per rules.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- pdpmake (\texttt{pdpmake\_O0.json})}
+
+\textbf{Confidence:} 95
+
+\textbf{Reasoning}
+
+Analyzed the intraprocedural control flow within the given x86\_64 disassembly routines.
+
+Functions identified include the .init section, various PLT stubs, error initialization, formatting, custom path/string management routines, and core logic components.
+
+Basic blocks are delineated based on execution-altering instructions such as conditional jumps (je, jne, jge, jl, jb, ja, jae), unconditional jumps (jmp), returns (ret), and trap instructions (hlt).
+
+Linear sequences of instructions (including function call instructions like call) are preserved inside their respective basic blocks.
+
+No interprocedural edges (edges bridging distinct functions) have been included, strictly respecting the intraprocedural bounds.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- pdpmake (\texttt{pdpmake\_O1.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The input is a single binary module containing multiple functions, including .init, various PLT stubs, and the primary function 'error@@Base'.
+
+Each function has been analyzed independently to reconstruct its control flow.
+
+Basic blocks are identified by identifying entry points (targets of branches, calls, and sequential flow) and terminating instructions (branches, jumps, calls, returns).
+
+Function calls, such as those to PLT stubs (e.g., exit@plt, printf@plt), are modeled as part of the basic block containing the call instruction, as they do not terminate the block.
+
+Conditional and unconditional jumps establish edges between basic blocks.
+
+Edges are strictly intraprocedural, ignoring cross-function transitions or call/return relationships.
+
+Some disassembly includes 'data16' or NOP paddings which are ignored during CFG construction.
+
+Confidence is 75 due to complex indirect jumps (like 'jmp rax' in some sections) where potential targets might not be fully resolvable without dynamic analysis, necessitating a conservative approach to edge creation.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- pdpmake (\texttt{pdpmake\_O2.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The input contains a complex ELF binary disassembly, including .init, .plt, and .text sections.
+
+Functions like error@@Base contain multiple basic blocks with jumps, conditional branches, and function calls.
+
+The construction identifies multiple entry points (e.g., error@@Base at 23b0, and other sub-routines).
+
+Basic blocks are separated by control flow instructions such as jne, je, call, ret, and unconditional jumps.
+
+The CFG reconstruction follows intraprocedural rules, ensuring edges do not cross function boundaries.
+
+Some indirect jumps (e.g., jmp rax at 260f) create ambiguity in edge destination, but the structural flow of surrounding blocks is captured.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- pdpmake (\texttt{pdpmake\_O3.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+Reconstructed basic blocks by identifying sequential instructions that terminate at control-flow instructions (jmp, je, jne, ret, call) or branch targets.
+
+The function error@@Base (starting at 23b0) contains several distinct logic paths based on jump and call instructions, leading to multiple basic blocks (B0-B\_final).
+
+Many basic blocks end in jmp or ret, forming clear entry/exit points for the CFG.
+
+Some edges were inferred based on conditional branch targets (e.g., je, jne) and unconditional jumps.
+
+Internal function calls were treated as part of the current basic block as per instructions, and edges represent control flow within error@@Base.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- wak (\texttt{wak\_O0.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The function at 2390 is the program entry point (main).
+
+Basic blocks are defined by branch targets and control-flow instructions.
+
+Function calls are treated as internal to basic blocks per instructions.
+
+The CFG was reconstructed by identifying jump/branch targets (e.g., 23d1, 23dd) and return points within .text.
+
+Some targets are indirect jumps (e.g., jmp rax), which limits absolute certainty in edge mapping.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- wak (\texttt{wak\_O1.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The input contains multiple distinct functions and code sections (.init, .plt, .plt.got, .text).
+
+Each function is identified by a unique address and contains its own sequence of basic blocks.
+
+Basic blocks are delineated by control-flow instructions (jmp, je, jne, call, ret) as per the rules.
+
+Function call instructions are included within basic blocks, not as separate nodes or edges, maintaining intraprocedural graph constraints.
+
+The graph is constructed by analyzing unconditional and conditional jump targets for edges within the same function.
+
+Some uncertainty exists regarding the exact boundaries of very large functions or complex jump tables, so confidence is set to 75\%.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- wak (\texttt{wak\_O2.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The input contains multiple functions (including .init, plt entries, and numerous .text functions).
+
+Basic blocks are identified by control-flow altering instructions (call, ret, jmp, je, jne, jge, ja, jb).
+
+Function calls are treated as part of the basic block, not as edges, as per instructions.
+
+Edges represent intraprocedural transfers (conditional and unconditional branches).
+
+The reconstruction is partial, focusing on the main logic structures in .text.
+
+Functions lacking clear boundaries (e.g., jump tables, complex switch-like logic) were analyzed based on visible control flow.
+
+Some uncertain branches (e.g., computed jumps) were omitted to maintain soundness.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Gemini -- wak (\texttt{wak\_O3.json})}
+
+\textbf{Confidence:} 75
+
+\textbf{Reasoning}
+
+The input is a complete x86-64 assembly listing including .plt, .text, and other sections.
+
+Basic blocks were identified by locating entry points (like function start addresses) and control-flow instructions (jumps, calls, returns).
+
+Calls to library functions (e.g., fwrite@plt, vfprintf@plt) are treated as part of the calling basic block, and no interprocedural call/return edges were modeled.
+
+Multiple functions were identified (e.g., .init, the main code starting at 2390, and various sub-routines).
+
+Edges represent intraprocedural transfers; branches and jumps are resolved to their target addresses within the same function.
+
+Uncertain branches (e.g., indirect jumps like 'jmp rax') result in the omission of only the uncertain edge, adhering to the provided instructions.
 
 \bigskip
 \hrule
@@ -1037,13 +1953,15 @@ Basic blocks are numbered B0, B1... within each function.
 
 \textbf{Reasoning}
 
-Disassembly contains multiple functions identifiable by standard prologues (push rbp; mov rbp,rsp) and epilogues at addresses like 0x1200, 0x1360, 0x1390, 0x1630, 0x16d0, 0x17e0, 0x1970, 0x19e0, 0x1a40, 0x1aa0, 0x1b00, 0x1b90, 0x1c00, 0x1c90, 0x1da0, 0x1e10, 0x1ea0, 0x21a0, 0x21e0 (main).
+Identified multiple functions via standard x86-64 prologues (push rbp; mov rbp,rsp) and ret instructions in .text section.
 
-Basic blocks derived from linear sequences terminating at branches (jumps, conditional jumps like je/jne/jge, calls treated as intra-function flow continuation per rules, ret), respecting entry points from labels and targets.
+Main function recovered at 0x21e0 with extensive control flow including argument parsing, game loop with input handling, conditional branches for moves (w/a/s/d), and win/lose checks.
 
-Intraprocedural only: no call/return edges across functions; edges within each function's blocks based on jmp/je/jne/jge/etc. destinations; partial recovery for dense sections with many small loops (e.g., 4x4 grid iterations).
+Other functions identified at addresses like 0x1200 (byte manipulation), 0x1360 (digit count), 0x1390 (print), 0x17e0 (matrix rotate), 0x1c90 (random fill), 0x1ea0 (win check), etc., based on calls and structure.
 
-Functions labeled as sub\_<addr> or main where clear; nodes numbered per function; CFG sound but not exhaustive due to volume of small blocks and some indirect flows.
+Basic blocks split at branches (jumps, conditional j* , ret), calls do not split BBs per rules. Intra-function edges only.
+
+Partial reconstruction due to large number of small functions and complex loops; omitted uncertain indirect edges.
 
 \bigskip
 \hrule
@@ -1051,17 +1969,17 @@ Functions labeled as sub\_<addr> or main where clear; nodes numbered per functio
 
 \subsection{Grok -- 2048.c (\texttt{2048\_O1.json})}
 
-\textbf{Confidence:} 40
+\textbf{Confidence:} 45
 
 \textbf{Reasoning}
 
-Disassembly lacks explicit function symbols/labels for user code beyond PLT and sections; .text appears as monolithic with internal calls and branches.
+Disassembly lacks explicit function symbols in .text; identified main at 0x29c0 based on argc/argv handling and high-level structure.
 
-Identified entry at 0x1110 (\_start-like), main-like at 0x29c0, and multiple helper routines via prologues/returns (e.g., around 0x12e0, 0x1730, 0x2590, 0x26a0, 0x2740).
+Multiple intraprocedural basic blocks recovered from branch targets (je, jne, jmp, etc.) and fallthroughs within identifiable subroutines starting at addresses like 0x12e0, 0x16f0, 0x1730, etc.
 
-Basic blocks derived from branch targets (je, jne, jmp), ret instructions, and fall-throughs; interprocedural calls ignored per rules.
+Partial CFG due to dense code with many small helper functions; focused on main and key helpers with clear control flow; omitted uncertain inter-block edges where targets ambiguous.
 
-Partial CFG covers key control flow in main game loop and puzzle manipulation functions; full recovery limited by unlabeled code volume.
+No interprocedural edges created; calls to PLT ignored for CFG purposes.
 
 \bigskip
 \hrule
@@ -1069,17 +1987,19 @@ Partial CFG covers key control flow in main game loop and puzzle manipulation fu
 
 \subsection{Grok -- 2048.c (\texttt{2048\_O2.json})}
 
-\textbf{Confidence:} 45
+\textbf{Confidence:} 65
 
 \textbf{Reasoning}
 
-Disassembly provided with no user symbols; functions identified by standard prologues (push rbp, sub rsp) and epilogues (ret, pop registers) at addresses like 0x12e0, 0x1c10, 0x1d50, 0x2300, 0x2580, 0x2bf0 (main).
+Disassembly provided covers .text with multiple identifiable functions via prologues (push rbp etc.), ret instructions, and call targets.
 
-Basic blocks constructed by locating branch targets (je, jmp, jne etc.), fall-throughs, and control-flow terminators (ret, conditional jumps) within each identified function.
+Main function identified at 0x2bf0 (sub\_2bf0), large game loop with keyboard input handling (getc), grid operations, and terminal mode changes.
 
-Intraprocedural only: no call/return edges modeled. Multiple small utility functions for grid ops (4x4 byte arrays, shifts, merges like 2048-style) and main loop identified. Partial due to size/complexity of disassembly; many loops and conditionals recovered.
+Helper functions extracted: sub\_1200 (grid printing), sub\_12e0 (grid update/print loop), sub\_2580 (random fill), sub\_28c0 (validation/check), sub\_2820 (terminal attrs), smaller grid manipulators like sub\_1c60, sub\_1d50 etc.
 
-CFG includes representative BBs from key functions; full exhaustive BBs omitted for brevity but follows rules.
+Basic blocks split at branches (je/jne/jmp), returns, and targets; calls do not split blocks per rules. Intra-function edges only.
+
+Some indirect/conditional edges approximated; full coverage of major paths in main and helpers; minor uncertainty in dense loops.
 
 \bigskip
 \hrule
@@ -1087,19 +2007,235 @@ CFG includes representative BBs from key functions; full exhaustive BBs omitted 
 
 \subsection{Grok -- 2048.c (\texttt{2048\_O3.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 65
 
 \textbf{Reasoning}
 
-Disassembly provided covers .init, .plt, .text with multiple subroutines identifiable by standard prologues (endbr64, push rbp) and epilogues (pop rbp, ret).
+Disassembly contains multiple distinct functions identifiable by standard prologues (endbr64/push rbp), ret instructions, and call targets.
 
-Main function starts at 0x2dc0 with argument processing, option handling (h/v), signal setup, terminal config, and interactive loop with getc.
+Basic blocks constructed by splitting at conditional jumps (je/jne/ja), unconditional jmp, ret, and branch targets. Consecutive instructions without control flow form single blocks.
 
-Several helper functions identified: random move at \textasciitilde{}0x27f0, state validation at \textasciitilde{}0x2570, rotations/shuffles at 0x21e0/0x22e0/0x23c0, print at 0x12e0, checks at 0x24c0/0x2b30.
+Functions identified: sub\_1110 (entry), sub\_1200, sub\_12b0, sub\_12e0 (large logic), sub\_1f90, sub\_1fe0, sub\_2130, sub\_2180, sub\_21e0, sub\_22e0, sub\_23c0, sub\_24c0, sub\_2520, sub\_2570, sub\_27f0, sub\_2a70, sub\_2a90, sub\_2b30, sub\_2d90, sub\_2dc0 (main).
 
-Basic blocks extracted from branches (je/jne/ja/jmp), calls (ignored for intraprocedural), and fallthroughs within each function. Partial due to length and label-less code.
+Intra-function edges from jumps/conditionals only; no interprocedural or call/return edges per rules. Partial coverage for dense sections like sub\_12e0 due to length/complexity.
 
-No interprocedural edges; only intra-function control flow. PLT stubs treated as separate but minimal CFGs.
+No empty CFG as substantial recoverable control flow exists.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Notepad-- (\texttt{Notepad--\_O0.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly contains startup code (.init, .text entry at 0x1230), PLT stubs, and multiple functions identifiable by standard prologues (push rbp; mov rbp,rsp) and epilogues (pop rbp; ret).
+
+Basic blocks extracted from visible control flow: conditional jumps (je/jne), unconditional jumps (jmp), loops, and returns. Many functions like buffer append (around 1320), terminal setup (1460,1480), file loading (1780), and input handling are present.
+
+Full reconstruction limited by input truncation and scale; partial intraprocedural CFGs for key functions (e.g., sub\_1320, sub\_1530, sub\_1780) with identified branches. No interprocedural edges included per rules.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Notepad-- (\texttt{Notepad--\_O1.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly is a large .text section with multiple intraprocedural functions identifiable by standard prologues (push rbp, etc.) and epilogues (pop, ret).
+
+Basic blocks derived from conditional jumps (je, jne, jl, etc.), unconditional jumps, and ret instructions. Function boundaries inferred from call targets and entry points.
+
+Many functions like buffer management, file I/O, terminal control (tcgetattr/tcsetattr), and editing logic present. Partial CFG covers visible control flow; full reconstruction limited by truncation and label reuse.
+
+No interprocedural edges included; only intra-function branches and fall-throughs.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Notepad-- (\texttt{Notepad--\_O2.json})}
+
+\textbf{Confidence:} 40
+
+\textbf{Reasoning}
+
+Disassembly provided with no explicit function symbols in .text beyond PLT and init/fini; identified candidate function starts via common prologues (push rbp) and internal call targets.
+
+Reconstructed intraprocedural CFGs for several identifiable functions based on branch/jump targets, conditional branches, and returns within address ranges.
+
+Basic blocks split at control flow instructions (jumps, branches, calls to external but kept intra for blocks, rets); many edges recovered from je/jne/jmp etc., but full coverage limited by size and truncation.
+
+No interprocedural edges; treated each candidate function independently.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Notepad-- (\texttt{Notepad--\_O3.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+Disassembly shows multiple functions in .text with standard x86-64 prologues (push rbp, etc.) and control flow via conditional jumps (je, jne, jg, jl), unconditional jmp, and ret.
+
+Basic blocks identified by branch targets and fall-throughs within visible functions like sub\_1350 (string append/buffer), sub\_1500 (init), sub\_1700 (file load with getline loop), sub\_1890 (cleanup).
+
+Intraprocedural edges from jumps/branches within each function; calls to PLT ignored per rules; partial reconstruction due to truncation and label offsets.
+
+No interprocedural edges; focused on confidently recoverable blocks and flows from provided disassembly.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Tinyhttpd (\texttt{Tinyhttpd\_O0.json})}
+
+\textbf{Confidence:} 65
+
+\textbf{Reasoning}
+
+Identified multiple functions in .text section via address patterns and stack frames (push rbp, sub rsp).
+
+Parsed basic blocks by locating branch targets (labels like je, jmp destinations), conditional jumps, and returns.
+
+Reconstructed intraprocedural edges for key functions like the server loop at 2920, request handler at 1390, and utilities; ignored PLT stubs and interprocedural calls.
+
+Basic blocks split only at control flow instructions or targets; calls do not split blocks per rules.
+
+Partial coverage due to large disassembly size and some complex loops/conditions, but core flow recovered.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Tinyhttpd (\texttt{Tinyhttpd\_O1.json})}
+
+\textbf{Confidence:} 65
+
+\textbf{Reasoning}
+
+Identified distinct functions via prologues, stack adjustments, and call targets in .text section: error handler at 1230, client\_handler at 1330, read\_line at 1610, send\_404 at 16f0, send\_500 at 1890, serve\_file at 1a60, handle\_request at 1ba0, send\_error at 20c0, send\_file at 21b0, send\_alt\_error at 2220, send\_header at 2310, create\_socket at 23e0, main at 24f0.
+
+Basic blocks determined by branch targets (je, jne, jl, ja, jmp, etc.), loop entries, and return points; calls do not split blocks per rules; intra-function jumps and conditional branches define edges.
+
+Partial reconstruction prioritizing high-confidence branches; omitted uncertain indirect edges; all functions treated independently with no interprocedural edges.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Tinyhttpd (\texttt{Tinyhttpd\_O2.json})}
+
+\textbf{Confidence:} 65
+
+\textbf{Reasoning}
+
+Disassembly shows multiple functions identifiable by standard x86-64 prologues (push rbp, sub rsp), epilogues (pop rbp, ret), and call sites in .text section starting at 0x1230.
+
+Major functions recovered: handle\_client at 0x1330 (large request parser with recv loops), process\_request at 0x1d70, main at 0x28d0, setup\_socket at 0x27c0, and several error/send helpers (0x1810, 0x19b0, etc.).
+
+Basic blocks identified by branch targets, conditional jumps (je, jne, jle, etc.), unconditional jmp, ret instructions; calls do not split blocks. Intraprocedural edges only; no inter-function edges.
+
+Partial reconstruction due to complex recv loops and conditional paths in HTTP handling; some fallthroughs and loop back-edges included where clear from offsets.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- Tinyhttpd (\texttt{Tinyhttpd\_O3.json})}
+
+\textbf{Confidence:} 65
+
+\textbf{Reasoning}
+
+Disassembly shows multiple functions in .text section identified by prologues (push rbp etc.), rets, and call targets.
+
+Functions identified: sub\_1230 (error), sub\_1330 (client\_handler), sub\_1760 (recv\_line), sub\_1820 (send\_error), sub\_19c0 (send\_forbidden), sub\_1b90 (serve\_file), sub\_1de0 (handle\_request), sub\_2530 (bad\_request), sub\_2620 (send\_content), sub\_2690 (send\_internal\_error), sub\_2780 (send\_http\_headers), sub\_2850 (create\_server\_socket), sub\_2990 (main).
+
+Basic blocks derived from branch targets (je, jne, jmp, jle etc.), fall-throughs, and ret instructions within each function. No interprocedural edges. Partial reconstruction due to large size and label offsets.
+
+Edges follow conditional/unconditional jumps and sequential flow within functions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- bzip2 (\texttt{bzip2\_O0.json})}
+
+\textbf{Confidence:} 40
+
+\textbf{Reasoning}
+
+The disassembly is from a stripped ELF binary (likely bzip2 or similar compressor) with .text section containing multiple functions identified by standard x86-64 prologues (push rbp; mov rbp,rsp).
+
+PLT stubs and init/fini sections have simple linear CFGs with conditional jumps and returns. Main .text functions show complex control flow with loops, conditionals, and calls to library functions.
+
+Due to the large truncated disassembly (800k+ bytes) and lack of symbol names, only partial intraprocedural CFG reconstruction is feasible. Identified entry points at 0x22a0, 0x2390, 0x25c0 etc. Basic blocks split at branches (je, jmp, jge, ret). No interprocedural edges included.
+
+CFG represents key structures from visible code: init routines, compression/decompression helpers with loops over buffers and bit operations.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- bzip2 (\texttt{bzip2\_O1.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+Disassembly provided is extensive but lacks standard function symbols (stripped binary with relative PLT labels). Identified multiple function prologues via push rbp/sub rsp patterns at addresses like 0x2620, 0x3840, 0x41f0 etc.
+
+Basic blocks derived from control flow instructions (je/jne/jmp/ret/conditional branches) within .text section starting at 0x22c0. Intra-procedural edges follow branch targets within same function.
+
+Limited to key functions due to file size/truncation; no interprocedural edges per rules. Partial CFG focuses on identifiable entry points and visible branches.
+
+Confidence moderate due to massive disassembly volume and label artifacts preventing full automated parsing.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- bzip2 (\texttt{bzip2\_O2.json})}
+
+\textbf{Confidence:} 40
+
+\textbf{Reasoning}
+
+The disassembly is from a stripped binary with limited function symbols; most code is under .text starting at 0x22c0 containing multiple inlined or unlabeled functions.
+
+Identified basic blocks from visible control flow instructions (branches, jumps, returns) in the provided .text section excerpts.
+
+Reconstructed intraprocedural CFGs for prominent entry points like the one at 0x22c0 (likely main or entry), 0x2320, 0x23a0 etc., focusing on conditional jumps (je/jne) and unconditional jumps.
+
+PLT stubs and .init/.fini have simple CFGs but are library-related; prioritized user code in .text.
+
+Edges follow standard rules: terminate BBs at branches/returns; no interprocedural edges.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- bzip2 (\texttt{bzip2\_O3.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+Disassembly provided contains .text section with multiple unlabeled subroutines starting at addresses like 0x22c0, 0x2320, 0x23a0, 0x2530 (\_start), 0x2620 (large function likely main processing), and ending at .fini.
+
+Basic blocks identified by linear sequences terminated by branches (je, jne, jmp, call does not terminate), returns, etc. Intra-procedural edges only within each subroutine.
+
+Functions inferred by entry points with standard prologues (push rbp etc.) and ret instructions. PLT entries treated as separate trivial functions but CFG focuses on .text. Partial reconstruction due to truncation and lack of symbols.
+
+Nodes numbered per subroutine (e.g., sub\_22c0::B0). Edges from conditional/unconditional branches within same function.
 
 \bigskip
 \hrule
@@ -1111,13 +2247,13 @@ No interprocedural edges; only intra-function control flow. PLT stubs treated as
 
 \textbf{Reasoning}
 
-The disassembly contains multiple functions identifiable by standard prologues (push rbp; mov rbp, rsp) at addresses like 0x11c0, 0x1210, 0x1220, etc., under .text section.
+The disassembly contains standard CRT startup code at 0x1120 (\_start) with conditional branches and calls.
 
-Basic blocks were identified by locating conditional jumps (je, jne, etc.), unconditional jumps, calls (ignored for intraprocedural), and returns.
+Multiple functions identified by push rbp / mov rbp,rsp prologues and ret instructions, such as at 0x1210, 0x1220, 0x12f0, etc.
 
-Intraprocedural edges were reconstructed for key functions like init-like routines and parser/evaluator functions based on branch targets and fall-throughs; full CFG is partial due to size and truncation but covers main control flows.
+Intraprocedural edges extracted from je/jne/jmp/call/ret within each identified function boundary; PLT stubs treated as separate trivial functions.
 
-No interprocedural edges or call/return modeling; PLT stubs treated as external.
+CFG is partial due to large size and some unresolved indirect jumps, but covers key basic blocks and control transfers.
 
 \bigskip
 \hrule
@@ -1125,17 +2261,15 @@ No interprocedural edges or call/return modeling; PLT stubs treated as external.
 
 \subsection{Grok -- fe (\texttt{fe\_O1.json})}
 
-\textbf{Confidence:} 45
+\textbf{Confidence:} 60
 
 \textbf{Reasoning}
 
-Disassembly shows multiple intraprocedural functions in .text with standard x86-64 prologues (endbr64/push rbp) and epilogues (ret/pop).
+The disassembly shows multiple intraprocedural control flows with conditional jumps (je, jne, jb, etc.), loops, and returns in .text section.
 
-Basic blocks identified by linear sequences terminating at branches (je/jne/jmp/call/ret), conditional jumps, and targets of jumps.
+Identified basic blocks around key addresses like 0x1250 (multi-register push function with branches), 0x1320, 0x1360, 0x1430, etc., based on prologues and ret instructions.
 
-Identified main-like function at 0x3860 with setjmp/fopen/loop parsing logic; several helpers like error (0x1250), stack ops (0x1430, 0x14b0, etc.), and expression evaluator fragments. Edges only within same function; calls treated as intra-block terminators without interproc edges.
-
-Partial reconstruction due to large/truncated disassembly; focused on prominent functions with clear control flow (e.g., main, error handlers, stack manipulators). No inter-function edges or call/return modeling.
+Edges constructed from visible branches (e.g., je to targets) within apparent function boundaries; calls ignored as per rules; partial reconstruction due to large/truncated input but sound for visible parts.
 
 \bigskip
 \hrule
@@ -1147,13 +2281,13 @@ Partial reconstruction due to large/truncated disassembly; focused on prominent 
 
 \textbf{Reasoning}
 
-Disassembly shows .text section with mixed code and many relative branches using <\_\_cxa\_finalize@plt+offset> placeholders, indicating unnamed or stripped functions.
+Disassembly lacks symbol names; functions identified by prologues (push rbp etc.), epilogues, and address ranges where control flow stays local.
 
-Identified multiple intraprocedural basic blocks in key subroutines (e.g., around addresses 0x1120, 0x1250 error handler, 0x1d60 expression evaluator, 0x22f0 parser) via conditional jumps (je/jne), calls (ignored for intraprocedural), and returns.
+Major functions reconstructed: init-like at 1120/1150, error\_handler at 1250, parser/eval at \textasciitilde{}1d60/2a00/39c0, with basic blocks split at branches/jumps/returns.
 
-Basic blocks split at branches/returns; edges connect sequential flow and resolved targets within visible functions. Partial reconstruction due to truncation and lack of explicit symbols; no interprocedural edges added.
+Intra-procedural edges from conditional jumps (je/jne), unconditional (jmp), and fall-throughs within identified function bounds. Calls ignored per rules.
 
-Functions like init/fini/PLT are simple; main logic in .text recovered where control flow evident (loops, conditionals in parsing/eval).
+Partial CFG due to size/truncation; focused on key .text routines with clear CF.
 
 \bigskip
 \hrule
@@ -1161,19 +2295,17 @@ Functions like init/fini/PLT are simple; main logic in .text recovered where con
 
 \subsection{Grok -- fe (\texttt{fe\_O3.json})}
 
-\textbf{Confidence:} 45
+\textbf{Confidence:} 40
 
 \textbf{Reasoning}
 
-Disassembly provided in single .text section with no function symbols, requiring manual identification via prologues/epilogues (push rbp/mov rbp, ret patterns).
+Disassembly shows .text section starting at 0x1120 with mixed code, PLT stubs, and no clear function symbols beyond sections and PLT entries.
 
-Main function identified at 0x35a0 with standard prologue, argument handling, setjmp, loop for parsing/execution, and file I/O branches.
+Identified potential entry points and branches (je, jmp, call, ret) within .text for basic block construction.
 
-Multiple small utility functions identified (e.g., around 0x1250, 0x14d0 for alloc-like, 0x1ab0 for expression eval). Basic blocks split at branches (je, jne, jmp, call targets treated as intraprocedural only).
+Reconstructed minimal intraprocedural CFG for main .text block and key subroutines based on visible control transfers; many edges inferred from conditional jumps and sequential flow.
 
-Full CFG reconstruction partial due to file size/truncation and complexity of interpreter-like code with linked lists/trees; focused on key control flows in main and helpers.
-
-No interprocedural edges; calls ignored per rules. Edges from conditional jumps (e.g., je at various offsets) and loops.
+Limited by unlabeled functions and truncation; focused on intraprocedural edges only, avoiding calls/returns.
 
 \bigskip
 \hrule
@@ -1181,17 +2313,17 @@ No interprocedural edges; calls ignored per rules. Edges from conditional jumps 
 
 \subsection{Grok -- kilo (\texttt{kilo\_O0.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 45
 
 \textbf{Reasoning}
 
-Disassembly shows .text section with multiple intraprocedural control flows identifiable via branches, jumps, and prologues.
+Disassembly provided as .asm dump with .text section containing multiple functions identifiable by push rbp/mov rbp,rsp prologues and ret instructions.
 
-Functions identified by push rbp/mov rbp,rsp patterns and returns; basic blocks split at conditional jumps (je/jne), unconditional jmp, and ret.
+Identified key functions: entry/\_start at 0x2270, terminal setup \textasciitilde{}0x23b0, get\_key \textasciitilde{}0x2490, render \textasciitilde{}0x4100, main loop \textasciitilde{}0x4880.
 
-Reconstructed key functions like terminal setup, input handling, and rendering loops with their BBs and edges; omitted uncertain interprocedural calls.
+Basic blocks split at branches (je, jne, jmp, conditional), returns; calls do not split blocks. Partial reconstruction due to truncation and label offsets; focused on prominent intraprocedural flows.
 
-Partial but sound CFG covering main control paths from entry at \textasciitilde{}0x2270 and visible functions up to \textasciitilde{}0x5464.
+No interprocedural edges; only within-function control transfers.
 
 \bigskip
 \hrule
@@ -1199,17 +2331,17 @@ Partial but sound CFG covering main control paths from entry at \textasciitilde{
 
 \subsection{Grok -- kilo (\texttt{kilo\_O1.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 40
 
 \textbf{Reasoning}
 
-The disassembly shows a large .text section with multiple intraprocedural control flow constructs including conditional jumps (je, jne), unconditional jumps, and returns.
+The disassembly is from a stripped binary with no user function symbols in .text, only PLT entries and init/fini.
 
-No explicit user function labels beyond PLT and standard sections; treated primary code in .text as containing recoverable basic blocks from visible branches and sequential flows.
+Identified entry points and common function patterns (e.g., around 0x2270 for \_start-like, 0x4d10 for main-like, several subs with push rbp).
 
-Basic blocks identified around key addresses with branches like at 0x231b, 0x23fc, 0x24c1, etc.; edges connect within the same code region avoiding interprocedural calls.
+Basic blocks derived from branch targets (je, jmp, call targets within function), ret instructions, and fall-throughs. Full CFG reconstruction limited by size and lack of symbols, so partial with representative functions.
 
-Partial CFG reconstructed focusing on prominent control transfers in the main logic for terminal handling and input processing.
+Intraprocedural only: no call/return edges across functions. Used sub\_ identifiers for unnamed functions.
 
 \bigskip
 \hrule
@@ -1217,17 +2349,19 @@ Partial CFG reconstructed focusing on prominent control transfers in the main lo
 
 \subsection{Grok -- kilo (\texttt{kilo\_O2.json})}
 
-\textbf{Confidence:} 45
+\textbf{Confidence:} 65
 
 \textbf{Reasoning}
 
-The input is a large objdump-style disassembly without explicit user function labels beyond PLT stubs and sections.
+Disassembly reveals multiple distinct functions in .text section identifiable by standard prologues (push rbp, endbr64, register saves) and epilogues (ret, pop sequences).
 
-Identified intraprocedural CFGs for major code regions in .text: entry/\_start at 0x2270 (B0-B1 with libc call), key handling at 0x2490, cursor/term at 0x2630 and 0x26f0, buffer ops at 0x2970/0x2ed0, render at \textasciitilde{}0x4020, main loop at \textasciitilde{}0x4950.
+Basic blocks constructed by identifying linear sequences terminated by branches (je, jne, jmp, conditional jumps), returns, and targets of jumps (labels like 24b0, 25d7).
 
-Basic blocks split at branches (je/jne/jmp/call/ret/conditional), with edges for fallthrough and taken branches. Limited by truncation and lack of full symbol info; partial reconstruction prioritizes visible control flow.
+Intraprocedural edges only: calls treated as non-terminating within BBs; no inter-function edges or call/return modeling.
 
-No interprocedural edges; calls treated as intra-block terminators only.
+Key functions recovered: entry at 0x2270, terminal setup at 0x23c0, key reading at 0x2490 and 0x2630, screen/ANSI handling at 0x26f0, buffer processing at 0x2970, main loop logic around 0x4020 and 0x4950.
+
+Truncation in provided disassembly limits full recovery of later functions, but core control flow (conditionals, loops over input, state updates) is reconstructible with high local accuracy.
 
 \bigskip
 \hrule
@@ -1235,17 +2369,17 @@ No interprocedural edges; calls treated as intra-block terminators only.
 
 \subsection{Grok -- kilo (\texttt{kilo\_O3.json})}
 
-\textbf{Confidence:} 40
+\textbf{Confidence:} 35
 
 \textbf{Reasoning}
 
-The disassembly is stripped with no clear function symbols in .text; all code appears under <.text> label with internal branches using offset references like <\_\_cxa\_finalize@plt+...>.
+Disassembly is stripped with no symbol table; functions identified by standard prologues (push rbp/sub rsp), call sites, and return patterns.
 
-PLT entries and init/fini sections have simple CFGs, but main logic is a large monolithic .text section containing multiple implicit functions or one complex procedure.
+Basic blocks split at branches (je/jne/jmp/conditional), returns, and targets; calls do not split blocks per rules.
 
-Basic blocks can be identified from branches (je, jne, jmp, ret, etc.), but full reconstruction of all BBs/edges is limited by truncation and scale; partial CFG focusing on visible entry points and common patterns.
+Partial reconstruction due to truncation in input and complexity; focused on .text entry and key visible functions like input handler at 24a0 and terminal setup at 23c0; intra-function edges only.
 
-Intraprocedural only: no call/return edges modeled across PLT or between implicit subs.
+Many edges recovered from explicit jumps; indirect/switch cases (e.g., at 25e2) partially resolved where targets visible.
 
 \bigskip
 \hrule
@@ -1257,13 +2391,13 @@ Intraprocedural only: no call/return edges modeled across PLT or between implici
 
 \textbf{Reasoning}
 
-Disassembly clearly delineates functions via standard x86-64 prologues (push rbp; mov rbp, rsp) and ret instructions, allowing reliable function boundary detection.
+Disassembly covers complete .text section with clear function boundaries via standard prologues (push rbp; mov rbp,rsp) and ret instructions.
 
-Basic blocks identified as maximal sequences ending at branches (j*, jmp, ret) or branch targets; fallthrough and conditional edges reconstructed where targets are within the same function.
+Basic blocks identified per rules: leaders at function entries, branch targets, and post-branch instructions; maximal linear sequences without internal branches.
 
-Intraprocedural only: no call/return edges or inter-function links; indirect jumps and external calls treated as terminators without uncertain edges.
+Intraprocedural only: no call/return edges modeled; functions like main, shell\_loop, read\_line, etc. reconstructed independently based on control transfers (jne, je, jmp).
 
-All major functions (cd, help, exec, dispatch, read\_line, tokenize, loop, main, crt inits) have complete BB coverage based on linear scan of .text.
+All major functions (change\_directory, print\_menu, execute\_command, command\_dispatch, read\_line, tokenize, shell\_loop, main) analyzed; init stubs included where relevant.
 
 \bigskip
 \hrule
@@ -1271,17 +2405,17 @@ All major functions (cd, help, exec, dispatch, read\_line, tokenize, loop, main,
 
 \subsection{Grok -- lsh (\texttt{lsh\_O1.json})}
 
-\textbf{Confidence:} 60
+\textbf{Confidence:} 65
 
 \textbf{Reasoning}
 
-Disassembly parsed to identify distinct functions via prologues (push regs), epilogues (pops, ret), and logical groupings (e.g., cd\_handler at 0x1220, shell loop at 0x15a0).
+Identified multiple functions in .text section based on entry points, ret instructions, and call targets: sub\_1130 (\_start), sub\_1160, sub\_11d0, sub\_1220 (cd), sub\_1270 (help), sub\_12e0, sub\_12f0, sub\_1300 (run\_external), sub\_1390 (dispatch), sub\_1410 (read\_line), sub\_14c0 (tokenize), sub\_15a0 (shell\_loop), sub\_1660 (main).
 
-Basic blocks constructed as maximal sequences ending at branches (je/jne/jmp), calls (kept within BB as non-splitting for intra), or rets; branch targets start new BBs.
+For each function, identified leaders as function entries, branch targets, and fall-throughs after terminating instructions (jumps, conditional branches, rets). Grouped into maximal basic blocks without internal control flow.
 
-Intraprocedural only: no call/return edges modeled; indirect jumps via table omitted from edges; CRT init/\_start included as separate functions.
+Constructed intraprocedural edges only; calls do not create edges or split blocks; no inter-function edges. Partial recovery for complex loops and error paths where targets clear.
 
-Partial but complete reconstruction for all major user functions; some small returns have single BB.
+Small stub functions have single-block CFGs. Complex functions like shell\_loop and read\_line have loops with multiple BBs and back-edges.
 
 \bigskip
 \hrule
@@ -1293,11 +2427,13 @@ Partial but complete reconstruction for all major user functions; some small ret
 
 \textbf{Reasoning}
 
-Identified distinct functions from entry points and call targets in .text section: \_start, csu\_init variants, cd\_handler, help\_handler, return0, return3, run\_external, dispatch\_cmd, read\_line, tokenize, shell\_loop, main.
+Disassembly provided is complete for .text section with clear function boundaries identifiable via prologues, calls, rets, and padding nops.
 
-Basic blocks constructed by locating branch targets (je/jne/jmp/jl), call sites (ending BB but no interproc edges), returns, and fallthroughs. Standard glibc stubs have minimal internal CF.
+Basic blocks constructed per rules: maximal sequences ending at branches/returns/jumps; calls do not terminate BBs; leaders include entries and branch targets.
 
-Intraprocedural only: no call/return edges across functions; edges only within same function. Some indirect jumps (dispatch table) handled via known targets. Partial fallthroughs and error paths included.
+Intraprocedural only: no call/return edges between functions; multiple small utility functions and init code included where CF identifiable.
+
+Some small functions have single-BB CF; main loop and dispatch have multiple due to conditionals and jump table.
 
 \bigskip
 \hrule
@@ -1309,11 +2445,13 @@ Intraprocedural only: no call/return edges across functions; edges only within s
 
 \textbf{Reasoning}
 
-Disassembly shows standard ELF startup (\_start at 0x1130, init functions) and several user functions in .text for a simple shell-like program.
+Disassembly provided allows clear identification of multiple functions via entry points, prologues (push rbp etc.), epilogues (pop/ret), and call targets.
 
-Identified functions via prologues, call targets, and ret instructions: cd (1220), help (1280), constants (1300,1310), execute (1320), dispatch (13b0), read\_line (1440), tokenize (14f0), loop (15d0), main (16b0).
+Basic blocks identified by linear sequences ending at branches (je, jne, jl, jmp), calls (not terminating BB), or returns. Targets of jumps define new BB starts.
 
-Basic blocks split at branches (jumps, conditional jumps, calls ignored for intra-CFG, rets). Edges follow explicit jumps/conditionals within each function. Some fall-throughs and loops reconstructed. Partial due to label offsets and complexity.
+Intraprocedural only: no call/return edges modeled. Functions: \_start, init variants, cd, help, run\_cmd, handle\_cmd, read\_line, tokenize, shell\_loop, main.
+
+Some padding/nops treated as part of prior BB. All recoverable intra-function flows included; minor indirects via tables noted but edges from known jumps added.
 
 \bigskip
 \hrule
@@ -1325,13 +2463,13 @@ Basic blocks split at branches (jumps, conditional jumps, calls ignored for intr
 
 \textbf{Reasoning}
 
-Disassembly clearly delineates functions via prologues (push rbp; mov rbp,rsp), epilogues, and padding nops separating them.
+Disassembly provided is complete for .text section with clear function boundaries identifiable via standard prologues (push rbp; mov rbp,rsp), epilogues (pop rbp; ret), and cross-references via calls/jumps.
 
-Basic blocks identified by sequential instructions ending at branches (jumps, conditional jae/jge/jle/je/jne), calls (treated as fall-through within function for intraprocedural CFG), and returns.
+Functions identified: \_start (1090), \_\_libc\_csu\_init variants (10c0,10f0,1130), print\_bytes (1180), main (11e0), rotate\_left (1260), md5\_init (1290), md5\_update (12e0), md5\_transform (1400), md5\_final (1590), md5 (1770), md5\_file (17e0).
 
-Intraprocedural only: no call/return edges between functions; loops and conditionals within each function reconstructed accurately from offsets.
+Basic blocks constructed per intraprocedural rules: maximal straight-line sequences ending at branches/returns/jumps. Loops and conditionals create multiple blocks per function. No interprocedural edges or call/return modeling.
 
-Startup code (.text 1090-1170) included as separate functions where branches exist; user MD5 functions fully analyzed.
+All major loops (e.g., in md5\_update, md5\_transform, main argument processing) and conditionals fully recovered with high fidelity.
 
 \bigskip
 \hrule
@@ -1343,11 +2481,13 @@ Startup code (.text 1090-1170) included as separate functions where branches exi
 
 \textbf{Reasoning}
 
-Disassembly provided is from a stripped ELF binary with MD5 hashing implementation (evident from constants, rotate, rounds in 1370/14d0/15c0/17c0).
+Disassembly provided covers standard ELF startup, MD5 implementation functions, and utility routines with clear prologues and control flow instructions.
 
-Identified functions based on call targets, prologues (push rbp etc.), and epilogues (pop, ret): sub\_10a0 (\_start), sub\_1190 (print16), sub\_11e0 (main), sub\_12b0 (rol), sub\_12c0 (init\_ctx), sub\_12e0 (md5\_update), sub\_1370 (md5\_transform), sub\_14d0 (md5\_final), sub\_15c0 (md5\_process or update helper), sub\_17c0 (md5\_file).
+Functions identified by prologues (endbr64/push rbp), call targets, and ret instructions; basic blocks split at branches (jcc, jmp, ret) and targets.
 
-Basic blocks constructed by splitting at branches (jumps, calls treated as intra only for fallthrough, cond jumps, ret). No interprocedural edges. Partial recovery due to complex loops in MD5 routines and lack of symbols.
+Intra-function edges from conditional jumps, unconditional jumps, fall-throughs; no inter-procedural edges or calls included per rules.
+
+Main, MD5 update/compress/final, file/string handlers reconstructed with high fidelity; library stubs and small inits have simple CFGs.
 
 \bigskip
 \hrule
@@ -1359,13 +2499,13 @@ Basic blocks constructed by splitting at branches (jumps, calls treated as intra
 
 \textbf{Reasoning}
 
-Disassembly contains multiple standard and custom functions including \_start, main, MD5-related functions (init, update, transform, final, hash string, hash file), and helper like print bytes.
+Identified key functions from prologues, epilogues, and call targets in .text: main at 0x1290, print\_hex at 0x1190, md5\_init at 0x1310, md5\_update at 0x1330, md5\_transform at 0x13c0, md5\_final at 0x1520, md5\_string at 0x1610, md5\_file at 0x1830, and startup at 0x10a0.
 
-Basic blocks identified by linear sequences terminating at branches (jumps, calls ignored for intra, returns, conditional).
+Basic blocks split at branches (je, jne, jmp, jbe, etc.), returns, and targets. Loops in MD5 processing create multiple BBs per function.
 
-Intraprocedural only: no call/return edges across functions; edges within each function's blocks based on j* and jmp targets.
+Intraprocedural only: no call/return edges modeled. Partial reconstruction due to dense code and offsets; focused on clear control flow in main and core MD5 funcs.
 
-Functions named where inferable (main, print\_hex16, md5\_*) or sub\_<addr>; BBs numbered per function.
+Rol at 0x1300 is trivial single BB. Many small init/fini stubs.
 
 \bigskip
 \hrule
@@ -1373,15 +2513,165 @@ Functions named where inferable (main, print\_hex16, md5\_*) or sub\_<addr>; BBs
 
 \subsection{Grok -- md5-c (\texttt{md5\_O3.json})}
 
+\textbf{Confidence:} 70
+
+\textbf{Reasoning}
+
+Disassembly parsed to identify distinct functions via prologues, call targets, and entry points in .text section.
+
+Basic blocks constructed by identifying linear sequences terminated by branches (jumps, conditional, ret) or targets.
+
+Intraprocedural only: no call/return edges modeled; functions treated independently.
+
+Main, MD5-related functions (update, compress, final, etc.) recovered with their internal CFGs.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- pdpmake (\texttt{pdpmake\_O0.json})}
+
+\textbf{Confidence:} 40
+
+\textbf{Reasoning}
+
+Disassembly contains PLT stubs and one large user function error@@Base along with its prologue error@@Base-0xa60.
+
+Full CFG reconstruction for the very large error@@Base (thousands of instructions) is complex due to size and indirect control flow; partial reconstruction focuses on identified entry points and sample branches.
+
+Basic blocks derived from branch targets (je, jmp, jne etc.) and function starts; edges are intraprocedural only within identified functions.
+
+Many PLT entries are simple stubs with limited internal CFG.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- pdpmake (\texttt{pdpmake\_O1.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly presents a large .text section primarily labeled under error@@Base, indicating either a single dominant function or symbol overlay on multiple routines.
+
+Multiple entry points visible via standard prologues (endbr64, push/pop sequences, stack adjustments) allow identification of distinct functions such as error handlers, init/fini, and utility subs.
+
+Basic blocks derived from branch targets, conditional jumps (je/jne), unconditional jumps, calls (retained in BB), and ret instructions; interprocedural edges omitted per rules.
+
+Truncation in provided disassembly limits full recovery, yielding partial CFG focused on prominent visible control flows in early .text.
+
+Nodes use error@@Base::B<n> prefix for main blob and sub\_ prefixes for smaller identifiable routines; edges reflect only intraprocedural transfers.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- pdpmake (\texttt{pdpmake\_O2.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly primarily consists of PLT stubs and one large function labeled error@@Base at 0x23b0 containing the bulk of the program's logic.
+
+Multiple small helper-like routines and entry points (e.g., at 0x25c0, 0x2660) are identifiable as separate functions based on prologues and labels.
+
+Basic blocks were identified by locating branch targets, conditional jumps, returns, and fall-through sequences within the .text section; full enumeration is limited by input size but key intraprocedural flows recovered.
+
+No interprocedural edges included; calls to PLT functions do not terminate BBs or create edges.
+
+Partial CFG focused on main function and visible subs for soundness.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- pdpmake (\texttt{pdpmake\_O3.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly primarily consists of PLT stubs for library functions and one very large function labeled error@@Base spanning most of the .text section.
+
+Basic blocks were identified by scanning for branch targets (labels like <error@@Base+0xNNN>), conditional jumps (je, jne, etc.), unconditional jumps, calls (which do not terminate BBs), and returns.
+
+PLT entries are treated as trivial functions with single basic blocks. The large error@@Base function has numerous internal basic blocks connected by identified intraprocedural branches; not all edges recovered due to truncation and complexity.
+
+No interprocedural edges or call/return modeling per rules. CFG focuses on identifiable intraprocedural flows within recovered functions.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- wak (\texttt{wak\_O0.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+The disassembly primarily contains one large function labeled error@@Base spanning most of .text, with numerous internal branches, calls, and conditional jumps.
+
+PLT stubs and small init/fini sections have simple linear CFGs with few branches.
+
+Basic blocks identified by sequential instructions terminating at jumps, calls (kept in BB), returns, or branch targets.
+
+Due to truncation and volume, partial reconstruction focuses on major control points in error@@Base and entry points; many edges recoverable from visible je/jne/jmp/ret.
+
+No interprocedural edges; only intra-function CFGs.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- wak (\texttt{wak\_O1.json})}
+
 \textbf{Confidence:} 65
 
 \textbf{Reasoning}
 
-Identified multiple functions in .text section based on standard prologues (push regs, sub rsp), epilogues (ret, pop regs, add rsp), and call targets.
+Disassembly shows multiple functions in .text section starting at addresses like 0x2390, 0x2470, 0x25d0, 0x26c0 (likely main), and others up to \textasciitilde{}0x10f60.
 
-Reconstructed CFGs for main (1290), print\_bytes (1190), update (1330), transform (1430), final (1590), sha1 (1660), sha1\_file (16c0), and init/rol helpers. Entry at 10a0 treated as separate.
+Basic blocks identified by branch targets (e.g., je, jne, jmp), function prologues (push rbp, sub rsp), and returns. PLT stubs treated as trivial functions.
 
-Basic blocks split at branches (jumps, conditional, calls ignored for edges), loops, and returns. Edges only within same function. Some complex loops in transform have partial branch recovery.
+Intraprocedural edges from conditional branches (je/jne at offsets like 0x23b8, 0x24f4), unconditional jmps, and fall-throughs within visible functions. Full CFG partial due to truncation but covers key control flow.
+
+No interprocedural edges added; calls ignored per rules. Node names use generic 'sub\_X' or inferred 'main' where clear.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- wak (\texttt{wak\_O2.json})}
+
+\textbf{Confidence:} 65
+
+\textbf{Reasoning}
+
+Disassembly contains standard ELF sections with PLT stubs and .text code.
+
+Multiple functions identifiable via prologues (push rbp etc.) and ret instructions at addresses like 0x25d0 (\_start-like), 0x26c0 (main), and smaller helpers at 0x2390, 0x2470.
+
+Basic blocks constructed by linear sequences terminated by branches/jumps/returns/calls where control flow changes; intraprocedural only, no call/return edges between functions.
+
+Large binary with truncation limits full enumeration, but key control flows in entry points recovered; nodes use sub\_ addresses where names unavailable.
+
+\bigskip
+\hrule
+\bigskip
+
+\subsection{Grok -- wak (\texttt{wak\_O3.json})}
+
+\textbf{Confidence:} 45
+
+\textbf{Reasoning}
+
+Disassembly contains multiple functions in .text section including error handlers at 0x2390 and 0x2470, \_start at 0x25d0, and a large main-like function at 0x26c0 handling getopt and processing logic.
+
+Basic blocks identified by branch targets (e.g., je, jne, jmp) and function entry points. Truncation and size limit full reconstruction; focused on prominent control flows.
+
+Intraprocedural only: no call/return edges between functions. Nodes follow <function>::B<n> format using recovered labels where possible (e.g., start, error\_print). Partial but sound CFG from visible branches.
 
 \bigskip
 \hrule
