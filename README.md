@@ -24,9 +24,7 @@ Bachelor-Thesis/
 │   └── Disassembly_Sample/       # Sampled disassembly provided to LLMs
 │
 ├── Results/                      # Evaluation results
-│   └── Plots/
-│       ├── Individual/           # Per-program evaluation plots
-│       └── Average/              # Average results across benchmark programs
+│   └── Plots/                    # Graph metric plots
 │
 ├── Scripts/                      # Dataset generation and evaluation scripts
 │
@@ -144,15 +142,20 @@ The evaluation computes the following graph metrics:
 
 ## Benchmark Programs
 
-The experiments use five open-source C programs:
+The experiments use ten open-source C programs:
 
 | Program | Description |
 |---------|-------------|
 | lsh | Unix Shell |
-| md5-c | Cryptographic Utility  |
+| md5-c | Cryptographic Utility |
 | 2048.c | Game |
 | fe | Expression Interpreter |
 | kilo | Text Editor |
+| Tinyhttpd | HTTP Server |
+| Notepad-- | Text Editor |
+| bzip2 | Compression Utility |
+| pdpmake | Build Automation Tool |
+| wak | AWK Interpreter |
 
 ---
 
